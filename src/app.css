@@ -2,19 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Geist";
+  src: url("/fonts/Geist/Geist-VariableFont_wght.ttf") format("truetype-variations");
+  font-weight: 300 700;
+  font-style: normal;
+}
+
 :root {
-  --background-rgb: 214, 219, 220;
-  --foreground-rgb: 0, 0, 0;
+  --background: 0 0% 16%;
+  --foreground: 0 0% 95%;
+  --primary: 98 100% 65%;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background-rgb: 0, 0, 0;
-    --foreground-rgb: 255, 255, 255;
+    --background: 0 0% 16%;
+    --foreground: 0 0% 95%;
+    --primary: 98 100% 65%;
   }
 }
 
 body {
-  background: rgb(var(--background-rgb));
-  color: rgb(var(--foreground-rgb));
+  background: hsl(var(--background));
+  font-family: 'Geist';
 }
