@@ -4,7 +4,8 @@
 
 @font-face {
   font-family: "Geist";
-  src: url("/fonts/Geist/Geist-VariableFont_wght.ttf") format("truetype-variations");
+  src: url("/fonts/Geist/Geist-VariableFont_wght.ttf")
+    format("truetype-variations");
   font-weight: 300 700;
   font-style: normal;
 }
@@ -25,5 +26,6 @@
 
 body {
   background: hsl(var(--background));
-  font-family: 'Geist';
+  font-family: "Geist";
+  color: hsl(var(--foreground));
 }

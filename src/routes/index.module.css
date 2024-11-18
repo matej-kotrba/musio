@@ -1,0 +1,15 @@
+.host__join:has(> button:hover) > button:not(:hover) {
+  font-size: 0.8rem !important;
+}
+
+.host__join__separator::before,
+.host__join__separator::after {
+  content: "";
+  width: 2rem;
+  height: 100%;
+}
+
+.host__join:has(> button:hover)
+  > button:not(:hover)
+  > .host__join__separator::before {
+}
