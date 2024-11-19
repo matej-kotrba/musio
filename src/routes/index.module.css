@@ -2,14 +2,40 @@
   font-size: 0.8rem !important;
 }
 
-.host__join__separator::before,
-.host__join__separator::after {
-  content: "";
-  width: 2rem;
-  height: 100%;
+.host__join__separator {
+  box-shadow: 0 0 48px 1rem hsl(var(--primary) / 0.2),
+    0 0 24px 0.5rem hsl(var(--primary) / 0.1),
+    0 0 8px 0.3rem hsl(var(--primary) / 0.2);
 }
 
-.host__join:has(> button:hover)
-  > button:not(:hover)
-  > .host__join__separator::before {
+.host__join > button::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  transform: scaleX(0);
+  transform-origin: var(--circle-position);
+  background: radial-gradient(
+    circle at var(--circle-position),
+    hsl(var(--primary) / 0.1),
+    transparent
+  );
+
+  transition: transform 0.2s ease;
+}
+
+.host__join > button:first-of-type::before {
+  --circle-position: 100% 50%;
+  left: 0;
+}
+
+.host__join > button:not(:first-of-type)::before {
+  --circle-position: 0% 50%;
+  right: 0;
+}
+
+.host__join > button:hover::before {
+  transform: scaleX(1);
 }

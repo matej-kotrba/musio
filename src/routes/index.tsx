@@ -10,13 +10,19 @@ export default function Home() {
       <div
         class={`${index.host__join} relative mx-auto text-foreground text-2xl font-semibold w-[32rem] flex`}
       >
-        <button type="button" class="grow-[1] py-8 hover:grow-[2] duration-150">
+        <button
+          type="button"
+          class="grow-[1] py-8 hover:grow-[2] duration-150 relative"
+        >
           Host
         </button>
         <div
           class={`${index.host__join__separator} w-1 bg-primary rounded-md`}
         ></div>
-        <button type="button" class="grow-[1] py-8 hover:grow-[2] duration-150">
+        <button
+          type="button"
+          class="grow-[1] py-8 hover:grow-[2] duration-150 relative"
+        >
           Join
         </button>
       </div>
