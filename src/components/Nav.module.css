@@ -1,0 +1,22 @@
+.link::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 0.2rem;
+  top: 100%;
+  left: 0;
+  background-image: linear-gradient(
+    to right,
+    hsl(var(--primary)),
+    hsl(var(--primary))
+  );
+
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.2s ease;
+}
+
+.link:hover::before {
+  transform: scaleX(1);
+  transform-origin: left;
+}

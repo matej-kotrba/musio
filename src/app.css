@@ -12,6 +12,7 @@
 
 :root {
   --background: 0 0% 16%;
+  --background-accent: 0 0% 21%;
   --foreground: 0 0% 95%;
   --primary: 98 100% 65%;
 }
@@ -19,6 +20,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --background: 0 0% 16%;
+    --background-accent: 0 0% 21%;
     --foreground: 0 0% 95%;
     --primary: 98 100% 65%;
   }
