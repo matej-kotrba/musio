@@ -8,8 +8,9 @@
   background-image: linear-gradient(
     to right,
     hsl(var(--primary)),
-    hsl(var(--primary))
+    hsl(var(--primary-accent))
   );
+  border-radius: 4px;
 
   transform: scaleX(0);
   transform-origin: right;

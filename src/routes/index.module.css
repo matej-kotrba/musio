@@ -1,3 +1,18 @@
+.landing::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: transparent;
+  opacity: 0.8;
+  background-image: radial-gradient(
+    hsl(var(--primary)) 0.5px,
+    hsl(var(--background)) 0.5px
+  );
+  background-size: 10px 10px;
+  mask-image: radial-gradient(ellipse at center, black -40%, transparent);
+  z-index: -99;
+}
+
 .host__join:has(> button:hover) > button:not(:hover) {
   font-size: 0.8rem !important;
 }
