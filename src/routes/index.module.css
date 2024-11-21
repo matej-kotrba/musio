@@ -1,3 +1,16 @@
+.main__title {
+  width: fit-content;
+  margin-inline: auto;
+
+  background-image: linear-gradient(
+    90deg,
+    hsl(var(--primary)),
+    hsl(var(--primary-accent))
+  );
+  background-clip: text;
+  color: transparent;
+}
+
 .landing::before {
   content: "";
   position: absolute;
