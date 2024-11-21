@@ -11,10 +11,15 @@ module.exports = {
     },
     extend: {
       colors: {
-        background: "hsl(var(--background) / <alpha-value>)",
-        background_accent: "hsl(var(--background-accent) / <alpha-value>)",
         foreground: "hsl(var(--foreground) / <alpha-value>)",
-        primary: "hsl(var(--primary) / <alpha-value>)",
+        background: {
+          DEAFULT: "hsl(var(--background) / <alpha-value>)",
+          accent: "hsl(var(--background-accent) / <alpha-value>)",
+        },
+        primary: {
+          DEFAULT: "hsl(var(--primary) / <alpha-value>)",
+          accent: "hsl(var(--primary-accent) / <alpha-value>)",
+        },
       },
     },
   },
