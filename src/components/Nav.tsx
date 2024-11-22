@@ -1,10 +1,14 @@
 import styles from "./Nav.module.css";
 import { A } from "@solidjs/router";
 import musioLogo from "/svgs/logo.svg";
+import { NAV_HEIGHT } from "~/utils/constants";
 
 export default function Nav() {
   return (
-    <nav class="h-20 flex items-center justify-between px-4 lg:px-8 2xl:px-16">
+    <nav
+      class="flex items-center justify-between px-4 container mx-auto"
+      style={{ height: NAV_HEIGHT }}
+    >
       <img src={musioLogo} alt="" class="w-16" />
       <div class="flex gap-4">
         <A

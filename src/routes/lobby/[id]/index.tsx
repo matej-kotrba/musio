@@ -1,3 +1,41 @@
+import { createSignal } from "solid-js";
+import PlayerDisplay, { getAllIcons, Player } from "~/components/lobby/Player";
+import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
+
 export default function Lobby() {
-  return <div>asd</div>;
+  const [players, setPlayers] = createSignal([]);
+
+  const dummy_players: Player[] = [
+    {
+      id: "1",
+      name: "Very Long cool name",
+      icon: getAllIcons()[Math.round(Math.random() * 6)],
+    },
+    {
+      id: "2",
+      name: "Player 2",
+      icon: getAllIcons()[Math.round(Math.random() * 6)],
+    },
+    {
+      id: "3",
+      name: "Player 3",
+      icon: getAllIcons()[Math.round(Math.random() * 6)],
+    },
+  ];
+
+  return (
+    <div
+      class="relative"
+      style={{
+        height: `calc(100vh - ${NAV_HEIGHT} - ${LOBBY_LAYOUT_HEIGHT} * 2 - 2rem)`,
+      }}
+    >
+      <aside class="flex flex-col gap-4 w-80 border-r-2 border-white">
+        {dummy_players.map((item) => (
+          <PlayerDisplay {...item} />
+        ))}
+      </aside>
+      <section></section>
+    </div>
+  );
 }
