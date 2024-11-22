@@ -16,10 +16,10 @@
   position: absolute;
   inset: 0;
   background-color: transparent;
-  opacity: 0.8;
+  opacity: 0.6;
   background-image: radial-gradient(
-    hsl(var(--primary)) 0.5px,
-    hsl(var(--background)) 0.5px
+    hsl(var(--primary)) 0.8px,
+    hsl(var(--background)) 0.8px
   );
   background-size: 10px 10px;
   mask-image: radial-gradient(ellipse at center, black -40%, transparent);
