@@ -27,8 +27,10 @@ export default function PlayerDisplay(props: Player) {
   return (
     <div class="flex gap-2">
       <img src={props.icon.url} alt="" class="rounded-lg w-24" />
-      <div class="self-start">
-        <div class="text-xl font-semibold">{props.name}</div>
+      <div class="min-w-0 self-start">
+        <div class="text-xl font-semibold overflow-hidden whitespace-nowrap text-ellipsis">
+          {props.name}
+        </div>
         <div class="text-xl">25 points</div>
         <div class="w-fit text-white bg-blue-500 text-sm rounded-full px-2 py-1">
           Some badge
