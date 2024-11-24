@@ -28,6 +28,10 @@
   }
 }
 
+* {
+  scroll-behavior: smooth;
+}
+
 body {
   background: hsl(var(--background));
   font-family: "Geist";

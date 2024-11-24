@@ -1,3 +1,4 @@
+import styles from "./index.module.css";
 import { createSignal } from "solid-js";
 import PlayerDisplay, { getAllIcons, Player } from "~/components/lobby/Player";
 import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
@@ -78,7 +79,9 @@ export default function Lobby() {
         height: `calc(100vh - ${NAV_HEIGHT} - ${LOBBY_LAYOUT_HEIGHT} * 2 - 2rem)`,
       }}
     >
-      <aside class="relative flex flex-col gap-4 w-80 overflow-x-clip border-r-2 border-white border-opacity-20 h-full overflow-y-auto">
+      <aside
+        class={`${styles.aside__scrollbar} relative flex flex-col gap-4 w-80 overflow-x-clip pr-2 border-r-2 border-white border-opacity-20 h-full overflow-y-auto`}
+      >
         {dummy_players.map((item) => (
           <PlayerDisplay {...item} />
         ))}

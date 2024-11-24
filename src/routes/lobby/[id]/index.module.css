@@ -1,0 +1,28 @@
+@-moz-document url-prefix() {
+  .aside__scrollbar {
+    scrollbar-width: thin; /* For Firefox */
+    scrollbar-color: hsl(var(--primary-accent)) transparent; /* Thumb and track colors for Firefox */
+  }
+}
+
+/* For WebKit-based browsers (Chrome, Safari, Edge) */
+.aside__scrollbar::-webkit-scrollbar {
+  width: 6px; /* Width of the scrollbar */
+}
+
+.aside__scrollbar::-webkit-scrollbar-thumb {
+  background-color: hsl(
+    var(--primary-accent)
+  ); /* Color of the scrollbar thumb */
+  border-radius: 6px; /* Round edges */
+}
+
+/* Optional: Hover effect for the scrollbar thumb */
+.aside__scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #333; /* Darker thumb on hover */
+}
+
+/* Optional: Active (dragging) state for the scrollbar thumb */
+.aside__scrollbar::-webkit-scrollbar-thumb:active {
+  background-color: #111; /* Even darker thumb when active */
+}
