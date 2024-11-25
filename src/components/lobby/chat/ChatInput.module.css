@@ -1,0 +1,5 @@
+.input__wrapper:focus-within {
+  box-shadow: 0 0 16px 0.1rem hsl(var(--primary) / 0.1),
+    0 0 12px 0.1rem hsl(var(--primary) / 0.1),
+    0 0 4px 0.1rem hsl(var(--primary) / 0.1);
+}

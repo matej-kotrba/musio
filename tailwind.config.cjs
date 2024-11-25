@@ -11,7 +11,10 @@ module.exports = {
     },
     extend: {
       colors: {
-        foreground: "hsl(var(--foreground) / <alpha-value>)",
+        foreground: {
+          DEFAULT: "hsl(var(--foreground) / <alpha-value>)",
+          dark: "hsl(var(--foreground-dark) / <alpha-value>)",
+        },
         background: {
           DEAFULT: "hsl(var(--background) / <alpha-value>)",
           accent: "hsl(var(--background-accent) / <alpha-value>)",

@@ -1,0 +1,4 @@
+.message:has(.near)::before {
+  content: "Near";
+  @apply absolute right-2 top-1 text-sm font-bold text-yellow-700;
+}

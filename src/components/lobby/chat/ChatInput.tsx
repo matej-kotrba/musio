@@ -1,8 +1,9 @@
+import styles from "./ChatInput.module.css";
 import { Icon } from "@iconify-icon/solid";
 
 export default function ChatInput() {
   return (
-    <div class="grid grid-flow-col">
+    <div class={`${styles.input__wrapper} grid grid-flow-col rounded-full`}>
       <input
         type="text"
         placeholder="Guess the music"
@@ -10,9 +11,9 @@ export default function ChatInput() {
       />
       <button
         type="button"
-        class="peer-focus-within:border-primary grid content-center border-2 border-white border-opacity-30 rounded-r-full h-full duration-100"
+        class="group peer-focus-within:border-primary grid content-center border-2 border-white border-opacity-30 rounded-r-full h-full duration-100"
       >
-        <Icon icon="material-symbols:search" class="text-4xl px-1" />
+        <Icon icon="material-symbols:send-outline" class="text-4xl px-1" />
       </button>
     </div>
   );
