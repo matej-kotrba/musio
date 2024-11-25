@@ -1,9 +1,9 @@
-import ChatInput from "~/components/lobby/chat/ChatInput";
 import styles from "./index.module.css";
 import { createSignal } from "solid-js";
 import PlayerDisplay, { getAllIcons, Player } from "~/components/lobby/Player";
 import WordToGuess from "~/components/lobby/WordToGuess";
 import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
+import Chat from "~/components/lobby/chat/Chat";
 
 export default function Lobby() {
   const [players, setPlayers] = createSignal([]);
@@ -113,7 +113,7 @@ export default function Lobby() {
         <WordToGuess wordChars={dummySongName} />
       </section>
       <aside class="w-80">
-        <ChatInput />
+        <Chat />
       </aside>
     </div>
   );

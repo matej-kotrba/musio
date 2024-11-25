@@ -7,7 +7,7 @@ import Nav from "./components/Nav";
 export default function App() {
   return (
     <Router
-      root={props => (
+      root={(props) => (
         <>
           <Nav />
           <Suspense>{props.children}</Suspense>
