@@ -21,7 +21,7 @@ export default function ChatInput(props: Props) {
   return (
     <form
       on:submit={handleSubmit}
-      class={`${styles.input__wrapper} grid grid-flow-col rounded-full`}
+      class={`${styles.input__wrapper} grid grid-flow-col rounded-full h-fit`}
     >
       <input
         type="text"

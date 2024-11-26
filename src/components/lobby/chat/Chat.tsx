@@ -140,12 +140,10 @@ export default function Chat() {
   }
 
   return (
-    <div
-      class={`${styles.messages__mask} h-full grid grid-rows-[1fr,auto] gap-2 relative`}
-    >
+    <div ref={chatRef} class="h-full grid grid-rows-[1fr,auto] gap-2">
       <div
         ref={chatRef}
-        class="flex flex-col justify-end gap-2 bg-red-600 overflow-y-scroll h-full"
+        class={`${styles.messages__mask} flex flex-col gap-2 overflow-y-auto`}
       >
         {messages().map((message) => {
           return <MessageComponent message={message} />;

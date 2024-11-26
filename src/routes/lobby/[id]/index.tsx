@@ -92,9 +92,10 @@ export default function Lobby() {
 
   return (
     <div
-      class="relative grid grid-cols-[auto,1fr,auto] gap-4 h-full max-h-full overflow-hidden"
+      class="relative grid grid-cols-[auto,1fr,auto] gap-4 h-full max-h-full"
       style={{
-        height: `calc(100vh - ${NAV_HEIGHT} - ${LOBBY_LAYOUT_HEIGHT} * 2 - 2rem)`,
+        "--custom-height": `calc(100vh - ${NAV_HEIGHT} - ${LOBBY_LAYOUT_HEIGHT} * 2 - 2rem)`,
+        height: "var(--custom-height)",
       }}
     >
       <aside
@@ -112,7 +113,12 @@ export default function Lobby() {
         </div>
         <WordToGuess wordChars={dummySongName} />
       </section>
-      <aside class="h-full max-h-full w-80">
+      <aside
+        class="h-full max-h-full w-80"
+        style={{
+          height: "var(--custom-height)",
+        }}
+      >
         <Chat />
       </aside>
     </div>
