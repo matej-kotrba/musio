@@ -143,7 +143,7 @@ export default function Chat() {
     <div ref={chatRef} class="h-full grid grid-rows-[1fr,auto] gap-2">
       <div
         ref={chatRef}
-        class={`${styles.messages__mask} flex flex-col gap-2 overflow-y-auto`}
+        class={`${styles.messages__mask} flex flex-col gap-2 overflow-y-auto pr-2`}
       >
         {messages().map((message) => {
           return <MessageComponent message={message} />;
@@ -161,7 +161,7 @@ function MessageComponent(props: { message: Message }) {
       classList={{
         "bg-yellow-400 text-foreground-dark border-yellow-600 border-opacity-100":
           props.message.isGuessRelated === "near",
-        "bg-green-500 border-green-800 border-opacity-100":
+        "bg-green-600 border-green-800 border-opacity-100":
           props.message.isGuessRelated === "guessed",
         "relative bg-background-DEAFULT rounded-xl p-2 border-2 border-white border-opacity-20":
           true,

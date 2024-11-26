@@ -5,7 +5,7 @@
 
 .message[data-guessed="true"]::before {
   content: "Guessed";
-  @apply absolute right-2 top-1 text-sm font-bold text-green-700;
+  @apply absolute right-2 top-1 text-sm font-bold text-green-900;
 }
 
 .messages__mask {
