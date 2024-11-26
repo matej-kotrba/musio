@@ -112,7 +112,7 @@ export default function Lobby() {
         </div>
         <WordToGuess wordChars={dummySongName} />
       </section>
-      <aside class="w-80">
+      <aside class="h-full w-80 overflow-y-hidden">
         <Chat />
       </aside>
     </div>

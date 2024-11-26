@@ -1,4 +1,13 @@
-.message:has(.near)::before {
+.message[data-near="true"]::before {
   content: "Near";
   @apply absolute right-2 top-1 text-sm font-bold text-yellow-700;
+}
+
+.message[data-guessed="true"]::before {
+  content: "Guessed";
+  @apply absolute right-2 top-1 text-sm font-bold text-green-700;
+}
+
+.messages__mask {
+  mask-image: linear-gradient(to top, black 80%, transparent);
 }
