@@ -99,7 +99,7 @@ function MessageComponent(props: { message: Message }) {
       <span class="font-semibold opacity-75 text-ellipsis overflow-x-hidden whitespace-nowrap block">
         {props.message.senderName}
       </span>
-      <p>{props.message.content}</p>
+      <p class="hyphens-auto">{props.message.content}</p>
     </div>
   );
 }
