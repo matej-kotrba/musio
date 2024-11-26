@@ -92,7 +92,7 @@ export default function Lobby() {
 
   return (
     <div
-      class="relative grid grid-cols-[auto,1fr,auto] gap-4"
+      class="relative grid grid-cols-[auto,1fr,auto] gap-4 h-full max-h-full overflow-hidden"
       style={{
         height: `calc(100vh - ${NAV_HEIGHT} - ${LOBBY_LAYOUT_HEIGHT} * 2 - 2rem)`,
       }}
@@ -112,7 +112,7 @@ export default function Lobby() {
         </div>
         <WordToGuess wordChars={dummySongName} />
       </section>
-      <aside class="h-full w-80 overflow-y-hidden">
+      <aside class="h-full max-h-full w-80">
         <Chat />
       </aside>
     </div>

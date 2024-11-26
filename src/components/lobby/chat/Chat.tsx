@@ -45,6 +45,78 @@ const dummy_messages: Message[] = [
       "Love to Lose asuoidh auwuid aiuwd iuawhuidgi awdia gdygayida uidhauihsdljashdhasjkdhjakdhuauwdhaiwduawd",
     isGuessRelated: false,
   },
+  {
+    senderName: "Erik",
+    content: "Hymn for the Weekend",
+    isGuessRelated: false,
+  },
+  {
+    senderName: "Dr. House",
+    content: "Monody",
+    isGuessRelated: false,
+  },
+  {
+    senderName: "Dr. House",
+    content: "Rocks Bottom",
+    isGuessRelated: "near",
+  },
+  {
+    senderName: "Hrna",
+    content: "Clarity",
+    isGuessRelated: false,
+  },
+  {
+    senderName: "Dr. House",
+    content: "Rock Bottom",
+    isGuessRelated: "guessed",
+  },
+  {
+    senderName: "Dustix",
+    content: "Love to Lose",
+    isGuessRelated: false,
+  },
+  {
+    senderName: "Dustix",
+    content:
+      "Love to Lose asuoidh auwuid aiuwd iuawhuidgi awdia gdygayida uidhauihsdljashdhasjkdhjakdhuauwdhaiwduawd",
+    isGuessRelated: false,
+  },
+  {
+    senderName: "Erik",
+    content: "Hymn for the Weekend",
+    isGuessRelated: false,
+  },
+  {
+    senderName: "Dr. House",
+    content: "Monody",
+    isGuessRelated: false,
+  },
+  {
+    senderName: "Dr. House",
+    content: "Rocks Bottom",
+    isGuessRelated: "near",
+  },
+  {
+    senderName: "Hrna",
+    content: "Clarity",
+    isGuessRelated: false,
+  },
+  {
+    senderName: "Dr. House",
+    content: "Rock Bottom",
+    isGuessRelated: "guessed",
+  },
+  {
+    senderName: "Dustix",
+    content: "Love to Lose",
+    isGuessRelated: false,
+  },
+  {
+    senderName: "Dustix",
+    content:
+      "Love to Lose asuoidh auwuid aiuwd iuawhuidgi awdia gdygayida uidhauihsdljashdhasjkdhjakdhuauwdhaiwduawd",
+    isGuessRelated: false,
+  },
 ];
 
 export default function Chat() {
@@ -69,9 +141,12 @@ export default function Chat() {
 
   return (
     <div
-      class={`${styles.messages__mask} h-full flex flex-col justify-end gap-2`}
+      class={`${styles.messages__mask} h-full grid grid-rows-[1fr,auto] gap-2 relative`}
     >
-      <div ref={chatRef} class="overflow-y-auto flex flex-col gap-2">
+      <div
+        ref={chatRef}
+        class="flex flex-col justify-end gap-2 bg-red-600 overflow-y-scroll h-full"
+      >
         {messages().map((message) => {
           return <MessageComponent message={message} />;
         })}

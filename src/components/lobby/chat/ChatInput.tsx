@@ -15,6 +15,7 @@ export default function ChatInput(props: Props) {
     if (inputValue() === "") return;
 
     props.onSubmit(inputValue());
+    setInputValue("");
   }
 
   return (
