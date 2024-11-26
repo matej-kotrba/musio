@@ -1,5 +1,5 @@
 import styles from "./Chat.module.css";
-import { createSignal } from "solid-js";
+import { createEffect, createSignal } from "solid-js";
 import ChatInput from "./ChatInput";
 
 type Message = {
@@ -40,50 +40,43 @@ const dummy_messages: Message[] = [
     isGuessRelated: false,
   },
   {
-    senderName: "Erik",
-    content: "Hymn for the Weekend",
-    isGuessRelated: false,
-  },
-  {
-    senderName: "Dr. House",
-    content: "Monody",
-    isGuessRelated: false,
-  },
-  {
-    senderName: "Dr. House",
-    content: "Rocks Bottom",
-    isGuessRelated: "near",
-  },
-  {
-    senderName: "Hrna",
-    content: "Clarity",
-    isGuessRelated: false,
-  },
-  {
-    senderName: "Dr. House",
-    content: "Rock Bottom",
-    isGuessRelated: "guessed",
-  },
-  {
     senderName: "Dustix",
-    content: "Love to Lose",
+    content:
+      "Love to Lose asuoidh auwuid aiuwd iuawhuidgi awdia gdygayida uidhauihsdljashdhasjkdhjakdhuauwdhaiwduawd",
     isGuessRelated: false,
   },
 ];
 
 export default function Chat() {
   const [messages, setMessages] = createSignal<Message[]>(dummy_messages);
+  let chatRef!: HTMLDivElement;
+
+  createEffect(() => {
+    messages();
+
+    chatRef.scrollTo({ top: chatRef.scrollHeight });
+  });
+
+  function createNewMessage(value: string) {
+    const newMessage: Message = {
+      content: value,
+      isGuessRelated: false,
+      senderName: "Dr. House",
+    };
+
+    setMessages((old) => [...old, newMessage]);
+  }
 
   return (
-    <div class="h-full flex flex-col justify-end gap-2">
-      <div
-        class={`${styles.messages__mask} overflow-y-auto flex flex-col gap-2`}
-      >
+    <div
+      class={`${styles.messages__mask} h-full flex flex-col justify-end gap-2`}
+    >
+      <div ref={chatRef} class="overflow-y-auto flex flex-col gap-2">
         {messages().map((message) => {
           return <MessageComponent message={message} />;
         })}
       </div>
-      <ChatInput />
+      <ChatInput onSubmit={createNewMessage} />
     </div>
   );
 }
