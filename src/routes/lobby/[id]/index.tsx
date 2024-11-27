@@ -15,6 +15,7 @@ export default function Lobby() {
       icon: getAllIcons()[
         Math.round(Math.random() * (getAllIcons().length - 1))
       ],
+      points: 100,
     },
     {
       id: "2",
@@ -22,6 +23,7 @@ export default function Lobby() {
       icon: getAllIcons()[
         Math.round(Math.random() * (getAllIcons().length - 1))
       ],
+      points: 89,
     },
     {
       id: "3",
@@ -29,6 +31,7 @@ export default function Lobby() {
       icon: getAllIcons()[
         Math.round(Math.random() * (getAllIcons().length - 1))
       ],
+      points: 76,
     },
     {
       id: "1",
@@ -36,6 +39,7 @@ export default function Lobby() {
       icon: getAllIcons()[
         Math.round(Math.random() * (getAllIcons().length - 1))
       ],
+      points: 67,
     },
     {
       id: "2",
@@ -43,6 +47,7 @@ export default function Lobby() {
       icon: getAllIcons()[
         Math.round(Math.random() * (getAllIcons().length - 1))
       ],
+      points: 56,
     },
     {
       id: "3",
@@ -50,6 +55,7 @@ export default function Lobby() {
       icon: getAllIcons()[
         Math.round(Math.random() * (getAllIcons().length - 1))
       ],
+      points: 43,
     },
     {
       id: "1",
@@ -57,6 +63,7 @@ export default function Lobby() {
       icon: getAllIcons()[
         Math.round(Math.random() * (getAllIcons().length - 1))
       ],
+      points: 39,
     },
     {
       id: "2",
@@ -64,6 +71,7 @@ export default function Lobby() {
       icon: getAllIcons()[
         Math.round(Math.random() * (getAllIcons().length - 1))
       ],
+      points: 28,
     },
     {
       id: "3",
@@ -71,6 +79,7 @@ export default function Lobby() {
       icon: getAllIcons()[
         Math.round(Math.random() * (getAllIcons().length - 1))
       ],
+      points: 13,
     },
   ];
 
@@ -102,7 +111,7 @@ export default function Lobby() {
         class={`${styles.aside__scrollbar} relative flex flex-col gap-4 w-80 pr-2 overflow-x-clip h-full overflow-y-auto`}
       >
         {dummy_players.map((item) => (
-          <PlayerDisplay {...item} />
+          <PlayerDisplay maxPoints={100} player={item} />
         ))}
       </aside>
       <section class="flex flex-col items-center">
