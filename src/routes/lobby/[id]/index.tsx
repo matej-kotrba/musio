@@ -115,6 +115,7 @@ export default function Lobby() {
         ))}
       </aside>
       <section class="flex flex-col items-center">
+        <p class="text-xl mb-4 font-bold opacity-35">Guess the song:</p>
         <div class="mb-4">
           <div class="w-64 aspect-square overflow-hidden rounded-md">
             <img src={dummySongImage} alt="Song to guess" class="blur-md" />

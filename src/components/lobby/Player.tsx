@@ -30,8 +30,6 @@ type Props = {
 };
 
 export default function PlayerDisplay(props: Props) {
-  const maxPointsBarWidth = 150;
-
   function displayPointsInPercentage() {
     return (props.player.points / props.maxPoints) * 100;
   }
@@ -39,25 +37,20 @@ export default function PlayerDisplay(props: Props) {
   return (
     <div class="flex gap-2">
       <img src={props.player.icon.url} alt="" class="rounded-lg w-24" />
-      <div class="min-w-0 self-start">
+      <div class="min-w-0 self-start w-full">
         <div class="text-xl font-semibold overflow-hidden whitespace-nowrap text-ellipsis">
           {props.player.name}
         </div>
-        <div class="flex">
-          <div class="p-2 rounded-full w-8 aspect-square">
+        <div class="grid grid-cols-[auto,1fr] items-center">
+          <div class="px-1 rounded-full bg-background-DEAFULT border-2 border-primary">
             {props.player.points}
           </div>
           <div
-            class="text-sm text-foreground-dark px-1 my-2 bg-primary rounded-full w-full"
-            // style={{
-            //   width: `${
-            //     (maxPointsBarWidth / 100) * displayPointsInPercentage()
-            //   }px`,
-            // }}
+            class="h-2 text-sm text-foreground-dark px-1 my-2 bg-primary rounded-r-full -translate-x-[1px]"
+            style={{
+              width: `${displayPointsInPercentage()}%`,
+            }}
           ></div>
-        </div>
-        <div class="w-fit text-white bg-blue-500 text-sm rounded-full px-2 py-1">
-          Some badge
         </div>
       </div>
     </div>
