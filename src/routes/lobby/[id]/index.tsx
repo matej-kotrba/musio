@@ -1,12 +1,61 @@
 import styles from "./index.module.css";
-import { createSignal } from "solid-js";
+import { createSignal, onMount, useContext } from "solid-js";
 import PlayerDisplay, { getAllIcons, Player } from "~/components/lobby/Player";
 import WordToGuess from "~/components/lobby/WordToGuess";
 import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
 import Chat from "~/components/lobby/chat/Chat";
+import {
+  isWsConnectionContext,
+  WsConnectionContext,
+  WsContext,
+} from "~/contexts/connection";
+import { useParams } from "@solidjs/router";
+
+function wsConnect(ctx: WsContext) {
+  if (ctx.ws) {
+    ctx.log("ws", "Closing previous connection before reconnecting…");
+    ctx.ws.close();
+    ctx.ws = undefined;
+    ctx.clear();
+  }
+
+  ctx.log("ws", "Connecting to", ctx.href, "…");
+  const ws = new WebSocket(ctx.href);
+
+  ws.addEventListener("message", ctx.onMessage);
+  ws.addEventListener("open", () => {
+    ctx.ws = ws;
+    ctx.log("ws", "Connected!");
+  });
+}
+
+const onMessage = (event: MessageEvent<string>) => {
+  const { user, message } = event.data.startsWith("{")
+    ? (JSON.parse(event.data) as { user: string; message: unknown })
+    : { user: "Kamos", message: event.data };
+
+  console.log(user, message);
+};
 
 export default function Lobby() {
   const [players, setPlayers] = createSignal([]);
+  const params = useParams();
+  const ws = useContext(WsConnectionContext);
+
+  onMount(() => {
+    ws?.setConnection({
+      ws: undefined,
+      href: `/_ws?id=${params.id}`,
+      onMessage,
+      log: () => {},
+      clear: () => {},
+      send: (data) => ws.connection.ws?.send(data),
+    });
+
+    if (ws && isWsConnectionContext(ws?.connection)) {
+      wsConnect(ws?.connection);
+    }
+  });
 
   const dummy_players: Player[] = [
     {
