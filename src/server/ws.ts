@@ -1,7 +1,7 @@
 import { eventHandler } from "vinxi/http";
 import { Player } from "~/components/lobby/Player";
 
-const userFromId = (id: string) => id.slice(-6);
+const userIdFromId = (id: string) => id.slice(-6);
 
 // Don't want to send binary Blob to the client
 const toPayload = (from: String, message: string) =>
@@ -17,17 +17,48 @@ type Lobby = {
 
 const lobbies = new Map<string, Lobby>();
 
+function createNewLobby(id: string): Lobby {
+  const existingLobby = lobbies.get(id);
+  if (existingLobby) {
+    return existingLobby;
+  }
+
+  return {
+    id: id,
+    players: [],
+  };
+}
+
+function getLobbyIdFromPeer(peer: { url: string }) {
+  const url = new URLSearchParams(peer.url.split("?")[1]);
+  return url.get("id");
+}
+
+function joinUserToLobby(userId: string, lobbyId: string): boolean {
+  const lobby = lobbies.get(lobbyId);
+  if (!lobby) {
+    return false;
+  }
+  return true;
+  // lobby.players.push({});
+}
+
 export default eventHandler({
   handler() {},
   websocket: {
     async open(peer) {
       console.log("[ws] open", peer);
 
-      const url = new URLSearchParams(peer.url.split("?")[1]);
-      console.log(url.get("id"));
+      const lobbyId = getLobbyIdFromPeer(peer);
+      if (!lobbyId) {
+        console.log("No lobby id found in query params");
+        return;
+      }
 
-      const user = userFromId(peer.id);
+      const user = userIdFromId(peer.id);
       peer.send(toPayload(SERVER_ID, `Welcome ${user}`));
+
+      createNewLobby(lobbyId);
 
       // Join new client to the "chat" channel
       peer.subscribe(CHANNEL_NAME);
@@ -36,7 +67,7 @@ export default eventHandler({
     },
 
     async message(peer, message) {
-      const user = userFromId(peer.id);
+      const user = userIdFromId(peer.id);
       console.log("[ws] message", user, message);
 
       const content = message.text();
@@ -53,7 +84,7 @@ export default eventHandler({
     },
 
     async close(peer, details) {
-      const user = userFromId(peer.id);
+      const user = userIdFromId(peer.id);
       console.log("[ws] close", user, details);
 
       peer.unsubscribe(CHANNEL_NAME);
@@ -64,7 +95,7 @@ export default eventHandler({
     },
 
     async error(peer, error) {
-      console.log("[ws] error", userFromId(peer.id), error);
+      console.log("[ws] error", userIdFromId(peer.id), error);
     },
   },
 });
