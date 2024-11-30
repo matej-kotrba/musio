@@ -10,8 +10,9 @@ import {
   WsContext,
 } from "~/contexts/connection";
 import { useParams } from "@solidjs/router";
+import { createNewMessage } from "~/utils/game/connection";
 
-function wsConnect(ctx: WsContext) {
+function wsConnect(ctx: WsContext, lobbyId: string) {
   if (ctx.ws) {
     ctx.log("ws", "Closing previous connection before reconnecting…");
     ctx.ws.close();
@@ -25,6 +26,11 @@ function wsConnect(ctx: WsContext) {
   ws.addEventListener("message", ctx.onMessage);
   ws.addEventListener("open", () => {
     ctx.ws = ws;
+    ws.send(
+      JSON.stringify(
+        createNewMessage(lobbyId, "PLAYER_INIT", { name: "aaaa", icon: "Seal" })
+      )
+    );
     ctx.log("ws", "Connected!");
   });
 }
@@ -40,12 +46,13 @@ const onMessage = (event: MessageEvent<string>) => {
 export default function Lobby() {
   const [players, setPlayers] = createSignal([]);
   const params = useParams();
+  const lobbyId = () => params.id;
   const ws = useContext(WsConnectionContext);
 
   onMount(() => {
     ws?.setConnection({
       ws: undefined,
-      href: `/_ws?id=${params.id}`,
+      href: `/_ws?id=${lobbyId()}`,
       onMessage,
       log: () => {},
       clear: () => {},
@@ -53,7 +60,7 @@ export default function Lobby() {
     });
 
     if (ws && isWsConnectionContext(ws?.connection)) {
-      wsConnect(ws?.connection);
+      wsConnect(ws?.connection, lobbyId());
     }
   });
 
