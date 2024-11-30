@@ -19,6 +19,9 @@
     "node": ">=18"
   },
   "devDependencies": {
-    "@iconify-icon/solid": "^2.1.1"
+    "@iconify-icon/solid": "^2.1.1",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.5.5",
+    "tailwindcss-animate": "^1.0.7"
   }
 }
