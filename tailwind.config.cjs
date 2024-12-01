@@ -25,6 +25,7 @@ module.exports = {
         primary: {
           DEFAULT: "hsl(var(--primary) / <alpha-value>)",
           accent: "hsl(var(--primary-accent) / <alpha-value>)",
+          darker: "hsl(var(--primary-darker) / <alpha-value>)",
         },
         // Shadcn
         border: "hsl(var(--border))",

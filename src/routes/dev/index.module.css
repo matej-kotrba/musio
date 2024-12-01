@@ -37,3 +37,19 @@
     --deg: 360deg;
   }
 }
+
+.icons {
+  --selected-icon: 0;
+  --icons-count: 0;
+  --side-icons-count: 1;
+
+  display: grid;
+  grid-template-columns:
+    repeat(max(calc(var(--selected-icon) - var(--side-icons-count)), 0))
+    4rem 8rem 4rem repeat(
+      max(calc(var(--icons-count) - var(--selected-icon)), 0),
+      0
+    );
+  place-content: center;
+  place-items: center;
+}

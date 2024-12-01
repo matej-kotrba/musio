@@ -14,9 +14,17 @@ import {
   TextFieldLabel,
   TextFieldRoot,
 } from "~/components/ui/textfield";
+import { createSignal } from "solid-js";
 
 export default function Dev() {
-  const icons = getAllIcons();
+  const [selectedIcon, setSelectedIcon] = createSignal(2);
+  const iconUrls = getAllIcons().map((icon) => icon.url);
+
+  const getIcon = () => iconUrls[selectedIcon()];
+
+  function getIndexOfIcon(url: string) {
+    return iconUrls.indexOf(url);
+  }
 
   return (
     <div class="container mx-auto">
@@ -28,27 +36,29 @@ export default function Dev() {
             <DialogDescription>
               <div>
                 <div
-                  class={`${styles.profile} relative overflow-hidden rounded-lg p-2`}
+                  class={`${styles.profile} relative overflow-hidden rounded-lg p-2 mb-4`}
                 >
-                  <button
-                    type="button"
-                    class="group relative rounded-full overflow-hidden block mx-auto w-40 aspect-square"
+                  <div
+                    class={`${styles.icons}`}
+                    style={`--icons-count: ${
+                      iconUrls.length
+                    }; --selected-icon: ${selectedIcon()}`}
                   >
-                    <Icon
-                      icon="fluent:edit-12-filled"
-                      class="absolute grid text-4xl px-1 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-transparent group-hover:text-white duration-200"
-                    />
-                    <img
-                      src={icons[Math.round(Math.random() * icons.length)].url}
-                      alt="Player icon"
-                      class="group-hover:brightness-50 duration-200"
-                    />
-                  </button>
+                    {iconUrls.map((url) => {
+                      return <CarouselIcon url={url} />;
+                    })}
+                  </div>
                 </div>
                 <TextFieldRoot>
                   <TextFieldLabel>Name</TextFieldLabel>
                   <TextField type="text" placeholder="Name" />
                 </TextFieldRoot>
+                <button
+                  type="submit"
+                  class="bg-primary block ml-auto mt-2 text-[1rem] font-semibold px-6 py-2 rounded-md text-background-DEAFULT hover:bg-primary-darker hover:text-foreground duration-150"
+                >
+                  Save
+                </button>
               </div>
               {/* This action cannot be undone. This will permanently delete your
               account and remove your data from our servers. */}
@@ -56,6 +66,14 @@ export default function Dev() {
           </DialogHeader>
         </DialogContent>
       </Dialog>
+    </div>
+  );
+}
+
+function CarouselIcon(props: { url: string }) {
+  return (
+    <div class="relative overflow-hidden rounded-full w-full aspect-square p-1">
+      <img src={props.url} alt="" class="" />
     </div>
   );
 }
