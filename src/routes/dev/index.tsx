@@ -17,7 +17,9 @@ import {
 import { createSignal } from "solid-js";
 
 export default function Dev() {
-  const [selectedIcon, setSelectedIcon] = createSignal(2);
+  const sideIconsCount = 1;
+
+  const [selectedIcon, setSelectedIcon] = createSignal(1);
   const iconUrls = getAllIcons().map((icon) => icon.url);
 
   const getIcon = () => iconUrls[selectedIcon()];
@@ -42,12 +44,30 @@ export default function Dev() {
                     class={`${styles.icons}`}
                     style={`--icons-count: ${
                       iconUrls.length
-                    }; --selected-icon: ${selectedIcon()}`}
+                    }; --selected-icon: ${selectedIcon()}; --side-icons-count: ${sideIconsCount}`}
                   >
+                    {/* Blank div for grid repeat */}
+                    {Array(sideIconsCount + 1)
+                      .fill(0)
+                      .map((_) => (
+                        <div></div>
+                      ))}
                     {iconUrls.map((url) => {
                       return <CarouselIcon url={url} />;
                     })}
                   </div>
+                  <button
+                    type="button"
+                    on:click={() => setSelectedIcon((old) => old - 1)}
+                  >
+                    L
+                  </button>
+                  <button
+                    type="button"
+                    on:click={() => setSelectedIcon((old) => old + 1)}
+                  >
+                    R
+                  </button>
                 </div>
                 <TextFieldRoot>
                   <TextFieldLabel>Name</TextFieldLabel>

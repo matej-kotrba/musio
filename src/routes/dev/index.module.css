@@ -45,11 +45,9 @@
 
   display: grid;
   grid-template-columns:
-    repeat(max(calc(var(--selected-icon) - var(--side-icons-count)), 0))
-    4rem 8rem 4rem repeat(
-      max(calc(var(--icons-count) - var(--selected-icon)), 0),
-      0
-    );
+    repeat(calc(var(--selected-icon) + var(--side-icons-count)), 0px)
+    4rem 8rem 4rem repeat(calc(var(--icons-count) - var(--selected-icon)), 0px);
   place-content: center;
   place-items: center;
+  transition: 0.4s ease;
 }
