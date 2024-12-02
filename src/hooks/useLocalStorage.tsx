@@ -1,13 +1,22 @@
-import { createEffect, createSignal, onMount } from "solid-js";
+import {
+  Accessor,
+  createEffect,
+  createSignal,
+  onMount,
+  Setter,
+} from "solid-js";
 import { isServer } from "solid-js/web";
 
-export default function useLocalStorage(key: string) {
+export default function useLocalStorage(
+  key: string
+): [Accessor<string | null>, Setter<string | null>] {
   const [value, setValue] = createSignal<null | string>(null);
 
   onMount(() => {
     if (!isServer) {
       setValue(localStorage.getItem(key ?? null));
     }
+    console.log(value());
   });
 
   createEffect(() => {

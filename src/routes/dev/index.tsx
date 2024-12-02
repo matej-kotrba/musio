@@ -14,19 +14,46 @@ import {
   TextFieldLabel,
   TextFieldRoot,
 } from "~/components/ui/textfield";
-import { createSignal } from "solid-js";
+import { createSignal, onMount } from "solid-js";
+import { useLocalStorage } from "~/hooks";
 
 export default function Dev() {
   const sideIconsCount = 1;
+  const icons = getAllIcons();
 
-  const [selectedIcon, setSelectedIcon] = createSignal(1);
-  const iconUrls = getAllIcons().map((icon) => icon.url);
+  const [localStorageName, setLocalStorageName] = useLocalStorage("last_name");
+  const [localStorageIcon, setLocalStorageIcon] = useLocalStorage("last_icon");
 
-  const getIcon = () => iconUrls[selectedIcon()];
+  const [selectedIconIndex, setSelectedIconIndex] = createSignal(0);
+  const [name, setName] = createSignal(localStorageName() ?? "");
 
-  function getIndexOfIcon(url: string) {
-    return iconUrls.indexOf(url);
+  const getIconByIndex = (index: number) =>
+    icons.find((_, idx) => idx === index);
+
+  function moveCarousel(ratio: -1 | 1) {
+    const newValue = selectedIconIndex() + 1 * ratio;
+    if (newValue < 0 || newValue > icons.length - 1) return;
+    setSelectedIconIndex((old) => old + 1 * ratio);
   }
+
+  function onSubmit() {
+    const currentIcon = getIconByIndex(selectedIconIndex())?.name;
+
+    setLocalStorageName(name());
+    setLocalStorageIcon(currentIcon ?? null);
+  }
+
+  // TODO: Possible race condition due to onMount in useLocalStorage
+  onMount(() => {
+    const lsIconIndex = icons.findIndex((icon) => {
+      console.log(icon.name, localStorageIcon());
+      return icon.name === localStorageIcon();
+    });
+
+    if (lsIconIndex !== -1) {
+      setSelectedIconIndex(lsIconIndex);
+    }
+  });
 
   return (
     <div class="container mx-auto">
@@ -43,8 +70,8 @@ export default function Dev() {
                   <div
                     class={`${styles.icons}`}
                     style={`--icons-count: ${
-                      iconUrls.length
-                    }; --selected-icon: ${selectedIcon()}; --side-icons-count: ${sideIconsCount}`}
+                      icons.length
+                    }; --selected-icon: ${selectedIconIndex()}; --side-icons-count: ${sideIconsCount}`}
                   >
                     {/* Blank div for grid repeat */}
                     {Array(sideIconsCount + 1)
@@ -52,29 +79,37 @@ export default function Dev() {
                       .map((_) => (
                         <div></div>
                       ))}
-                    {iconUrls.map((url) => {
-                      return <CarouselIcon url={url} />;
+                    {icons.map((icon) => {
+                      return <CarouselIcon url={icon.url} />;
                     })}
                   </div>
                   <button
                     type="button"
-                    on:click={() => setSelectedIcon((old) => old - 1)}
+                    on:click={() => moveCarousel(-1)}
+                    class="hover:text-foreground duration-150 absolute left-1 top-1/2 -translate-y-1/2"
                   >
-                    L
+                    <Icon icon="raphael:arrowleft" class="text-4xl px-1" />
                   </button>
                   <button
                     type="button"
-                    on:click={() => setSelectedIcon((old) => old + 1)}
+                    on:click={() => moveCarousel(1)}
+                    class="hover:text-foreground duration-150 absolute right-1 top-1/2 -translate-y-1/2"
                   >
-                    R
+                    <Icon icon="raphael:arrowright" class="text-4xl px-1" />
                   </button>
                 </div>
                 <TextFieldRoot>
                   <TextFieldLabel>Name</TextFieldLabel>
-                  <TextField type="text" placeholder="Name" />
+                  <TextField
+                    type="text"
+                    placeholder="Name"
+                    value={name()}
+                    on:change={(e) => setName(e.target.value)}
+                  />
                 </TextFieldRoot>
                 <button
-                  type="submit"
+                  type="button"
+                  on:click={onSubmit}
                   class="bg-primary block ml-auto mt-2 text-[1rem] font-semibold px-6 py-2 rounded-md text-background-DEAFULT hover:bg-primary-darker hover:text-foreground duration-150"
                 >
                   Save
@@ -92,8 +127,8 @@ export default function Dev() {
 
 function CarouselIcon(props: { url: string }) {
   return (
-    <div class="relative overflow-hidden rounded-full w-full aspect-square p-1">
-      <img src={props.url} alt="" class="" />
+    <div class="relative overflow-hidden w-full aspect-square">
+      <img src={props.url} alt="" class="p-1 rounded-full" />
     </div>
   );
 }
