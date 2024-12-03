@@ -39,15 +39,8 @@
 }
 
 .icons {
-  --selected-icon: 0;
-  --icons-count: 0;
-  --side-icons-count: 1;
-
   display: grid;
-  grid-template-columns:
-    repeat(calc(var(--selected-icon) + var(--side-icons-count)), 0px)
-    4rem 8rem 4rem repeat(calc(var(--icons-count) - var(--selected-icon)), 0px);
   place-content: center;
   place-items: center;
-  transition: 0.4s ease;
+  transition: 0.2s ease;
 }

@@ -17,8 +17,27 @@ import {
 import { createSignal, onCleanup, onMount } from "solid-js";
 import { useLocalStorage } from "~/hooks";
 
+type CarouselIconType = "selected" | "neighbour" | "none";
+
+const carouselIconTypes: Record<
+  CarouselIconType,
+  { styles: string; cssSize: string }
+> = {
+  selected: {
+    styles: "",
+    cssSize: "8rem",
+  },
+  neighbour: {
+    styles: "brightness-50",
+    cssSize: "4rem",
+  },
+  none: {
+    styles: "",
+    cssSize: "0",
+  },
+};
+
 export default function Dev() {
-  const sideIconsCount = 1;
   const icons = getAllIcons();
 
   const [localStorageName, setLocalStorageName] = useLocalStorage("last_name");
@@ -34,6 +53,13 @@ export default function Dev() {
     const newValue = selectedIconIndex() + 1 * ratio;
     if (newValue < 0 || newValue > icons.length - 1) return;
     setSelectedIconIndex((old) => old + 1 * ratio);
+  }
+
+  function getCarouselIconType(idx: number): CarouselIconType {
+    const currentIdx = selectedIconIndex();
+    if (currentIdx === idx) return "selected";
+    if (Math.abs(idx - selectedIconIndex()) === 1) return "neighbour";
+    else return "none";
   }
 
   function onSubmit() {
@@ -88,19 +114,23 @@ export default function Dev() {
                   class={`${styles.profile} relative overflow-hidden rounded-lg p-2 mb-4`}
                 >
                   <div
-                    class={`${styles.icons}`}
-                    style={`--icons-count: ${
-                      icons.length
-                    }; --selected-icon: ${selectedIconIndex()}; --side-icons-count: ${sideIconsCount}`}
+                    class={`${styles.icons} min-h-[8rem]`}
+                    style={{
+                      "grid-template-columns": icons
+                        .map((_, idx) => {
+                          return carouselIconTypes[getCarouselIconType(idx)]
+                            .cssSize;
+                        })
+                        .join(" "),
+                    }}
                   >
-                    {/* Blank div for grid repeat */}
-                    {Array(sideIconsCount + 1)
-                      .fill(0)
-                      .map((_) => (
-                        <div></div>
-                      ))}
-                    {icons.map((icon) => {
-                      return <CarouselIcon url={icon.url} />;
+                    {icons.map((icon, idx) => {
+                      return (
+                        <CarouselIcon
+                          url={icon.url}
+                          type={getCarouselIconType(idx)}
+                        />
+                      );
                     })}
                   </div>
                   <button
@@ -143,9 +173,13 @@ export default function Dev() {
   );
 }
 
-function CarouselIcon(props: { url: string }) {
+function CarouselIcon(props: { url: string; type: CarouselIconType }) {
   return (
-    <div class="relative overflow-hidden w-full aspect-square">
+    <div
+      class={`${
+        carouselIconTypes[props.type].styles
+      } relative overflow-hidden w-full aspect-square duration-150`}
+    >
       <img src={props.url} alt="" class="p-1 rounded-full" />
     </div>
   );
