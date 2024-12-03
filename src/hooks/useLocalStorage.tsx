@@ -16,7 +16,6 @@ export default function useLocalStorage(
     if (!isServer) {
       setValue(localStorage.getItem(key ?? null));
     }
-    console.log(value());
   });
 
   createEffect(() => {

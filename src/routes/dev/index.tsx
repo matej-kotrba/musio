@@ -14,7 +14,7 @@ import {
   TextFieldLabel,
   TextFieldRoot,
 } from "~/components/ui/textfield";
-import { createSignal, onMount } from "solid-js";
+import { createSignal, onCleanup, onMount } from "solid-js";
 import { useLocalStorage } from "~/hooks";
 
 export default function Dev() {
@@ -43,16 +43,36 @@ export default function Dev() {
     setLocalStorageIcon(currentIcon ?? null);
   }
 
+  const moveCarouselLeft = () => moveCarousel(-1);
+  const moveCarouselRight = () => moveCarousel(1);
+  const onKeyDownMoveCarousel = (e: KeyboardEvent) => {
+    if (e.key === "ArrowLeft") {
+      moveCarouselLeft();
+    } else if (e.key === "ArrowRight") {
+      moveCarouselRight();
+    }
+  };
+
   // TODO: Possible race condition due to onMount in useLocalStorage
   onMount(() => {
+    const savedName = localStorageName();
+    if (savedName) {
+      setName(savedName);
+    }
+
     const lsIconIndex = icons.findIndex((icon) => {
-      console.log(icon.name, localStorageIcon());
       return icon.name === localStorageIcon();
     });
 
     if (lsIconIndex !== -1) {
       setSelectedIconIndex(lsIconIndex);
     }
+
+    window.addEventListener("keydown", onKeyDownMoveCarousel);
+
+    onCleanup(() => {
+      window.removeEventListener("keydown", onKeyDownMoveCarousel);
+    });
   });
 
   return (
@@ -85,14 +105,14 @@ export default function Dev() {
                   </div>
                   <button
                     type="button"
-                    on:click={() => moveCarousel(-1)}
+                    on:click={moveCarouselLeft}
                     class="hover:text-foreground duration-150 absolute left-1 top-1/2 -translate-y-1/2"
                   >
                     <Icon icon="raphael:arrowleft" class="text-4xl px-1" />
                   </button>
                   <button
                     type="button"
-                    on:click={() => moveCarousel(1)}
+                    on:click={moveCarouselRight}
                     class="hover:text-foreground duration-150 absolute right-1 top-1/2 -translate-y-1/2"
                   >
                     <Icon icon="raphael:arrowright" class="text-4xl px-1" />
@@ -115,8 +135,6 @@ export default function Dev() {
                   Save
                 </button>
               </div>
-              {/* This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers. */}
             </DialogDescription>
           </DialogHeader>
         </DialogContent>
