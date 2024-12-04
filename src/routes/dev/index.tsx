@@ -103,7 +103,7 @@ export default function Dev() {
 
   return (
     <div class="container mx-auto">
-      <Dialog open>
+      <Dialog>
         <DialogTrigger>Open</DialogTrigger>
         <DialogContent>
           <DialogHeader>
@@ -136,14 +136,14 @@ export default function Dev() {
                   <button
                     type="button"
                     on:click={moveCarouselLeft}
-                    class="hover:text-foreground duration-150 absolute left-1 top-1/2 -translate-y-1/2"
+                    class="hover:text-foreground duration-150 absolute left-1 top-1/2 -translate-y-1/2 focus-within:outline-none focus-within:text-foreground"
                   >
                     <Icon icon="raphael:arrowleft" class="text-4xl px-1" />
                   </button>
                   <button
                     type="button"
                     on:click={moveCarouselRight}
-                    class="hover:text-foreground duration-150 absolute right-1 top-1/2 -translate-y-1/2"
+                    class="hover:text-foreground duration-150 absolute right-1 top-1/2 -translate-y-1/2 focus-within:outline-none focus-within:text-foreground"
                   >
                     <Icon icon="raphael:arrowright" class="text-4xl px-1" />
                   </button>
@@ -157,13 +157,19 @@ export default function Dev() {
                     on:change={(e) => setName(e.target.value)}
                   />
                 </TextFieldRoot>
-                <button
-                  type="button"
-                  on:click={onSubmit}
-                  class="bg-primary block ml-auto mt-2 text-[1rem] font-semibold px-6 py-2 rounded-md text-background-DEAFULT hover:bg-primary-darker hover:text-foreground duration-150"
+                <DialogTrigger
+                  on:change={(e) => {
+                    e.preventDefault();
+                  }}
                 >
-                  Save
-                </button>
+                  <button
+                    type="button"
+                    on:click={onSubmit}
+                    class="bg-primary block ml-auto mt-2 text-[1rem] font-semibold px-6 py-2 rounded-md text-background-DEAFULT hover:bg-primary-darker hover:text-foreground duration-150"
+                  >
+                    Save
+                  </button>
+                </DialogTrigger>
               </div>
             </DialogDescription>
           </DialogHeader>
