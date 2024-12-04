@@ -11,6 +11,7 @@ import styles from "./index.module.css";
 import { Icon } from "@iconify-icon/solid";
 import {
   TextField,
+  TextFieldErrorMessage,
   TextFieldLabel,
   TextFieldRoot,
 } from "~/components/ui/textfield";
@@ -43,6 +44,9 @@ export default function Dev() {
   const [localStorageName, setLocalStorageName] = useLocalStorage("last_name");
   const [localStorageIcon, setLocalStorageIcon] = useLocalStorage("last_icon");
 
+  const [shouldDisplayNameError, setShouldDisplayNameError] =
+    createSignal(false);
+
   const [selectedIconIndex, setSelectedIconIndex] = createSignal(0);
   const [name, setName] = createSignal(localStorageName() ?? "");
 
@@ -62,7 +66,23 @@ export default function Dev() {
     else return "none";
   }
 
+  function onNameChange(
+    e: Event & {
+      currentTarget: HTMLInputElement;
+      target: HTMLInputElement;
+    }
+  ) {
+    if (e.target.value.length < 1) {
+      setShouldDisplayNameError(true);
+    } else {
+      setShouldDisplayNameError(false);
+    }
+    setName(e.target.value);
+  }
+
   function onSubmit() {
+    if (shouldDisplayNameError()) return;
+
     const currentIcon = getIconByIndex(selectedIconIndex())?.name;
 
     setLocalStorageName(name());
@@ -103,7 +123,7 @@ export default function Dev() {
 
   return (
     <div class="container mx-auto">
-      <Dialog>
+      <Dialog open>
         <DialogTrigger>Open</DialogTrigger>
         <DialogContent>
           <DialogHeader>
@@ -148,28 +168,30 @@ export default function Dev() {
                     <Icon icon="raphael:arrowright" class="text-4xl px-1" />
                   </button>
                 </div>
-                <TextFieldRoot>
+                <TextFieldRoot
+                  validationState={
+                    shouldDisplayNameError() ? "invalid" : "valid"
+                  }
+                >
                   <TextFieldLabel>Name</TextFieldLabel>
                   <TextField
                     type="text"
                     placeholder="Name"
                     value={name()}
-                    on:change={(e) => setName(e.target.value)}
+                    on:change={onNameChange}
+                    min={1}
                   />
+                  <TextFieldErrorMessage>
+                    Name has to be atleast 1 character long.
+                  </TextFieldErrorMessage>
                 </TextFieldRoot>
-                <DialogTrigger
-                  on:change={(e) => {
-                    e.preventDefault();
-                  }}
+                <button
+                  type="button"
+                  on:click={onSubmit}
+                  class="bg-primary block ml-auto mt-2 text-[1rem] font-semibold px-6 py-2 rounded-md text-background-DEAFULT hover:bg-primary-darker hover:text-foreground duration-150"
                 >
-                  <button
-                    type="button"
-                    on:click={onSubmit}
-                    class="bg-primary block ml-auto mt-2 text-[1rem] font-semibold px-6 py-2 rounded-md text-background-DEAFULT hover:bg-primary-darker hover:text-foreground duration-150"
-                  >
-                    Save
-                  </button>
-                </DialogTrigger>
+                  Save
+                </button>
               </div>
             </DialogDescription>
           </DialogHeader>
