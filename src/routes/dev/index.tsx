@@ -18,7 +18,7 @@ import {
 import { createSignal, onCleanup, onMount } from "solid-js";
 import { useLocalStorage } from "~/hooks";
 import { playerProfileSchema } from "~/utils/validation/player";
-import toast, { Toaster } from "solid-toast";
+import toast from "solid-toast";
 
 type CarouselIconType = "selected" | "neighbour" | "none";
 
@@ -42,6 +42,8 @@ const carouselIconTypes: Record<
 
 export default function Dev() {
   const icons = getAllIcons();
+
+  const [isOpen, setIsOpen] = createSignal(false);
 
   const [localStorageName, setLocalStorageName] = useLocalStorage("last_name");
   const [localStorageIcon, setLocalStorageIcon] = useLocalStorage("last_icon");
@@ -97,6 +99,8 @@ export default function Dev() {
 
     setLocalStorageName(name!.toString());
     setLocalStorageIcon(icon!.toString());
+
+    setIsOpen(false);
   }
 
   const moveCarouselLeft = () => moveCarousel(-1);
@@ -128,7 +132,7 @@ export default function Dev() {
 
   return (
     <div class="container mx-auto">
-      <Dialog open>
+      <Dialog open={isOpen()} onOpenChange={setIsOpen}>
         <DialogTrigger>Open</DialogTrigger>
         <DialogContent>
           <DialogHeader>
