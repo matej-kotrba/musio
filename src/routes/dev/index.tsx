@@ -18,6 +18,7 @@ import {
 import { createSignal, onCleanup, onMount } from "solid-js";
 import { useLocalStorage } from "~/hooks";
 import { playerProfileSchema } from "~/utils/validation/player";
+import toast, { Toaster } from "solid-toast";
 
 type CarouselIconType = "selected" | "neighbour" | "none";
 
@@ -47,6 +48,8 @@ export default function Dev() {
 
   const [selectedIconIndex, setSelectedIconIndex] = createSignal(0);
 
+  const [nameError, setNameError] = createSignal<string | null>(null);
+
   const getIconByIndex = (index: number) =>
     icons.find((_, idx) => idx === index);
 
@@ -73,11 +76,27 @@ export default function Dev() {
     const result = playerProfileSchema.safeParse({ name, icon });
 
     if (result.success === false) {
+      const nameErrors = result.error.flatten().fieldErrors.name;
+      const iconErrors = result.error.flatten().fieldErrors.icon;
+
+      if (nameErrors?.length) {
+        setNameError(nameErrors[0]);
+      } else {
+        setNameError(null);
+      }
+
+      if (iconErrors?.length) {
+        toast.error(iconErrors[0]);
+      }
+
       return;
     }
 
-    setLocalStorageName(name.toString());
-    setLocalStorageIcon(icon.toString());
+    setNameError(null);
+    toast.success("Set your profile successfully!");
+
+    setLocalStorageName(name!.toString());
+    setLocalStorageIcon(icon!.toString());
   }
 
   const moveCarouselLeft = () => moveCarousel(-1);
@@ -160,7 +179,9 @@ export default function Dev() {
                     name="icon"
                     value={getIconByIndex(selectedIconIndex())?.name}
                   ></input>
-                  <TextFieldRoot>
+                  <TextFieldRoot
+                    validationState={nameError() ? "invalid" : "valid"}
+                  >
                     <TextFieldLabel for="name">Name</TextFieldLabel>
                     <TextField
                       type="text"
@@ -169,9 +190,7 @@ export default function Dev() {
                       value={localStorageName() ?? ""}
                       min={1}
                     />
-                    <TextFieldErrorMessage>
-                      Name has to be atleast 1 character long.
-                    </TextFieldErrorMessage>
+                    <TextFieldErrorMessage>{nameError()}</TextFieldErrorMessage>
                   </TextFieldRoot>
                   <button
                     type="submit"

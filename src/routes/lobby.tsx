@@ -1,4 +1,5 @@
 import { JSXElement } from "solid-js";
+import { Toaster } from "solid-toast";
 import { WsConnectionContextProvider } from "~/contexts/connection";
 
 type Props = {
