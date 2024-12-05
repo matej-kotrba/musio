@@ -1,5 +1,5 @@
 import styles from "./index.module.css";
-import { createSignal, onMount, useContext } from "solid-js";
+import { createSignal, onMount, Show, useContext } from "solid-js";
 import PlayerDisplay, { getAllIcons, Player } from "~/components/lobby/Player";
 import WordToGuess from "~/components/lobby/WordToGuess";
 import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
@@ -11,6 +11,7 @@ import {
 } from "~/contexts/connection";
 import { useParams } from "@solidjs/router";
 import { createNewMessage } from "~/utils/game/connection";
+import ProfileSelection from "~/components/lobby/profile/ProfileSelection";
 
 function wsConnect(ctx: WsContext, lobbyId: string) {
   if (ctx.ws) {
@@ -44,6 +45,8 @@ const onMessage = (event: MessageEvent<string>) => {
 };
 
 export default function Lobby() {
+  const [isProfileSelected, setIsProfileSelected] = createSignal(false);
+
   const [players, setPlayers] = createSignal([]);
   const params = useParams();
   const lobbyId = () => params.id;
@@ -156,37 +159,46 @@ export default function Lobby() {
   const dummySongImage = "/2000x2000bb.jpg";
 
   return (
-    <div
-      class="relative grid grid-cols-[auto,1fr,auto] gap-4 h-full max-h-full"
-      style={{
-        "--custom-height": `calc(100vh - ${NAV_HEIGHT} - ${LOBBY_LAYOUT_HEIGHT} * 2 - 2rem)`,
-        height: "var(--custom-height)",
-      }}
-    >
-      <aside
-        class={`${styles.aside__scrollbar} relative flex flex-col gap-4 w-80 pr-2 overflow-x-clip h-full overflow-y-auto`}
-      >
-        {dummy_players.map((item) => (
-          <PlayerDisplay maxPoints={100} player={item} />
-        ))}
-      </aside>
-      <section class="flex flex-col items-center">
-        <p class="text-xl mb-4 font-bold opacity-35">Guess the song:</p>
-        <div class="mb-4">
-          <div class="w-64 aspect-square overflow-hidden rounded-md">
-            <img src={dummySongImage} alt="Song to guess" class="blur-md" />
-          </div>
-        </div>
-        <WordToGuess wordChars={dummySongName} />
-      </section>
-      <aside
-        class="h-full max-h-full w-80"
+    <>
+      <ProfileSelection />
+      <div
+        class="relative grid grid-cols-[auto,1fr,auto] gap-4 h-full max-h-full"
         style={{
+          "--custom-height": `calc(100vh - ${NAV_HEIGHT} - ${LOBBY_LAYOUT_HEIGHT} * 2 - 2rem)`,
           height: "var(--custom-height)",
         }}
       >
-        <Chat />
-      </aside>
-    </div>
+        <aside
+          class={`${styles.aside__scrollbar} relative flex flex-col gap-4 w-80 pr-2 overflow-x-clip h-full overflow-y-auto`}
+        >
+          <Show when={isProfileSelected()} fallback={<p>Selecting...</p>}>
+            {dummy_players.map((item) => (
+              <PlayerDisplay maxPoints={100} player={item} />
+            ))}
+          </Show>
+        </aside>
+        <Show when={isProfileSelected()} fallback={<p>Selecting...</p>}>
+          <section class="flex flex-col items-center">
+            <p class="text-xl mb-4 font-bold opacity-35">Guess the song:</p>
+            <div class="mb-4">
+              <div class="w-64 aspect-square overflow-hidden rounded-md">
+                <img src={dummySongImage} alt="Song to guess" class="blur-md" />
+              </div>
+            </div>
+            <WordToGuess wordChars={dummySongName} />
+          </section>
+        </Show>
+        <aside
+          class="h-full max-h-full w-80"
+          style={{
+            height: "var(--custom-height)",
+          }}
+        >
+          <Show when={isProfileSelected()} fallback={<p>Selecting...</p>}>
+            <Chat />
+          </Show>
+        </aside>
+      </div>
+    </>
   );
 }
