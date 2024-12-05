@@ -17,6 +17,7 @@ import {
 } from "~/components/ui/textfield";
 import { createSignal, onCleanup, onMount } from "solid-js";
 import { useLocalStorage } from "~/hooks";
+import { playerProfileSchema } from "~/utils/validation/player";
 
 type CarouselIconType = "selected" | "neighbour" | "none";
 
@@ -44,11 +45,7 @@ export default function Dev() {
   const [localStorageName, setLocalStorageName] = useLocalStorage("last_name");
   const [localStorageIcon, setLocalStorageIcon] = useLocalStorage("last_icon");
 
-  const [shouldDisplayNameError, setShouldDisplayNameError] =
-    createSignal(false);
-
   const [selectedIconIndex, setSelectedIconIndex] = createSignal(0);
-  const [name, setName] = createSignal(localStorageName() ?? "");
 
   const getIconByIndex = (index: number) =>
     icons.find((_, idx) => idx === index);
@@ -66,27 +63,21 @@ export default function Dev() {
     else return "none";
   }
 
-  function onNameChange(
-    e: Event & {
-      currentTarget: HTMLInputElement;
-      target: HTMLInputElement;
+  function onSubmit(e: SubmitEvent) {
+    e.preventDefault();
+
+    const formData = new FormData(e.target as HTMLFormElement);
+    const name = formData.get("name");
+    const icon = formData.get("icon");
+
+    const result = playerProfileSchema.safeParse({ name, icon });
+
+    if (result.success === false) {
+      return;
     }
-  ) {
-    if (e.target.value.length < 1) {
-      setShouldDisplayNameError(true);
-    } else {
-      setShouldDisplayNameError(false);
-    }
-    setName(e.target.value);
-  }
 
-  function onSubmit() {
-    if (shouldDisplayNameError()) return;
-
-    const currentIcon = getIconByIndex(selectedIconIndex())?.name;
-
-    setLocalStorageName(name());
-    setLocalStorageIcon(currentIcon ?? null);
+    setLocalStorageName(name.toString());
+    setLocalStorageIcon(icon.toString());
   }
 
   const moveCarouselLeft = () => moveCarousel(-1);
@@ -101,11 +92,6 @@ export default function Dev() {
 
   // TODO: Possible race condition due to onMount in useLocalStorage
   onMount(() => {
-    const savedName = localStorageName();
-    if (savedName) {
-      setName(savedName);
-    }
-
     const lsIconIndex = icons.findIndex((icon) => {
       return icon.name === localStorageIcon();
     });
@@ -168,30 +154,33 @@ export default function Dev() {
                     <Icon icon="raphael:arrowright" class="text-4xl px-1" />
                   </button>
                 </div>
-                <TextFieldRoot
-                  validationState={
-                    shouldDisplayNameError() ? "invalid" : "valid"
-                  }
-                >
-                  <TextFieldLabel>Name</TextFieldLabel>
-                  <TextField
-                    type="text"
-                    placeholder="Name"
-                    value={name()}
-                    on:change={onNameChange}
-                    min={1}
-                  />
-                  <TextFieldErrorMessage>
-                    Name has to be atleast 1 character long.
-                  </TextFieldErrorMessage>
-                </TextFieldRoot>
-                <button
-                  type="button"
-                  on:click={onSubmit}
-                  class="bg-primary block ml-auto mt-2 text-[1rem] font-semibold px-6 py-2 rounded-md text-background-DEAFULT hover:bg-primary-darker hover:text-foreground duration-150"
-                >
-                  Save
-                </button>
+                <form on:submit={onSubmit}>
+                  <input
+                    type="hidden"
+                    name="icon"
+                    value={getIconByIndex(selectedIconIndex())?.name}
+                  ></input>
+                  <TextFieldRoot>
+                    <TextFieldLabel for="name">Name</TextFieldLabel>
+                    <TextField
+                      type="text"
+                      name="name"
+                      placeholder="Name"
+                      value={localStorageName() ?? ""}
+                      min={1}
+                    />
+                    <TextFieldErrorMessage>
+                      Name has to be atleast 1 character long.
+                    </TextFieldErrorMessage>
+                  </TextFieldRoot>
+                  <button
+                    type="submit"
+                    class="bg-primary block ml-auto mt-2 text-[1rem] font-semibold px-6 py-2 rounded-md text-background-DEAFULT hover:bg-primary-darker hover:text-foreground duration-150
+                  disabled:bg-gray-500!"
+                  >
+                    Save
+                  </button>
+                </form>
               </div>
             </DialogDescription>
           </DialogHeader>
