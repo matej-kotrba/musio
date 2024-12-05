@@ -40,7 +40,13 @@ const carouselIconTypes: Record<
   },
 };
 
-export default function ProfileSelection() {
+export type ProfileData = { name: string; icon: string };
+
+type Props = {
+  onProfileSelected: ({ name, icon }: ProfileData) => void;
+};
+
+export default function ProfileSelection(props: Props) {
   const icons = getAllIcons();
 
   const [isOpen, setIsOpen] = createSignal(true);
@@ -97,10 +103,14 @@ export default function ProfileSelection() {
     setNameError(null);
     toast.success("Set your profile successfully!");
 
-    setLocalStorageName(name!.toString());
-    setLocalStorageIcon(icon!.toString());
+    const nameStr = name!.toString();
+    const iconStr = icon!.toString();
+
+    setLocalStorageName(nameStr);
+    setLocalStorageIcon(iconStr);
 
     setIsOpen(false);
+    props.onProfileSelected({ name: nameStr, icon: iconStr });
   }
 
   const moveCarouselLeft = () => moveCarousel(-1);

@@ -1,5 +1,11 @@
 import styles from "./index.module.css";
-import { createSignal, onMount, Show, useContext } from "solid-js";
+import {
+  createEffect,
+  createSignal,
+  onMount,
+  Show,
+  useContext,
+} from "solid-js";
 import PlayerDisplay, { getAllIcons, Player } from "~/components/lobby/Player";
 import WordToGuess from "~/components/lobby/WordToGuess";
 import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
@@ -11,7 +17,9 @@ import {
 } from "~/contexts/connection";
 import { useParams } from "@solidjs/router";
 import { createNewMessage } from "~/utils/game/connection";
-import ProfileSelection from "~/components/lobby/profile/ProfileSelection";
+import ProfileSelection, {
+  ProfileData,
+} from "~/components/lobby/profile/ProfileSelection";
 
 function wsConnect(ctx: WsContext, lobbyId: string) {
   if (ctx.ws) {
@@ -52,7 +60,9 @@ export default function Lobby() {
   const lobbyId = () => params.id;
   const ws = useContext(WsConnectionContext);
 
-  onMount(() => {
+  function handleProfileSelected(data: ProfileData) {
+    setIsProfileSelected(true);
+
     ws?.setConnection({
       ws: undefined,
       href: `/_ws?id=${lobbyId()}`,
@@ -65,7 +75,7 @@ export default function Lobby() {
     if (ws && isWsConnectionContext(ws?.connection)) {
       wsConnect(ws?.connection, lobbyId());
     }
-  });
+  }
 
   const dummy_players: Player[] = [
     {
@@ -160,7 +170,7 @@ export default function Lobby() {
 
   return (
     <>
-      <ProfileSelection />
+      <ProfileSelection onProfileSelected={handleProfileSelected} />
       <div
         class="relative grid grid-cols-[auto,1fr,auto] gap-4 h-full max-h-full"
         style={{
