@@ -94,17 +94,22 @@ export default eventHandler({
         needToRedirect = true;
       }
 
+      peer.subscribe(lobbyId);
+
       if (needToRedirect) {
+        console.log("Redirecting to lobby", lobby.id);
         peer.send(
           toPayload(
             SERVER_ID,
-            createNewMessage(lobbyId, "REDIRECT_TO_LOBBY", { lobbyId })
+            createNewMessage(lobby.id, "REDIRECT_TO_LOBBY", {
+              lobbyId: lobby.id,
+            })
           )
         );
       }
 
       // Join new client to the "chat" channel
-      peer.subscribe(lobbyId);
+
       // Notify every other connected client
       // peer.publish(lobbyId, toPayload(SERVER_ID, `${playerId} joined!`));
     },

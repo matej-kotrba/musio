@@ -15,8 +15,8 @@ import {
   WsConnectionContext,
   WsContext,
 } from "~/contexts/connection";
-import { useParams } from "@solidjs/router";
-import { createNewMessage } from "~/utils/game/connection";
+import { useParams, useNavigate } from "@solidjs/router";
+import { createNewMessage, fromMessage } from "~/utils/game/connection";
 import ProfileSelection, {
   ProfileData,
 } from "~/components/lobby/profile/ProfileSelection";
@@ -44,20 +44,14 @@ function wsConnect(ctx: WsContext, lobbyId: string) {
   });
 }
 
-const onMessage = (event: MessageEvent<string>) => {
-  console.log(event);
-  const { user, message } = event.data.startsWith("{")
-    ? (JSON.parse(event.data) as { user: string; message: unknown })
-    : { user: "Kamos", message: event.data };
-
-  console.log(user, message);
-};
-
 export default function Lobby() {
   const [isProfileSelected, setIsProfileSelected] = createSignal(false);
 
   const [players, setPlayers] = createSignal([]);
+
   const params = useParams();
+  const navigate = useNavigate();
+
   const lobbyId = () => params.id;
   const ws = useContext(WsConnectionContext);
 
@@ -77,6 +71,22 @@ export default function Lobby() {
       wsConnect(ws?.connection, lobbyId());
     }
   }
+
+  const onMessage = (event: MessageEvent<string>) => {
+    const data = fromMessage(event.data);
+    switch (data.message.type) {
+      case "REDIRECT_TO_LOBBY": {
+        navigate(`/lobby/${data.message.lobbyId}`, { replace: true });
+      }
+    }
+
+    // console.log(event);
+    // const { user, message } = event.data.startsWith("{")
+    //   ? (JSON.parse(event.data) as { user: string; message: unknown })
+    //   : { user: "Kamos", message: event.data };
+
+    // console.log(user, message);
+  };
 
   const dummy_players: Player[] = [
     {

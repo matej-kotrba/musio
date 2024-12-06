@@ -37,3 +37,10 @@ export function createNewMessage<T extends WS_MESSAGE_TYPE>(
     lobbyId,
   } as WS_MessageInterface[T];
 }
+
+export function fromMessage(seriliazedMessage: string) {
+  return JSON.parse(seriliazedMessage) as {
+    user: string;
+    message: WS_MessageInterface[WS_MESSAGE_TYPE];
+  };
+}
