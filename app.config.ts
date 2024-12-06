@@ -1,4 +1,5 @@
 import { defineConfig } from "@solidjs/start/config";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   server: {
@@ -12,4 +13,5 @@ export default defineConfig({
   handler: "./src/server/ws.ts",
   target: "server",
   base: "/_ws",
+  plugins: () => [tsconfigPaths()],
 });

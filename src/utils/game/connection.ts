@@ -6,11 +6,15 @@ type WS_MessageMap = {
   PICK_SONG: {
     song: string;
   };
+  REDIRECT_TO_LOBBY: {
+    lobbyId: string;
+  };
 };
 
 export const WS_MESSAGE: (keyof WS_MessageMap)[] = [
   "PLAYER_INIT",
   "PICK_SONG",
+  "REDIRECT_TO_LOBBY",
 ] as const;
 export type WS_MESSAGE_TYPE = (typeof WS_MESSAGE)[number];
 

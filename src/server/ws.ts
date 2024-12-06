@@ -1,6 +1,10 @@
 import { eventHandler } from "vinxi/http";
 import { Player } from "~/components/lobby/Player";
-import { WS_MESSAGE_TYPE, WS_MessageInterface } from "~/utils/game/connection";
+import {
+  createNewMessage,
+  WS_MESSAGE_TYPE,
+  WS_MessageInterface,
+} from "~/utils/game/connection";
 
 type PlayerServer = Omit<Player, "icon"> & {
   icon: string;
@@ -9,8 +13,10 @@ type PlayerServer = Omit<Player, "icon"> & {
 const userIdFromId = (id: string) => id.slice(-6);
 
 // Don't want to send binary Blob to the client
-const toPayload = (from: String, message: string) =>
-  JSON.stringify({ user: from, message: message });
+const toPayload = (
+  from: String,
+  message: ReturnType<typeof createNewMessage>
+) => JSON.stringify({ user: from, message: message });
 
 const CHANNEL_NAME = "chat";
 const SERVER_ID = "server";
@@ -51,11 +57,19 @@ function initPlayerToLobby(lobbyId: string, player: PlayerServer) {
   console.log("Player joined", player);
 }
 
-function createNewLobby(id: string) {
-  lobbies.set(id, {
+function getRandomId() {
+  return crypto.getRandomValues(new Uint32Array(1))[0].toString(16);
+}
+
+function createNewLobby() {
+  const id = getRandomId();
+  const lobby = {
     id,
     players: [],
-  });
+  };
+
+  lobbies.set(id, lobby);
+  return lobby;
 }
 
 export default eventHandler({
@@ -71,17 +85,28 @@ export default eventHandler({
       }
 
       const playerId = userIdFromId(peer.id);
-      peer.send(toPayload(SERVER_ID, `Welcome ${playerId}`));
+      // peer.send(toPayload(SERVER_ID, `Welcome ${playerId}`));
 
-      const lobby = lobbies.get(lobbyId);
+      let lobby = lobbies.get(lobbyId);
+      let needToRedirect = false;
       if (!lobby) {
-        createNewLobby(lobbyId);
+        lobby = createNewLobby();
+        needToRedirect = true;
+      }
+
+      if (needToRedirect) {
+        peer.send(
+          toPayload(
+            SERVER_ID,
+            createNewMessage(lobbyId, "REDIRECT_TO_LOBBY", { lobbyId })
+          )
+        );
       }
 
       // Join new client to the "chat" channel
       peer.subscribe(lobbyId);
       // Notify every other connected client
-      peer.publish(lobbyId, toPayload(SERVER_ID, `${playerId} joined!`));
+      // peer.publish(lobbyId, toPayload(SERVER_ID, `${playerId} joined!`));
     },
 
     async message(peer, message) {
@@ -120,10 +145,10 @@ export default eventHandler({
       console.log("[ws] close", user, details);
 
       peer.unsubscribe(CHANNEL_NAME);
-      peer.publish(
-        CHANNEL_NAME,
-        toPayload(SERVER_ID, `${user} has left the chat!`)
-      );
+      // peer.publish(
+      //   CHANNEL_NAME
+      //   toPayload(SERVER_ID, `${user} has left the chat!`)
+      // );
     },
 
     async error(peer, error) {

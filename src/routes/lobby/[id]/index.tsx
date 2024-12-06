@@ -45,6 +45,7 @@ function wsConnect(ctx: WsContext, lobbyId: string) {
 }
 
 const onMessage = (event: MessageEvent<string>) => {
+  console.log(event);
   const { user, message } = event.data.startsWith("{")
     ? (JSON.parse(event.data) as { user: string; message: unknown })
     : { user: "Kamos", message: event.data };
