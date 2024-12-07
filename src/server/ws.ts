@@ -1,26 +1,20 @@
 import { eventHandler } from "vinxi/http";
 import { Player } from "~/components/lobby/Player";
 import {
-  createNewMessage,
+  createNewMessageToClient,
+  createNewMessageToServer,
   WS_MESSAGE_TO_SERVER_TYPE,
   WS_MessageInterface,
-  WS_MessageMapToServer,
+  WS_MessageMapServer,
 } from "~/utils/game/connection";
+import { addBroadcast, getRandomId, toPayload, userIdFromId } from "./utils";
+
+const CHANNEL_NAME = "chat";
+const SERVER_ID = "server";
 
 type PlayerServer = Omit<Player, "icon"> & {
   icon: string;
 };
-
-const userIdFromId = (id: string) => id.slice(-6);
-
-// Don't want to send binary Blob to the client
-const toPayload = (
-  from: String,
-  message: ReturnType<typeof createNewMessage>
-) => JSON.stringify({ user: from, message: message });
-
-const CHANNEL_NAME = "chat";
-const SERVER_ID = "server";
 
 type Lobby = {
   id: string;
@@ -56,10 +50,8 @@ function initPlayerToLobby(lobbyId: string, player: PlayerServer) {
 
   lobby.players.push(player);
   console.log("Player joined", player);
-}
 
-function getRandomId() {
-  return crypto.getRandomValues(new Uint32Array(1))[0].toString(16);
+  return player;
 }
 
 function createNewLobby() {
@@ -85,7 +77,8 @@ export default eventHandler({
         return;
       }
 
-      const playerId = userIdFromId(peer.id);
+      console.log("ID: ", peer.id);
+      // const playerId = userIdFromId(peer.id);
       // peer.send(toPayload(SERVER_ID, `Welcome ${playerId}`));
 
       let lobby = lobbies.get(lobbyId);
@@ -102,13 +95,9 @@ export default eventHandler({
         peer.send(
           toPayload(
             SERVER_ID,
-            createNewMessage<WS_MessageMapToServer, WS_MESSAGE_TO_SERVER_TYPE>(
-              lobby.id,
-              "REDIRECT_TO_LOBBY",
-              {
-                lobbyId: lobby.id,
-              }
-            )
+            createNewMessageToClient(lobby.id, "REDIRECT_TO_LOBBY", {
+              lobbyId: lobby.id,
+            })
           )
         );
       }
@@ -120,9 +109,10 @@ export default eventHandler({
     },
 
     async message(peer, message) {
+      // const peer = addBroadcast(p);
       const playerId = userIdFromId(peer.id);
 
-      let parsedMessage: WS_MessageInterface[WS_MESSAGE_TO_SERVER_TYPE];
+      let parsedMessage: WS_MessageInterface<WS_MessageMapServer>[WS_MESSAGE_TO_SERVER_TYPE];
       try {
         parsedMessage = JSON.parse(message.text());
       } catch {
@@ -134,22 +124,33 @@ export default eventHandler({
         case "PLAYER_INIT": {
           console.log("Player init", parsedMessage.payload);
           const { name, icon } = parsedMessage.payload;
-          initPlayerToLobby(
+          const newPlayer = initPlayerToLobby(
             parsedMessage.lobbyId,
             createNewPlayer(playerId, name, icon)
           );
+          if (!newPlayer) return;
+
+          // peer.broadcast()
           peer.send(
-            createNewMessage(parsedMessage.lobbyId, "PLAYER_INIT", {
-              name,
-              icon,
-            })
+            toPayload(
+              SERVER_ID,
+              createNewMessageToClient(parsedMessage.lobbyId, "PLAYER_INIT", {
+                name,
+                icon,
+                points: newPlayer.points,
+              })
+            )
           );
           peer.publish(
             parsedMessage.lobbyId,
-            createNewMessage(parsedMessage.lobbyId, "PLAYER_INIT", {
-              name,
-              icon,
-            })
+            toPayload(
+              SERVER_ID,
+              createNewMessageToClient(parsedMessage.lobbyId, "PLAYER_INIT", {
+                name,
+                icon,
+                points: newPlayer.points,
+              })
+            )
           );
 
           break;

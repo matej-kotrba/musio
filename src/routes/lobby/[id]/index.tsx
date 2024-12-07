@@ -16,7 +16,11 @@ import {
   WsContext,
 } from "~/contexts/connection";
 import { useParams, useNavigate } from "@solidjs/router";
-import { createNewMessage, fromMessage } from "~/utils/game/connection";
+import {
+  createNewMessageToServer,
+  fromMessage,
+  WS_MessageMapServer,
+} from "~/utils/game/connection";
 import ProfileSelection, {
   ProfileData,
 } from "~/components/lobby/profile/ProfileSelection";
@@ -51,7 +55,7 @@ export default function Lobby() {
       ctx.ws = ws;
       ws.send(
         JSON.stringify(
-          createNewMessage(lobbyId, "PLAYER_INIT", {
+          createNewMessageToServer(lobbyId, "PLAYER_INIT", {
             name: pd.name,
             icon: pd.icon,
           })
@@ -79,13 +83,14 @@ export default function Lobby() {
   }
 
   const onMessage = (event: MessageEvent<string>) => {
-    const data = fromMessage(event.data);
+    const data = fromMessage<WS_MessageMapServer>(event.data);
     switch (data.message.type) {
       case "REDIRECT_TO_LOBBY": {
         navigate(`/lobby/${data.message.lobbyId}`, { replace: true });
         break;
       }
       case "PLAYER_INIT": {
+        console.log(data.message);
         setPlayers((old) => [...old]);
         break;
       }
