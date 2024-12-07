@@ -2,8 +2,9 @@ import { eventHandler } from "vinxi/http";
 import { Player } from "~/components/lobby/Player";
 import {
   createNewMessage,
-  WS_MESSAGE_TYPE,
+  WS_MESSAGE_TO_SERVER_TYPE,
   WS_MessageInterface,
+  WS_MessageMapToServer,
 } from "~/utils/game/connection";
 
 type PlayerServer = Omit<Player, "icon"> & {
@@ -101,9 +102,13 @@ export default eventHandler({
         peer.send(
           toPayload(
             SERVER_ID,
-            createNewMessage(lobby.id, "REDIRECT_TO_LOBBY", {
-              lobbyId: lobby.id,
-            })
+            createNewMessage<WS_MessageMapToServer, WS_MESSAGE_TO_SERVER_TYPE>(
+              lobby.id,
+              "REDIRECT_TO_LOBBY",
+              {
+                lobbyId: lobby.id,
+              }
+            )
           )
         );
       }
@@ -117,7 +122,7 @@ export default eventHandler({
     async message(peer, message) {
       const playerId = userIdFromId(peer.id);
 
-      let parsedMessage: WS_MessageInterface[WS_MESSAGE_TYPE];
+      let parsedMessage: WS_MessageInterface[WS_MESSAGE_TO_SERVER_TYPE];
       try {
         parsedMessage = JSON.parse(message.text());
       } catch {
@@ -128,14 +133,26 @@ export default eventHandler({
       switch (parsedMessage.type) {
         case "PLAYER_INIT": {
           console.log("Player init", parsedMessage.payload);
-          for (const [key, value] of lobbies) {
-            console.log(key, value);
-          }
           const { name, icon } = parsedMessage.payload;
           initPlayerToLobby(
             parsedMessage.lobbyId,
             createNewPlayer(playerId, name, icon)
           );
+          peer.send(
+            createNewMessage(parsedMessage.lobbyId, "PLAYER_INIT", {
+              name,
+              icon,
+            })
+          );
+          peer.publish(
+            parsedMessage.lobbyId,
+            createNewMessage(parsedMessage.lobbyId, "PLAYER_INIT", {
+              name,
+              icon,
+            })
+          );
+
+          break;
         }
       }
 

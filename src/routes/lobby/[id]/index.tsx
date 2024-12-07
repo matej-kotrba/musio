@@ -21,31 +21,8 @@ import ProfileSelection, {
   ProfileData,
 } from "~/components/lobby/profile/ProfileSelection";
 
-function wsConnect(ctx: WsContext, lobbyId: string) {
-  if (ctx.ws) {
-    ctx.log("ws", "Closing previous connection before reconnecting…");
-    ctx.ws.close();
-    ctx.ws = undefined;
-    ctx.clear();
-  }
-
-  ctx.log("ws", "Connecting to", ctx.href, "…");
-  const ws = new WebSocket(ctx.href);
-
-  ws.addEventListener("message", ctx.onMessage);
-  ws.addEventListener("open", () => {
-    ctx.ws = ws;
-    ws.send(
-      JSON.stringify(
-        createNewMessage(lobbyId, "PLAYER_INIT", { name: "aaaa", icon: "Seal" })
-      )
-    );
-    ctx.log("ws", "Connected!");
-  });
-}
-
 export default function Lobby() {
-  const [isProfileSelected, setIsProfileSelected] = createSignal(false);
+  const [profileData, setProfileData] = createSignal<ProfileData | null>(null);
 
   const [players, setPlayers] = createSignal([]);
 
@@ -55,8 +32,37 @@ export default function Lobby() {
   const lobbyId = () => params.id;
   const ws = useContext(WsConnectionContext);
 
+  function wsConnect(ctx: WsContext, lobbyId: string) {
+    if (ctx.ws) {
+      ctx.log("ws", "Closing previous connection before reconnecting…");
+      ctx.ws.close();
+      ctx.ws = undefined;
+      ctx.clear();
+    }
+
+    const pd = profileData();
+    if (!pd) return;
+
+    ctx.log("ws", "Connecting to", ctx.href, "…");
+    const ws = new WebSocket(ctx.href);
+
+    ws.addEventListener("message", ctx.onMessage);
+    ws.addEventListener("open", () => {
+      ctx.ws = ws;
+      ws.send(
+        JSON.stringify(
+          createNewMessage(lobbyId, "PLAYER_INIT", {
+            name: pd.name,
+            icon: pd.icon,
+          })
+        )
+      );
+      ctx.log("ws", "Connected!");
+    });
+  }
+
   function handleProfileSelected(data: ProfileData) {
-    setIsProfileSelected(true);
+    setProfileData(data);
 
     ws?.setConnection({
       ws: undefined,
@@ -77,6 +83,11 @@ export default function Lobby() {
     switch (data.message.type) {
       case "REDIRECT_TO_LOBBY": {
         navigate(`/lobby/${data.message.lobbyId}`, { replace: true });
+        break;
+      }
+      case "PLAYER_INIT": {
+        setPlayers((old) => [...old]);
+        break;
       }
     }
 
@@ -192,13 +203,13 @@ export default function Lobby() {
         <aside
           class={`${styles.aside__scrollbar} relative flex flex-col gap-4 w-80 pr-2 overflow-x-clip h-full overflow-y-auto`}
         >
-          <Show when={isProfileSelected()} fallback={<p>Selecting...</p>}>
+          <Show when={!!profileData()} fallback={<p>Selecting...</p>}>
             {dummy_players.map((item) => (
               <PlayerDisplay maxPoints={100} player={item} />
             ))}
           </Show>
         </aside>
-        <Show when={isProfileSelected()} fallback={<p>Selecting...</p>}>
+        <Show when={!!profileData()} fallback={<p>Selecting...</p>}>
           <section class="flex flex-col items-center">
             <p class="text-xl mb-4 font-bold opacity-35">Guess the song:</p>
             <div class="mb-4">
@@ -215,7 +226,7 @@ export default function Lobby() {
             height: "var(--custom-height)",
           }}
         >
-          <Show when={isProfileSelected()} fallback={<p>Selecting...</p>}>
+          <Show when={!!profileData()} fallback={<p>Selecting...</p>}>
             <Chat />
           </Show>
         </aside>

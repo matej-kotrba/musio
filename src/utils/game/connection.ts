@@ -1,4 +1,4 @@
-type WS_MessageMap = {
+type WS_MessageMapToServer = {
   PLAYER_INIT: {
     name: string;
     icon: string;
@@ -11,36 +11,51 @@ type WS_MessageMap = {
   };
 };
 
-export const WS_MESSAGE: (keyof WS_MessageMap)[] = [
+type WS_MessageMapToClient = {
+  PLAYER_INITS: {
+    name: string;
+    icon: string;
+    points: number;
+  };
+};
+
+type WS_MESSAGE = WS_MessageMapToServer | WS_MessageMapToClient;
+
+export const WS_MESSAGE_TO_SERVER: (keyof WS_MessageMapToServer)[] = [
   "PLAYER_INIT",
   "PICK_SONG",
   "REDIRECT_TO_LOBBY",
 ] as const;
-export type WS_MESSAGE_TYPE = (typeof WS_MESSAGE)[number];
+export const WS_MESSAGE_TO_CLIENT: (keyof WS_MessageMapToClient)[] = [
+  "PLAYER_INITS",
+];
 
-export type WS_MessageInterface = {
-  [Key in keyof WS_MessageMap]: {
+export type WS_MESSAGE_TO_SERVER_TYPE = (typeof WS_MESSAGE_TO_SERVER)[number];
+export type WS_MESSAGE_TO_CLIENT_TYPE = (typeof WS_MESSAGE_TO_CLIENT)[number];
+
+export type WS_MessageInterface<T extends WS_MESSAGE> = {
+  [Key in keyof T]: {
     type: Key;
-    payload: WS_MessageMap[Key];
+    payload: T[Key];
     lobbyId: string;
   };
 };
 
-export function createNewMessage<T extends WS_MESSAGE_TYPE>(
+export function createNewMessage<R extends WS_MESSAGE, T extends keyof R>(
   lobbyId: string,
   type: T,
-  payload: WS_MessageMap[T]
-): WS_MessageInterface[T] {
+  payload: R[T]
+): WS_MessageInterface<R>[T] {
   return {
     type,
     payload,
     lobbyId,
-  } as WS_MessageInterface[T];
+  } as WS_MessageInterface<R>[T];
 }
 
-export function fromMessage(seriliazedMessage: string) {
+export function fromMessage<T extends WS_MESSAGE>(seriliazedMessage: string) {
   return JSON.parse(seriliazedMessage) as {
     user: string;
-    message: WS_MessageInterface[WS_MESSAGE_TYPE];
+    message: T[keyof T];
   };
 }
