@@ -43,6 +43,7 @@ function createNewPlayer(
 }
 
 function initPlayerToLobby(lobbyId: string, player: PlayerServer) {
+  console.log("Lobby: ", lobbyId);
   const lobby = lobbies.get(lobbyId);
   if (!lobby) {
     return;
@@ -120,9 +121,9 @@ export default eventHandler({
         return;
       }
 
+      console.log("[ws] message", playerId, parsedMessage);
       switch (parsedMessage.type) {
         case "PLAYER_INIT": {
-          console.log("Player init", parsedMessage.payload);
           const { name, icon } = parsedMessage.payload;
           const newPlayer = initPlayerToLobby(
             parsedMessage.lobbyId,

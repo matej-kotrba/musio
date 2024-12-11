@@ -84,6 +84,7 @@ export default function Lobby() {
 
   const onMessage = (event: MessageEvent<string>) => {
     const data = fromMessage<WS_MessageMapServer>(event.data);
+    console.log(data);
     switch (data.message.type) {
       case "REDIRECT_TO_LOBBY": {
         navigate(`/lobby/${data.message.lobbyId}`, { replace: true });
