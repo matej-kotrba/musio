@@ -24,6 +24,7 @@ import {
 import ProfileSelection, {
   ProfileData,
 } from "~/components/lobby/profile/ProfileSelection";
+import { redirectToLobby } from "~/utils/callbacks";
 
 export default function Lobby() {
   const [profileData, setProfileData] = createSignal<ProfileData | null>(null);
@@ -65,21 +66,24 @@ export default function Lobby() {
     });
   }
 
-  function handleProfileSelected(data: ProfileData) {
+  async function handleProfileSelected(data: ProfileData) {
     setProfileData(data);
 
-    ws?.setConnection({
-      ws: undefined,
-      href: `/_ws?id=${lobbyId()}`,
-      onMessage,
-      log: () => {},
-      clear: () => {},
-      send: (data) => ws.connection.ws?.send(data),
-    });
+    await redirectToLobby(lobbyId());
+    console.log(lobbyId());
 
-    if (ws && isWsConnectionContext(ws?.connection)) {
-      wsConnect(ws?.connection, lobbyId());
-    }
+    // ws?.setConnection({
+    //   ws: undefined,
+    //   href: `/_ws?id=${lobbyId()}`,
+    //   onMessage,
+    //   log: () => {},
+    //   clear: () => {},
+    //   send: (data) => ws.connection.ws?.send(data),
+    // });
+
+    // if (ws && isWsConnectionContext(ws?.connection)) {
+    //   wsConnect(ws?.connection, lobbyId());
+    // }
   }
 
   const onMessage = (event: MessageEvent<string>) => {

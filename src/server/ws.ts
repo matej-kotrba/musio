@@ -1,27 +1,15 @@
 import { eventHandler } from "vinxi/http";
-import { Player } from "~/components/lobby/Player";
 import {
   createNewMessageToClient,
-  createNewMessageToServer,
   WS_MESSAGE_TO_SERVER_TYPE,
   WS_MessageInterface,
   WS_MessageMapServer,
 } from "~/utils/game/connection";
-import { addBroadcast, getRandomId, toPayload, userIdFromId } from "./utils";
+import { getRandomId, toPayload, userIdFromId } from "./utils";
+import { lobbies, PlayerServer } from "./lobby";
 
 const CHANNEL_NAME = "chat";
 const SERVER_ID = "server";
-
-type PlayerServer = Omit<Player, "icon"> & {
-  icon: string;
-};
-
-type Lobby = {
-  id: string;
-  players: PlayerServer[];
-};
-
-const lobbies = new Map<string, Lobby>();
 
 function getLobbyIdFromPeer(peer: { url: string }) {
   const url = new URLSearchParams(peer.url.split("?")[1]);
