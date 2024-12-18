@@ -10,7 +10,7 @@ import {
   createNewLobby,
   getLobbyIdFromPeer,
   initPlayerToLobby,
-  lobbies,
+  getLobbies,
   PlayerServer,
 } from "./lobby";
 
@@ -47,7 +47,7 @@ export default eventHandler({
       // const playerId = userIdFromId(peer.id);
       // peer.send(toPayload(SERVER_ID, `Welcome ${playerId}`));
 
-      let lobby = lobbies.get(lobbyId);
+      let lobby = getLobbies().get(lobbyId);
       let needToRedirect = false;
       if (!lobby) {
         lobby = createNewLobby();

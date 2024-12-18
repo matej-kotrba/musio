@@ -10,7 +10,9 @@ export type Lobby = {
   players: PlayerServer[];
 };
 
-export const lobbies = new Map<string, Lobby>();
+const lobbies = new Map<string, Lobby>();
+
+export const getLobbies = () => lobbies;
 
 export function initPlayerToLobby(lobbyId: string, player: PlayerServer) {
   console.log("Lobby: ", lobbyId);

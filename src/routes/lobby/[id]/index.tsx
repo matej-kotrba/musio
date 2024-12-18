@@ -62,10 +62,11 @@ export default function Lobby() {
 
   async function handleProfileSelected(data: ProfileData) {
     setProfileData(data);
-    const newLobbyId = await getLobbyURL();
-    if (newLobbyId !== lobbyId()) {
-      navigate(newLobbyId, { replace: true });
-    }
+    await getLobbyURL();
+    // const newLobbyId = await getLobbyURL();
+    // if (newLobbyId !== lobbyId()) {
+    //   navigate(newLobbyId, { replace: true });
+    // }
     // await redirectToLobby(lobbyId());
     // console.log(lobbyId());
 
