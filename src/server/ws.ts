@@ -5,16 +5,17 @@ import {
   WS_MessageInterface,
   WS_MessageMapServer,
 } from "~/utils/game/connection";
-import { getRandomId, toPayload, userIdFromId } from "./utils";
-import { lobbies, PlayerServer } from "./lobby";
+import { toPayload, userIdFromId } from "./utils";
+import {
+  createNewLobby,
+  getLobbyIdFromPeer,
+  initPlayerToLobby,
+  lobbies,
+  PlayerServer,
+} from "./lobby";
 
 const CHANNEL_NAME = "chat";
 const SERVER_ID = "server";
-
-function getLobbyIdFromPeer(peer: { url: string }) {
-  const url = new URLSearchParams(peer.url.split("?")[1]);
-  return url.get("id");
-}
 
 function createNewPlayer(
   id: string,
@@ -28,30 +29,6 @@ function createNewPlayer(
     icon,
     points: points ?? 0,
   };
-}
-
-function initPlayerToLobby(lobbyId: string, player: PlayerServer) {
-  console.log("Lobby: ", lobbyId);
-  const lobby = lobbies.get(lobbyId);
-  if (!lobby) {
-    return;
-  }
-
-  lobby.players.push(player);
-  console.log("Player joined", player);
-
-  return player;
-}
-
-function createNewLobby() {
-  const id = getRandomId();
-  const lobby = {
-    id,
-    players: [],
-  };
-
-  lobbies.set(id, lobby);
-  return lobby;
 }
 
 export default eventHandler({

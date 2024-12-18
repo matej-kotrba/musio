@@ -1,21 +1,11 @@
 import styles from "./index.module.css";
-import {
-  createEffect,
-  createSignal,
-  onMount,
-  Show,
-  useContext,
-} from "solid-js";
+import { createSignal, Show, useContext, onCleanup } from "solid-js";
 import PlayerDisplay, { getAllIcons, Player } from "~/components/lobby/Player";
 import WordToGuess from "~/components/lobby/WordToGuess";
 import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
 import Chat from "~/components/lobby/chat/Chat";
-import {
-  isWsConnectionContext,
-  WsConnectionContext,
-  WsContext,
-} from "~/contexts/connection";
-import { useParams, useNavigate } from "@solidjs/router";
+import { WsConnectionContext, WsContext } from "~/contexts/connection";
+import { useParams, useNavigate, redirect } from "@solidjs/router";
 import {
   createNewMessageToServer,
   fromMessage,
@@ -24,7 +14,7 @@ import {
 import ProfileSelection, {
   ProfileData,
 } from "~/components/lobby/profile/ProfileSelection";
-import { redirectToLobby } from "~/utils/callbacks";
+import { getLobbyURL, removeLobbyWhenEmpty } from "~/utils/callbacks";
 
 export default function Lobby() {
   const [profileData, setProfileData] = createSignal<ProfileData | null>(null);
@@ -36,6 +26,10 @@ export default function Lobby() {
 
   const lobbyId = () => params.id;
   const ws = useContext(WsConnectionContext);
+
+  onCleanup(() => {
+    removeLobbyWhenEmpty(lobbyId());
+  });
 
   function wsConnect(ctx: WsContext, lobbyId: string) {
     if (ctx.ws) {
@@ -68,9 +62,12 @@ export default function Lobby() {
 
   async function handleProfileSelected(data: ProfileData) {
     setProfileData(data);
-
-    await redirectToLobby(lobbyId());
-    console.log(lobbyId());
+    const newLobbyId = await getLobbyURL();
+    if (newLobbyId !== lobbyId()) {
+      navigate(newLobbyId, { replace: true });
+    }
+    // await redirectToLobby(lobbyId());
+    // console.log(lobbyId());
 
     // ws?.setConnection({
     //   ws: undefined,
