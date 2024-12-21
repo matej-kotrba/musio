@@ -44,3 +44,16 @@
   place-items: center;
   transition: 0.2s ease;
 }
+
+.idk {
+  animation: spin 4s linear forwards;
+}
+
+@keyframes spin {
+  from {
+    transform: translateX(-50px);
+  }
+  to {
+    transform: translateX(0px);
+  }
+}

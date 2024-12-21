@@ -15,10 +15,11 @@ import {
   TextFieldLabel,
   TextFieldRoot,
 } from "~/components/ui/textfield";
-import { createSignal, onCleanup, onMount } from "solid-js";
+import { createSignal, onCleanup, onMount, Show } from "solid-js";
 import { useLocalStorage } from "~/hooks";
 import { playerProfileSchema } from "~/utils/validation/player";
 import toast from "solid-toast";
+import { iconNameToDisplayName } from "~/utils/game/common";
 
 type CarouselIconType = "selected" | "neighbour" | "none";
 
@@ -142,7 +143,15 @@ export default function ProfileSelection(props: Props) {
 
   return (
     <Dialog open={isOpen()} onOpenChange={setIsOpen}>
-      <DialogContent hideCloseButton>
+      <DialogContent
+        hideCloseButton
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+        onEscapeKeyDown={(e) => {
+          e.preventDefault();
+        }}
+      >
         <DialogHeader>
           <DialogTitle>Set your game profile</DialogTitle>
           <DialogDescription>
@@ -184,6 +193,15 @@ export default function ProfileSelection(props: Props) {
                 >
                   <Icon icon="raphael:arrowright" class="text-4xl px-1" />
                 </button>
+                <Show when={selectedIconIndex()} keyed>
+                  <p
+                    class={`${styles.idk} text-lg text-center text-foreground font-bold`}
+                  >
+                    {iconNameToDisplayName(
+                      getIconByIndex(selectedIconIndex())?.name ?? ""
+                    )}
+                  </p>
+                </Show>
               </div>
               <form on:submit={onSubmit}>
                 <input
