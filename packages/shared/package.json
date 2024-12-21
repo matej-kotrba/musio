@@ -1,12 +1,10 @@
 {
-  "name": "musio",
+  "name": "shared",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev:solid": "pnpm --filter ui dev",
-    "dev:hono": "pnpm --filter backend start",
-    "build": "pnpm -r build"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
