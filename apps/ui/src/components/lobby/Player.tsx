@@ -1,16 +1,6 @@
+import { Icon, Player } from "shared/index.types";
+
 const icons = import.meta.glob("/public/avatars/*", { query: "?url" });
-
-export type Icon = {
-  url: string;
-  name: string;
-};
-
-export type Player = {
-  id: string;
-  name: string;
-  icon: Icon;
-  points: number;
-};
 
 export function getAllIcons(): Icon[] {
   return Object.keys(icons).map((iconPath) => {

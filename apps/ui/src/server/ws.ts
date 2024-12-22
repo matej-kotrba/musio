@@ -1,35 +1,22 @@
+import { createNewMessageToClient } from "shared";
 import { eventHandler } from "vinxi/http";
-import {
-  createNewMessageToClient,
-  WS_MESSAGE_TO_SERVER_TYPE,
-  WS_MessageInterface,
-  WS_MessageMapServer,
-} from "~/utils/game/connection";
-import { toPayload, userIdFromId } from "./utils";
-import {
-  createNewLobby,
-  getLobbyIdFromPeer,
-  initPlayerToLobby,
-  getLobbies,
-  PlayerServer,
-} from "./lobby";
+// import {
+//   createNewMessageToClient,
+//   WS_MESSAGE_TO_SERVER_TYPE,
+//   WS_MessageInterface,
+//   WS_MessageMapServer,
+// } from "~/utils/game/connection";
+// import { toPayload, userIdFromId } from "./utils";
+// import {
+//   createNewLobby,
+//   getLobbyIdFromPeer,
+//   initPlayerToLobby,
+//   getLobbies,
+//   PlayerServer,
+// } from "./lobby";
 
 const CHANNEL_NAME = "chat";
 const SERVER_ID = "server";
-
-function createNewPlayer(
-  id: string,
-  name: string,
-  icon: string,
-  points?: number
-): PlayerServer {
-  return {
-    id,
-    name,
-    icon,
-    points: points ?? 0,
-  };
-}
 
 export default eventHandler({
   handler() {},

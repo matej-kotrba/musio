@@ -5,7 +5,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "~/components/ui/dialog";
 import styles from "./index.module.css";
 import { Icon } from "@iconify-icon/solid";
@@ -15,7 +14,7 @@ import {
   TextFieldLabel,
   TextFieldRoot,
 } from "~/components/ui/textfield";
-import { createSignal, onCleanup, onMount, Show } from "solid-js";
+import { createSignal, onCleanup, onMount } from "solid-js";
 import { useLocalStorage } from "~/hooks";
 import { playerProfileSchema } from "~/utils/validation/player";
 import toast from "solid-toast";
@@ -193,15 +192,11 @@ export default function ProfileSelection(props: Props) {
                 >
                   <Icon icon="raphael:arrowright" class="text-4xl px-1" />
                 </button>
-                <Show when={selectedIconIndex()} keyed>
-                  <p
-                    class={`${styles.idk} text-lg text-center text-foreground font-bold`}
-                  >
-                    {iconNameToDisplayName(
-                      getIconByIndex(selectedIconIndex())?.name ?? ""
-                    )}
-                  </p>
-                </Show>
+                <p class={`text-lg text-center text-foreground font-bold`}>
+                  {iconNameToDisplayName(
+                    getIconByIndex(selectedIconIndex())?.name ?? ""
+                  )}
+                </p>
               </div>
               <form on:submit={onSubmit}>
                 <input

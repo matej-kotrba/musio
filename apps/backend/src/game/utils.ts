@@ -1,4 +1,4 @@
-import { createNewMessageToClient } from "~/utils/game/connection";
+import { createNewMessageToClient } from "shared";
 
 export const userIdFromId = (id: string) => id.slice(-6);
 

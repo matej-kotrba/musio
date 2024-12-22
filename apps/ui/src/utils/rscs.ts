@@ -1,9 +1,14 @@
 "use server";
 
-import { createNewLobby, getLobbies } from "~/server/lobby";
+import { construstURL, getServerURL } from "shared";
 
 // Returns relative URL path to correct lobby
 export const getLobbyURL = async (lobbyId?: string) => {
+  const serverResponse = await fetch(
+    construstURL(getServerURL(), "getLobbyURL")
+  );
+  const parsedData = await serverResponse.json();
+  console.log(parsedData);
   // console.log(getLobbies());
   // if (!lobbyId || !getLobbies().has(lobbyId)) {
   //   const newLobby = createNewLobby();

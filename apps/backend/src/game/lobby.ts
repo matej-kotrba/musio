@@ -1,5 +1,5 @@
-import { Player } from "~/components/lobby/Player";
-import { getRandomId } from "./utils";
+import type { Player } from "shared/index.types.ts";
+import { getRandomId } from "./utils.js";
 
 export type PlayerServer = Omit<Player, "icon"> & {
   icon: string;
@@ -9,10 +9,6 @@ export type Lobby = {
   id: string;
   players: PlayerServer[];
 };
-
-const lobbies = new Map<string, Lobby>();
-
-export const getLobbies = () => lobbies;
 
 export function initPlayerToLobby(lobbyId: string, player: PlayerServer) {
   console.log("Lobby: ", lobbyId);
@@ -25,6 +21,20 @@ export function initPlayerToLobby(lobbyId: string, player: PlayerServer) {
   console.log("Player joined", player);
 
   return player;
+}
+
+function createNewPlayer(
+  id: string,
+  name: string,
+  icon: string,
+  points?: number
+): PlayerServer {
+  return {
+    id,
+    name,
+    icon,
+    points: points ?? 0,
+  };
 }
 
 export function createNewLobby() {

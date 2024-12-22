@@ -1,17 +1,17 @@
 import styles from "./index.module.css";
 import { createSignal, Show, useContext, onCleanup } from "solid-js";
-import PlayerDisplay, { getAllIcons, Player } from "~/components/lobby/Player";
+import PlayerDisplay, { getAllIcons } from "~/components/lobby/Player";
 import WordToGuess from "~/components/lobby/WordToGuess";
 import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
 import Chat from "~/components/lobby/chat/Chat";
 import { WsConnectionContext, WsContext } from "~/contexts/connection";
-import { useParams, useNavigate, redirect } from "@solidjs/router";
+import { useParams, useNavigate } from "@solidjs/router";
 import ProfileSelection, {
   ProfileData,
 } from "~/components/lobby/profile/ProfileSelection";
-import { getLobbyURL, removeLobbyWhenEmpty } from "~/utils/callbacks";
 import { createNewMessageToServer, fromMessage } from "shared";
-import { WS_MessageMapServer } from "shared/types/messages";
+import { getLobbyURL, removeLobbyWhenEmpty } from "~/utils/rscs";
+import { Player, WS_MessageMapServer } from "shared/index.types";
 
 export default function Lobby() {
   const [profileData, setProfileData] = createSignal<ProfileData | null>(null);
