@@ -10,7 +10,7 @@ import ProfileSelection, {
   ProfileData,
 } from "~/components/lobby/profile/ProfileSelection";
 import { createNewMessageToServer, fromMessage } from "shared";
-import { getLobbyURL, removeLobbyWhenEmpty } from "~/utils/rscs";
+import { getLobbyURL as getLobbyId } from "~/utils/rscs";
 import { Player, WS_MessageMapServer } from "shared/index.types";
 
 export default function Lobby() {
@@ -24,9 +24,9 @@ export default function Lobby() {
   const lobbyId = () => params.id;
   const ws = useContext(WsConnectionContext);
 
-  onCleanup(() => {
-    removeLobbyWhenEmpty(lobbyId());
-  });
+  // onCleanup(() => {
+  //   removeLobbyWhenEmpty(lobbyId());
+  // });
 
   function wsConnect(ctx: WsContext, lobbyId: string) {
     if (ctx.ws) {
@@ -59,7 +59,11 @@ export default function Lobby() {
 
   async function handleProfileSelected(data: ProfileData) {
     setProfileData(data);
-    await getLobbyURL();
+    const newLobbyId = await getLobbyId();
+    if (newLobbyId !== lobbyId()) {
+      navigate(newLobbyId, { replace: true });
+    }
+
     // const newLobbyId = await getLobbyURL();
     // if (newLobbyId !== lobbyId()) {
     //   navigate(newLobbyId, { replace: true });

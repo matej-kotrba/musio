@@ -1,5 +1,5 @@
-import { createNewMessageToClient } from "shared";
-
+import { createNewMessageToServer, createNewMessageToClient } from "shared";
+createNewMessageToServer;
 export const userIdFromId = (id: string) => id.slice(-6);
 
 export const toPayload = (

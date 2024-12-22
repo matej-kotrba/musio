@@ -5,12 +5,18 @@ export type PlayerServer = Omit<Player, "icon"> & {
   icon: string;
 };
 
+export type LobbiesMap = Map<string, Lobby>;
+
 export type Lobby = {
   id: string;
   players: PlayerServer[];
 };
 
-export function initPlayerToLobby(lobbyId: string, player: PlayerServer) {
+export function initPlayerToLobby(
+  lobbies: LobbiesMap,
+  lobbyId: string,
+  player: PlayerServer
+) {
   console.log("Lobby: ", lobbyId);
   const lobby = lobbies.get(lobbyId);
   if (!lobby) {
@@ -23,7 +29,7 @@ export function initPlayerToLobby(lobbyId: string, player: PlayerServer) {
   return player;
 }
 
-function createNewPlayer(
+export function createNewPlayer(
   id: string,
   name: string,
   icon: string,
@@ -37,7 +43,7 @@ function createNewPlayer(
   };
 }
 
-export function createNewLobby() {
+export function createNewLobby(lobbies: LobbiesMap) {
   const id = getRandomId();
   const lobby = {
     id,
