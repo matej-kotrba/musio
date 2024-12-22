@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev:solid": "pnpm --filter ui dev",
-    "dev:hono": "pnpm --filter backend start",
+    "dev:hono": "pnpm --filter backend dev",
+    "dev": "pnpm -r dev",
     "build": "pnpm -r build"
   },
   "keywords": [],

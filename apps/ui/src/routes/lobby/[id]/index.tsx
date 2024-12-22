@@ -6,15 +6,12 @@ import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
 import Chat from "~/components/lobby/chat/Chat";
 import { WsConnectionContext, WsContext } from "~/contexts/connection";
 import { useParams, useNavigate, redirect } from "@solidjs/router";
-import {
-  createNewMessageToServer,
-  fromMessage,
-  WS_MessageMapServer,
-} from "~/utils/game/connection";
 import ProfileSelection, {
   ProfileData,
 } from "~/components/lobby/profile/ProfileSelection";
 import { getLobbyURL, removeLobbyWhenEmpty } from "~/utils/callbacks";
+import { createNewMessageToServer, fromMessage } from "shared";
+import { WS_MessageMapServer } from "shared/types/messages";
 
 export default function Lobby() {
   const [profileData, setProfileData] = createSignal<ProfileData | null>(null);
