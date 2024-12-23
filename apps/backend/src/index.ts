@@ -1,11 +1,12 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
-import { createNodeWebSocket } from "@hono/node-ws";
+import { createNodeWebSocket, type NodeWebSocket } from "@hono/node-ws";
 import {
   createNewLobby,
   createNewPlayer,
   getLobbyIdFromPeer,
   initPlayerToLobby,
+  type LobbiesMap,
   type Lobby,
 } from "./game/lobby.js";
 import {
@@ -15,11 +16,13 @@ import {
   type WS_MessageMapServer,
 } from "shared";
 import { toPayload, userIdFromId } from "./game/utils.js";
+import type { WSContext } from "hono/ws";
+import { LobbyMap } from "./game/map.js";
 
 const app = new Hono();
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
 
-const lobbies = new Map<string, Lobby>();
+const lobbies: LobbiesMap = new LobbyMap<string, Lobby>();
 
 app.get("/", (c) => {
   return c.json("Hello Hono!");
@@ -35,10 +38,11 @@ const SERVER_ID = "server";
 app.get(
   "/ws",
   upgradeWebSocket((c) => {
+    console.log("Upgrade WebSocket");
     return {
       onOpen: (event, ws) => {
-        const raw = ws.raw;
-        console.log(JSON.stringify(raw));
+        const lobbyId = c.req.query("lobbyId");
+        console.log("lobbyId", lobbyId);
       },
       //   console.log("[ws] open", peer);
 

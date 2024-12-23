@@ -4,7 +4,11 @@ import PlayerDisplay, { getAllIcons } from "~/components/lobby/Player";
 import WordToGuess from "~/components/lobby/WordToGuess";
 import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
 import Chat from "~/components/lobby/chat/Chat";
-import { WsConnectionContext, WsContext } from "~/contexts/connection";
+import {
+  isWsConnectionContext,
+  WsConnectionContext,
+  WsContext,
+} from "~/contexts/connection";
 import { useParams, useNavigate } from "@solidjs/router";
 import ProfileSelection, {
   ProfileData,
@@ -45,24 +49,24 @@ export default function Lobby() {
     ws.addEventListener("message", ctx.onMessage);
     ws.addEventListener("open", () => {
       ctx.ws = ws;
-      ws.send(
-        JSON.stringify(
-          createNewMessageToServer(lobbyId, "PLAYER_INIT", {
-            name: pd.name,
-            icon: pd.icon,
-          })
-        )
-      );
+      // ws.send(
+      //   JSON.stringify(
+      //     createNewMessageToServer(lobbyId, "PLAYER_INIT", {
+      //       name: pd.name,
+      //       icon: pd.icon,
+      //     })
+      //   )
+      // );
       ctx.log("ws", "Connected!");
     });
   }
 
   async function handleProfileSelected(data: ProfileData) {
     setProfileData(data);
-    const newLobbyId = await getLobbyId();
-    if (newLobbyId !== lobbyId()) {
-      navigate(newLobbyId, { replace: true });
-    }
+    // const newLobbyId = await getLobbyId();
+    // if (newLobbyId !== lobbyId()) {
+    //   navigate(newLobbyId, { replace: true });
+    // }
 
     // const newLobbyId = await getLobbyURL();
     // if (newLobbyId !== lobbyId()) {
@@ -71,18 +75,18 @@ export default function Lobby() {
     // await redirectToLobby(lobbyId());
     // console.log(lobbyId());
 
-    // ws?.setConnection({
-    //   ws: undefined,
-    //   href: `/_ws?id=${lobbyId()}`,
-    //   onMessage,
-    //   log: () => {},
-    //   clear: () => {},
-    //   send: (data) => ws.connection.ws?.send(data),
-    // });
+    ws?.setConnection({
+      ws: undefined,
+      href: `ws://localhost:5173/ws?lobbyId=${lobbyId()}`,
+      onMessage,
+      log: () => {},
+      clear: () => {},
+      send: (data) => ws.connection.ws?.send(data),
+    });
 
-    // if (ws && isWsConnectionContext(ws?.connection)) {
-    //   wsConnect(ws?.connection, lobbyId());
-    // }
+    if (ws && isWsConnectionContext(ws?.connection)) {
+      wsConnect(ws?.connection, lobbyId());
+    }
   }
 
   const onMessage = (event: MessageEvent<string>) => {

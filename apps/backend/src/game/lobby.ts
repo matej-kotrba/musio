@@ -1,11 +1,14 @@
 import type { Player } from "shared";
 import { getRandomId } from "./utils.js";
+import type { WSContext } from "hono/ws";
+import type { LobbyMap } from "./map.js";
 
 export type PlayerServer = Omit<Player, "icon"> & {
+  ws: WSContext<unknown>;
   icon: string;
 };
 
-export type LobbiesMap = Map<string, Lobby>;
+export type LobbiesMap = LobbyMap<string, Lobby>;
 
 export type Lobby = {
   id: string;
@@ -30,12 +33,14 @@ export function initPlayerToLobby(
 }
 
 export function createNewPlayer(
+  ws: WSContext<unknown>,
   id: string,
   name: string,
   icon: string,
   points?: number
 ): PlayerServer {
   return {
+    ws,
     id,
     name,
     icon,
