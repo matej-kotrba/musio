@@ -1,4 +1,4 @@
-import {
+import type {
   WS_MESSAGE,
   WS_MESSAGE_TO_CLIENT_TYPE,
   WS_MESSAGE_TO_SERVER_TYPE,

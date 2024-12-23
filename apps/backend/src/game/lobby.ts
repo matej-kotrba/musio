@@ -1,4 +1,4 @@
-import type { Player } from "shared/index.types.ts";
+import type { Player } from "shared";
 import { getRandomId } from "./utils.js";
 
 export type PlayerServer = Omit<Player, "icon"> & {

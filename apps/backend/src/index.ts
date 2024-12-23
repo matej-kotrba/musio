@@ -8,13 +8,13 @@ import {
   initPlayerToLobby,
   type Lobby,
 } from "./game/lobby.js";
-import { createNewMessageToClient } from "shared";
+import {
+  createNewMessageToClient,
+  type WS_MESSAGE_TO_SERVER_TYPE,
+  type WS_MessageInterface,
+  type WS_MessageMapServer,
+} from "shared";
 import { toPayload, userIdFromId } from "./game/utils.js";
-import type {
-  WS_MESSAGE_TO_SERVER_TYPE,
-  WS_MessageInterface,
-  WS_MessageMapServer,
-} from "shared/index.types.js";
 
 const app = new Hono();
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
