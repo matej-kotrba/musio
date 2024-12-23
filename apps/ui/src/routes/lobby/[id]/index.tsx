@@ -63,10 +63,10 @@ export default function Lobby() {
 
   async function handleProfileSelected(data: ProfileData) {
     setProfileData(data);
-    // const newLobbyId = await getLobbyId();
-    // if (newLobbyId !== lobbyId()) {
-    //   navigate(newLobbyId, { replace: true });
-    // }
+    const newLobbyId = await getLobbyId(lobbyId());
+    if (newLobbyId !== lobbyId()) {
+      navigate(`/lobby/${newLobbyId}`, { replace: true });
+    }
 
     // const newLobbyId = await getLobbyURL();
     // if (newLobbyId !== lobbyId()) {
@@ -75,18 +75,18 @@ export default function Lobby() {
     // await redirectToLobby(lobbyId());
     // console.log(lobbyId());
 
-    ws?.setConnection({
-      ws: undefined,
-      href: `ws://localhost:5173/ws?lobbyId=${lobbyId()}`,
-      onMessage,
-      log: () => {},
-      clear: () => {},
-      send: (data) => ws.connection.ws?.send(data),
-    });
+    // ws?.setConnection({
+    //   ws: undefined,
+    //   href: `ws://localhost:5173/ws`,
+    //   onMessage,
+    //   log: () => {},
+    //   clear: () => {},
+    //   send: (data) => ws.connection.ws?.send(data),
+    // });
 
-    if (ws && isWsConnectionContext(ws?.connection)) {
-      wsConnect(ws?.connection, lobbyId());
-    }
+    // if (ws && isWsConnectionContext(ws?.connection)) {
+    //   wsConnect(ws?.connection, lobbyId());
+    // }
   }
 
   const onMessage = (event: MessageEvent<string>) => {

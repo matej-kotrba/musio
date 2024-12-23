@@ -15,7 +15,7 @@ import {
   type WS_MessageInterface,
   type WS_MessageMapServer,
 } from "shared";
-import { toPayload, userIdFromId } from "./game/utils.js";
+import { isDev, toPayload, userIdFromId } from "./game/utils.js";
 import type { WSContext } from "hono/ws";
 import { LobbyMap } from "./game/map.js";
 
@@ -28,8 +28,33 @@ app.get("/", (c) => {
   return c.json("Hello Hono!");
 });
 
+// Dev only endpoints
+// ****
+app.get("/getLobbies", (c) => {
+  if (isDev()) return c.notFound();
+
+  return c.json([...lobbies.keys()]);
+});
+
+app.get("/purgeLobbies", (c) => {
+  if (isDev()) return c.notFound();
+
+  lobbies.clear();
+  return c.json("Lobbies purged");
+});
+// ****
+
 app.get("/getLobbyId", (c) => {
-  return c.json("123");
+  const lobbyId = c.req.query("lobbyId");
+  console.log("lobbyId", lobbyId);
+
+  if (!lobbyId || !lobbies.has(lobbyId)) {
+    const newLobby = createNewLobby(lobbies);
+
+    return c.json(newLobby.id);
+  }
+
+  return c.json(lobbies.get(lobbyId)!.id);
 });
 
 const CHANNEL_NAME = "chat";
@@ -38,12 +63,8 @@ const SERVER_ID = "server";
 app.get(
   "/ws",
   upgradeWebSocket((c) => {
-    console.log("Upgrade WebSocket");
     return {
-      onOpen: (event, ws) => {
-        const lobbyId = c.req.query("lobbyId");
-        console.log("lobbyId", lobbyId);
-      },
+      onOpen: (event, ws) => {},
       //   console.log("[ws] open", peer);
 
       //   const lobbyId = getLobbyIdFromPeer(peer);
