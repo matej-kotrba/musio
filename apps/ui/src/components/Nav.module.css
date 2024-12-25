@@ -1,3 +1,21 @@
+.nav::before {
+  content: "";
+  position: absolute;
+  width: 100vw;
+  height: 110%;
+  left: 0;
+  top: 0;
+  background-color: transparent;
+  background-image: radial-gradient(
+    transparent 1px,
+    hsl(var(--background)) 1px
+  );
+  background-size: 4px 4px;
+  backdrop-filter: blur(3px);
+  mask: linear-gradient(black 60%, transparent 100%);
+  z-index: -1;
+}
+
 .link::before {
   content: "";
   position: absolute;
