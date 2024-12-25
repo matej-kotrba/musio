@@ -7,9 +7,6 @@ export type WS_MessageMapServer = {
   PICK_SONG: {
     song: string;
   };
-  REDIRECT_TO_LOBBY: {
-    lobbyId: string;
-  };
 };
 
 export type WS_MessageMapClient = {
@@ -24,7 +21,6 @@ export type WS_MESSAGE = WS_MessageMapServer | WS_MessageMapClient;
 export const WS_MESSAGE_TO_SERVER: (keyof WS_MessageMapServer)[] = [
   "PLAYER_INIT",
   "PICK_SONG",
-  "REDIRECT_TO_LOBBY",
 ] as const;
 export const WS_MESSAGE_TO_CLIENT: (keyof WS_MessageMapClient)[] = [
   "PLAYER_INIT",

@@ -1,23 +1,15 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
-import { createNodeWebSocket, type NodeWebSocket } from "@hono/node-ws";
+import { createNodeWebSocket } from "@hono/node-ws";
 import {
   createNewLobby,
   createNewPlayer,
-  getLobbyIdFromPeer,
-  initPlayerToLobby,
   type LobbiesMap,
   type Lobby,
 } from "./game/lobby.js";
-import {
-  createNewMessageToClient,
-  type WS_MESSAGE_TO_SERVER_TYPE,
-  type WS_MessageInterface,
-  type WS_MessageMapServer,
-} from "shared";
-import { isDev, toPayload, userIdFromId } from "./game/utils.js";
-import type { WSContext } from "hono/ws";
+import { getRandomId, isDev } from "./game/utils.js";
 import { LobbyMap } from "./game/map.js";
+import { playerNameValidator, playerIconNameValidator } from "shared";
 
 const app = new Hono();
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
@@ -46,7 +38,6 @@ app.get("/purgeLobbies", (c) => {
 
 app.get("/getLobbyId", (c) => {
   const lobbyId = c.req.query("lobbyId");
-  console.log("lobbyId", lobbyId);
 
   if (!lobbyId || !lobbies.has(lobbyId)) {
     const newLobby = createNewLobby(lobbies);
@@ -64,39 +55,39 @@ app.get(
   "/ws",
   upgradeWebSocket((c) => {
     return {
-      onOpen: (event, ws) => {},
-      //   console.log("[ws] open", peer);
+      onOpen: (event, ws) => {
+        const lobbyId = c.req.query("lobbyId");
+        const name = c.req.query("name");
+        const icon = c.req.query("icon");
 
-      //   const lobbyId = getLobbyIdFromPeer(peer);
-      //   if (!lobbyId) {
-      //     console.log("No lobby id found in query params");
-      //     return;
-      //   }
+        if (
+          !playerNameValidator.safeParse(name).success ||
+          !playerIconNameValidator.safeParse(icon).success
+        ) {
+          console.log("Invalid name or icon provided");
+          ws.close();
+          return;
+        }
 
-      //   console.log("ID: ", peer.id);
-      //   // const playerId = userIdFromId(peer.id);
-      //   // peer.send(toPayload(SERVER_ID, `Welcome ${playerId}`));
+        if (!lobbyId || !lobbies.has(lobbyId)) {
+          console.log("Not sufficent lobbyId provided");
+          ws.close();
+          return;
+        }
 
-      //   let lobby = lobbies.get(lobbyId);
-      //   let needToRedirect = false;
-      //   if (!lobby) {
-      //     lobby = createNewLobby(lobbies);
-      //     needToRedirect = true;
-      //   }
+        console.log("[ws] open");
 
-      //   peer.subscribe(lobbyId);
+        ws.send(`${SERVER_ID} Welcome!`);
 
-      //   if (needToRedirect) {
-      //     console.log("Redirecting to lobby", lobby.id);
-      //     peer.send(
-      //       toPayload(
-      //         SERVER_ID,
-      //         createNewMessageToClient(lobby.id, "REDIRECT_TO_LOBBY", {
-      //           lobbyId: lobby.id,
-      //         })
-      //       )
-      //     );
-      //   }
+        let lobby = lobbies.get(lobbyId);
+        lobby?.players.push(createNewPlayer(ws, getRandomId(), name!, icon!));
+
+        lobbies.publish(
+          lobbyId,
+          "Sender",
+          `${SERVER_ID} ${name} has joined the chat!`
+        );
+      },
       // },
       // onMessage(event, ws) {
       //   ws.

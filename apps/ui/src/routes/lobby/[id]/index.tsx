@@ -68,35 +68,24 @@ export default function Lobby() {
       navigate(`/lobby/${newLobbyId}`, { replace: true });
     }
 
-    // const newLobbyId = await getLobbyURL();
-    // if (newLobbyId !== lobbyId()) {
-    //   navigate(newLobbyId, { replace: true });
-    // }
-    // await redirectToLobby(lobbyId());
-    // console.log(lobbyId());
+    ws?.setConnection({
+      ws: undefined,
+      href: `ws://localhost:5173/ws?lobbyId=${newLobbyId}&name=${data.name}&icon=${data.icon}`,
+      onMessage,
+      log: () => {},
+      clear: () => {},
+      send: (data) => ws.connection.ws?.send(data),
+    });
 
-    // ws?.setConnection({
-    //   ws: undefined,
-    //   href: `ws://localhost:5173/ws`,
-    //   onMessage,
-    //   log: () => {},
-    //   clear: () => {},
-    //   send: (data) => ws.connection.ws?.send(data),
-    // });
-
-    // if (ws && isWsConnectionContext(ws?.connection)) {
-    //   wsConnect(ws?.connection, lobbyId());
-    // }
+    if (ws && isWsConnectionContext(ws?.connection)) {
+      wsConnect(ws?.connection, lobbyId());
+    }
   }
 
   const onMessage = (event: MessageEvent<string>) => {
     const data = fromMessage<WS_MessageMapServer>(event.data);
     console.log(data);
     switch (data.message.type) {
-      case "REDIRECT_TO_LOBBY": {
-        navigate(`/lobby/${data.message.lobbyId}`, { replace: true });
-        break;
-      }
       case "PLAYER_INIT": {
         console.log(data.message);
         setPlayers((old) => [...old]);

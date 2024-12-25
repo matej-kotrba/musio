@@ -58,8 +58,3 @@ export function createNewLobby(lobbies: LobbiesMap) {
   lobbies.set(id, lobby);
   return lobby;
 }
-
-export function getLobbyIdFromPeer(peer: { url: string }) {
-  const url = new URLSearchParams(peer.url.split("?")[1]);
-  return url.get("id");
-}
