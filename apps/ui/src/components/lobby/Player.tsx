@@ -36,7 +36,7 @@ export default function PlayerDisplay(props: Props) {
             {props.player.points}
           </div>
           <div
-            class="h-2 text-sm text-foreground-dark px-1 my-2 bg-primary rounded-r-full -translate-x-[1px]"
+            class="h-2 text-sm text-foreground-dark my-2 bg-primary rounded-r-full -translate-x-[1px]"
             style={{
               width: `${displayPointsInPercentage()}%`,
             }}

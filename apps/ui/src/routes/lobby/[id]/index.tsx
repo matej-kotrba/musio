@@ -16,11 +16,12 @@ import ProfileSelection, {
 import { createNewMessageToServer, fromMessage } from "shared";
 import { getLobbyURL as getLobbyId } from "~/utils/rscs";
 import { Player, WS_MessageMapServer } from "shared/index.types";
+import { playerServerToPlayer } from "~/utils/game/common";
 
 export default function Lobby() {
   const [profileData, setProfileData] = createSignal<ProfileData | null>(null);
 
-  const [players, setPlayers] = createSignal([]);
+  const [players, setPlayers] = createSignal<Player[]>([]);
 
   const params = useParams();
   const navigate = useNavigate();
@@ -86,9 +87,14 @@ export default function Lobby() {
     const data = fromMessage<WS_MessageMapServer>(event.data);
     console.log(data);
     switch (data.message.type) {
+      // TODO: Possible race conditions when handling new player join
       case "PLAYER_INIT": {
         console.log(data.message);
-        setPlayers((old) => [...old]);
+        const allPlayers =
+          data.message.payload.allPlayers.map(playerServerToPlayer);
+        console.log(allPlayers[0].icon.url);
+        setPlayers(allPlayers);
+
         break;
       }
     }
@@ -206,7 +212,7 @@ export default function Lobby() {
           class={`${styles.aside__scrollbar} relative flex flex-col gap-4 w-80 pr-2 overflow-x-clip h-full overflow-y-auto`}
         >
           <Show when={!!profileData()} fallback={<p>Selecting...</p>}>
-            {dummy_players.map((item) => (
+            {players().map((item) => (
               <PlayerDisplay maxPoints={100} player={item} />
             ))}
           </Show>

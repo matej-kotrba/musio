@@ -1,11 +1,10 @@
-import type { Player } from "shared";
+import type { Player, PlayerServerWithoutWS } from "shared";
 import { getRandomId } from "./utils.js";
 import type { WSContext } from "hono/ws";
 import type { LobbyMap } from "./map.js";
 
-export type PlayerServer = Omit<Player, "icon"> & {
+export type PlayerServer = Omit<PlayerServerWithoutWS, "ws"> & {
   ws: WSContext<unknown>;
-  icon: string;
 };
 
 export type LobbiesMap = LobbyMap<string, Lobby>;

@@ -9,3 +9,8 @@ export type Player = {
   icon: Icon;
   points: number;
 };
+
+export type PlayerServerWithoutWS = Omit<Player, "icon" | "ws"> & {
+  icon: string;
+  ws?: never;
+};

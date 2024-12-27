@@ -7,9 +7,13 @@ import {
   type LobbiesMap,
   type Lobby,
 } from "./game/lobby.js";
-import { getRandomId, isDev } from "./game/utils.js";
+import { getRandomId, isDev, toPayload } from "./game/utils.js";
 import { LobbyMap } from "./game/map.js";
-import { playerNameValidator, playerIconNameValidator } from "shared";
+import {
+  playerNameValidator,
+  playerIconNameValidator,
+  createNewMessageToClient,
+} from "shared";
 
 const app = new Hono();
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
@@ -75,18 +79,34 @@ app.get(
           return;
         }
 
-        console.log("[ws] open");
+        const lobby = lobbies.get(lobbyId);
 
-        ws.send(`${SERVER_ID} Welcome!`);
+        const newPlayer = createNewPlayer(ws, getRandomId(), name!, icon!);
+        lobby!.players.push(newPlayer);
 
-        let lobby = lobbies.get(lobbyId);
-        lobby?.players.push(createNewPlayer(ws, getRandomId(), name!, icon!));
-
-        lobbies.publish(
-          lobbyId,
-          "Sender",
-          `${SERVER_ID} ${name} has joined the chat!`
+        console.log("[ws] open - ", newPlayer.name);
+        ws.send(
+          toPayload(
+            newPlayer.id,
+            createNewMessageToClient(lobby!.id, "PLAYER_INIT", {
+              icon: newPlayer.icon,
+              name: newPlayer.name,
+              points: newPlayer.points,
+              allPlayers: lobby!.players.map((player) => ({
+                id: player.id,
+                name: player.name,
+                icon: player.icon,
+                points: player.points,
+              })),
+            })
+          )
         );
+
+        // lobbies.publish(
+        //   lobbyId,
+        //   "Sender",
+        //   `${SERVER_ID} ${name} has joined the chat!`
+        // );
       },
       // },
       // onMessage(event, ws) {

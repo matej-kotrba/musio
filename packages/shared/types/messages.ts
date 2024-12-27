@@ -1,8 +1,11 @@
+import type { PlayerServerWithoutWS } from "./player";
+
 export type WS_MessageMapServer = {
   PLAYER_INIT: {
     name: string;
     icon: string;
     points: number;
+    allPlayers: PlayerServerWithoutWS[];
   };
   PICK_SONG: {
     song: string;
