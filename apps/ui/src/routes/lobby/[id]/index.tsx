@@ -89,11 +89,18 @@ export default function Lobby() {
     switch (data.message.type) {
       // TODO: Possible race conditions when handling new player join
       case "PLAYER_INIT": {
-        console.log(data.message);
         const allPlayers =
           data.message.payload.allPlayers.map(playerServerToPlayer);
         console.log(allPlayers[0].icon.url);
         setPlayers(allPlayers);
+
+        break;
+      }
+      case "PLAYER_JOIN": {
+        setPlayers((old) => [
+          ...old,
+          playerServerToPlayer(data.message.payload),
+        ]);
 
         break;
       }

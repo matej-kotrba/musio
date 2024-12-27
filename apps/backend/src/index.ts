@@ -87,8 +87,9 @@ app.get(
         console.log("[ws] open - ", newPlayer.name);
         ws.send(
           toPayload(
-            newPlayer.id,
+            "server",
             createNewMessageToClient(lobby!.id, "PLAYER_INIT", {
+              id: newPlayer.id,
               icon: newPlayer.icon,
               name: newPlayer.name,
               points: newPlayer.points,
@@ -102,11 +103,19 @@ app.get(
           )
         );
 
-        // lobbies.publish(
-        //   lobbyId,
-        //   "Sender",
-        //   `${SERVER_ID} ${name} has joined the chat!`
-        // );
+        lobbies.publish(
+          lobbyId,
+          newPlayer.id,
+          toPayload(
+            "server",
+            createNewMessageToClient(lobby!.id, "PLAYER_JOIN", {
+              id: newPlayer.id,
+              name: newPlayer.name,
+              icon: newPlayer.icon,
+              points: newPlayer.points,
+            })
+          )
+        );
       },
       // },
       // onMessage(event, ws) {
