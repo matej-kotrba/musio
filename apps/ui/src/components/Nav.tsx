@@ -5,7 +5,7 @@ import { NAV_HEIGHT } from "~/utils/constants";
 
 export default function Nav() {
   return (
-    <div class={`${styles.nav} sticky top-0 left-0 z-[100]`}>
+    <div class={`${styles.nav} sticky top-0 left-0 z-[10]`}>
       <nav
         class={`flex items-center justify-between px-4 container mx-auto`}
         style={{ height: NAV_HEIGHT }}

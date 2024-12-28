@@ -14,6 +14,15 @@ import { useDebounce } from "~/hooks";
 import styles from "./styles.module.css";
 import { GlobalsContext } from "~/contexts/globals";
 import { Icon } from "@iconify-icon/solid";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog";
+import { Button } from "~/components/ui/button";
 
 type SolidEvent = Event & {
   currentTarget: HTMLInputElement;
@@ -287,10 +296,12 @@ export default function Dev() {
   const [searchedSongs, setSearchedSongs] = createSignal<ItunesSong[]>(
     dummy_data.results
   );
-  const [pickedSong, setPickedSong] = createSignal<ItunesSong | null>(
+  const [selectedSong, setSelectedSong] = createSignal<ItunesSong | null>(
     dummy_data.results[0]
   );
 
+  const [isConfirmDialogOpened, setIsConfirmDialogOpened] =
+    createSignal<boolean>(false);
   let audioElementRef: HTMLAudioElement;
 
   createEffect(() => {
@@ -315,7 +326,7 @@ export default function Dev() {
   }
 
   function handlePickSong(song: ItunesSong) {
-    setPickedSong(song);
+    setSelectedSong(song);
     console.log(globals);
     if (globals) {
       audioElementRef!.volume = globals.volumeInPercantage() / 100;
@@ -325,21 +336,45 @@ export default function Dev() {
     audioElementRef!.volume = 0.05;
   }
 
+  function handleSongConfirm() {
+    if (selectedSong()) {
+      setIsConfirmDialogOpened(true);
+    }
+  }
+
   return (
     <div>
+      <Dialog
+        open={isConfirmDialogOpened()}
+        onOpenChange={setIsConfirmDialogOpened}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Are you sure sure you want to pick this song?
+            </DialogTitle>
+            <DialogDescription>
+              <div class="flex gap-2 w-fit ml-auto">
+                <Button variant={"destructive"}>Close</Button>
+                <Button variant={"default"}>Confirm</Button>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
       <div class="w-80 mx-auto pt-4">
-        <Show when={pickedSong()}>
+        <Show when={selectedSong()}>
           <div class="flex flex-col mb-4">
             <div class={`${styles.effect} relative overflow-hiddens`}>
               <img
-                src={pickedSong()!.artworkUrl100}
+                src={selectedSong()!.artworkUrl100}
                 alt="Picked song"
                 class={`mx-auto`}
               />
             </div>
             <audio
               ref={audioElementRef!}
-              src={pickedSong()!.previewUrl}
+              src={selectedSong()!.previewUrl}
               muted
               controls
             ></audio>
@@ -359,7 +394,10 @@ export default function Dev() {
               autocomplete="off"
               class="text-lg py-6 border-r-0 rounded-r-none focus-visible:ring-0"
             />
-            <button class="group border border-primary bg-primary rounded-r-md px-2 grid place-content-center hover:bg-primary-darker duration-100">
+            <button
+              class="group border border-primary bg-primary rounded-r-md px-2 grid place-content-center hover:bg-primary-darker duration-100"
+              on:click={handleSongConfirm}
+            >
               <Icon
                 icon="charm:tick"
                 class="text-2xl text-background-DEAFULT group-hover:text-foreground duration-100"
