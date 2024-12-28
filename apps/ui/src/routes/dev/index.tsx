@@ -1,5 +1,5 @@
 import { ItunesSearchResponse, ItunesSong } from "shared";
-import { createEffect, createSignal, Index } from "solid-js";
+import { createEffect, createSignal, Index, Show, useContext } from "solid-js";
 import {
   Popover,
   PopoverContent,
@@ -11,6 +11,9 @@ import {
   TextFieldRoot,
 } from "~/components/ui/textfield";
 import { useDebounce } from "~/hooks";
+import styles from "./styles.module.css";
+import { GlobalsContext } from "~/contexts/globals";
+import { Icon } from "@iconify-icon/solid";
 
 type SolidEvent = Event & {
   currentTarget: HTMLInputElement;
@@ -32,121 +35,44 @@ async function sendItunesRequest(query: string) {
 }
 
 const dummy_data = {
-  resultCount: 5,
+  resultCount: 6,
   results: [
     {
       wrapperType: "track",
       kind: "song",
-      artistId: 112115157,
-      collectionId: 883909775,
-      trackId: 883909818,
-      artistName: "Power Music Workout",
-      collectionName: "55 Smash Hits! - Running Mixes!",
-      trackName: "Clarity (Workout Mix)",
-      collectionCensoredName: "55 Smash Hits! - Running Mixes!",
-      trackCensoredName: "Clarity (Workout Mix)",
+      artistId: 395664545,
+      collectionId: 1444888726,
+      trackId: 1444888936,
+      artistName: "TheFatRat",
+      collectionName: "Monody (feat. Laura Brehm) [Radio Edit] - Single",
+      trackName: "Monody (feat. Laura Brehm) [Radio Edit]",
+      collectionCensoredName:
+        "Monody (feat. Laura Brehm) [Radio Edit] - Single",
+      trackCensoredName: "Monody (feat. Laura Brehm) [Radio Edit]",
       artistViewUrl:
-        "https://music.apple.com/us/artist/power-music-workout/112115157?uo=4",
+        "https://music.apple.com/us/artist/thefatrat/395664545?uo=4",
       collectionViewUrl:
-        "https://music.apple.com/us/album/clarity-workout-mix/883909775?i=883909818&uo=4",
+        "https://music.apple.com/us/album/monody-feat-laura-brehm-radio-edit/1444888726?i=1444888936&uo=4",
       trackViewUrl:
-        "https://music.apple.com/us/album/clarity-workout-mix/883909775?i=883909818&uo=4",
+        "https://music.apple.com/us/album/monody-feat-laura-brehm-radio-edit/1444888726?i=1444888936&uo=4",
       previewUrl:
-        "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/30/00/44/30004456-63c0-8a8a-3393-96bffbbaf5f0/mzaf_5324733758013341000.plus.aac.p.m4a",
+        "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/85/b8/8f/85b88fcb-5be9-51af-e963-142aad843095/mzaf_5801279921877568855.plus.aac.p.m4a",
       artworkUrl30:
-        "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/03/17/95/031795b8-226a-7251-1275-0412f724bf62/55-Smash-Hits_2400.jpg/30x30bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/Music128/v4/f3/69/33/f3693389-7610-f6e0-9767-4b3ba8f61acc/00602557309201.rgb.jpg/30x30bb.jpg",
       artworkUrl60:
-        "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/03/17/95/031795b8-226a-7251-1275-0412f724bf62/55-Smash-Hits_2400.jpg/60x60bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/Music128/v4/f3/69/33/f3693389-7610-f6e0-9767-4b3ba8f61acc/00602557309201.rgb.jpg/60x60bb.jpg",
       artworkUrl100:
-        "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/03/17/95/031795b8-226a-7251-1275-0412f724bf62/55-Smash-Hits_2400.jpg/100x100bb.jpg",
-      collectionPrice: 9.99,
+        "https://is1-ssl.mzstatic.com/image/thumb/Music128/v4/f3/69/33/f3693389-7610-f6e0-9767-4b3ba8f61acc/00602557309201.rgb.jpg/100x100bb.jpg",
+      collectionPrice: 1.29,
       trackPrice: 1.29,
-      releaseDate: "2013-03-22T12:00:00Z",
+      releaseDate: "2016-11-25T12:00:00Z",
       collectionExplicitness: "notExplicit",
       trackExplicitness: "notExplicit",
       discCount: 1,
       discNumber: 1,
-      trackCount: 55,
-      trackNumber: 34,
-      trackTimeMillis: 233827,
-      country: "USA",
-      currency: "USD",
-      primaryGenreName: "Fitness & Workout",
-      isStreamable: true,
-    },
-    {
-      wrapperType: "track",
-      kind: "song",
-      artistId: 472054,
-      collectionId: 199049977,
-      trackId: 199050021,
-      artistName: "John Mayer",
-      collectionName: "Heavier Things",
-      trackName: "Clarity",
-      collectionCensoredName: "Heavier Things",
-      trackCensoredName: "Clarity",
-      artistViewUrl: "https://music.apple.com/us/artist/john-mayer/472054?uo=4",
-      collectionViewUrl:
-        "https://music.apple.com/us/album/clarity/199049977?i=199050021&uo=4",
-      trackViewUrl:
-        "https://music.apple.com/us/album/clarity/199049977?i=199050021&uo=4",
-      previewUrl:
-        "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/45/d8/ac/45d8acaf-d665-1727-8278-889406d5f5e4/mzaf_4223519344041582959.plus.aac.p.m4a",
-      artworkUrl30:
-        "https://is1-ssl.mzstatic.com/image/thumb/Music/df/0a/be/mzi.bwiyzxrl.jpg/30x30bb.jpg",
-      artworkUrl60:
-        "https://is1-ssl.mzstatic.com/image/thumb/Music/df/0a/be/mzi.bwiyzxrl.jpg/60x60bb.jpg",
-      artworkUrl100:
-        "https://is1-ssl.mzstatic.com/image/thumb/Music/df/0a/be/mzi.bwiyzxrl.jpg/100x100bb.jpg",
-      collectionPrice: 9.99,
-      trackPrice: 1.29,
-      releaseDate: "2003-09-09T07:00:00Z",
-      collectionExplicitness: "notExplicit",
-      trackExplicitness: "notExplicit",
-      discCount: 1,
-      discNumber: 1,
-      trackCount: 10,
+      trackCount: 1,
       trackNumber: 1,
-      trackTimeMillis: 271760,
-      country: "USA",
-      currency: "USD",
-      primaryGenreName: "Rock",
-      isStreamable: true,
-    },
-    {
-      wrapperType: "track",
-      kind: "song",
-      artistId: 368433979,
-      collectionId: 1440861402,
-      trackId: 1440861976,
-      artistName: "Zedd",
-      collectionName: "Clarity",
-      trackName: "Clarity (feat. Foxes)",
-      collectionCensoredName: "Clarity",
-      trackCensoredName: "Clarity (feat. Foxes)",
-      artistViewUrl: "https://music.apple.com/us/artist/zedd/368433979?uo=4",
-      collectionViewUrl:
-        "https://music.apple.com/us/album/clarity-feat-foxes/1440861402?i=1440861976&uo=4",
-      trackViewUrl:
-        "https://music.apple.com/us/album/clarity-feat-foxes/1440861402?i=1440861976&uo=4",
-      previewUrl:
-        "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/dc/73/a0/dc73a02a-0d6d-8931-0eba-90845253cd8e/mzaf_13265866442777153519.plus.aac.p.m4a",
-      artworkUrl30:
-        "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/d9/f2/2b/d9f22b74-8ef3-73d8-5da1-e5268c42f114/12UMGIM52120.rgb.jpg/30x30bb.jpg",
-      artworkUrl60:
-        "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/d9/f2/2b/d9f22b74-8ef3-73d8-5da1-e5268c42f114/12UMGIM52120.rgb.jpg/60x60bb.jpg",
-      artworkUrl100:
-        "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/d9/f2/2b/d9f22b74-8ef3-73d8-5da1-e5268c42f114/12UMGIM52120.rgb.jpg/100x100bb.jpg",
-      collectionPrice: 8.99,
-      trackPrice: 1.29,
-      releaseDate: "2012-10-02T12:00:00Z",
-      collectionExplicitness: "notExplicit",
-      trackExplicitness: "notExplicit",
-      discCount: 1,
-      discNumber: 1,
-      trackCount: 10,
-      trackNumber: 5,
-      trackTimeMillis: 271707,
+      trackTimeMillis: 252214,
       country: "USA",
       currency: "USD",
       primaryGenreName: "Dance",
@@ -155,100 +81,226 @@ const dummy_data = {
     {
       wrapperType: "track",
       kind: "song",
-      artistId: 41830051,
-      collectionId: 500693518,
-      trackId: 500693684,
-      artistName: "Bulb & Clarity",
-      collectionName: "Blood Pressure",
-      trackName: "Her Smooth Love",
-      collectionCensoredName: "Blood Pressure",
-      trackCensoredName: "Her Smooth Love",
-      collectionArtistId: 36270,
-      collectionArtistName: "Various Artists",
-      artistViewUrl: "https://music.apple.com/us/artist/bulb/41830051?uo=4",
+      artistId: 395664545,
+      collectionId: 1515508181,
+      trackId: 1515508187,
+      artistName: "TheFatRat",
+      collectionName: "Classics Remixed - EP",
+      trackName: "Monody (feat. Laura Brehm) [Bimonte Remix]",
+      collectionCensoredName: "Classics Remixed - EP",
+      trackCensoredName: "Monody (feat. Laura Brehm) [Bimonte Remix]",
+      artistViewUrl:
+        "https://music.apple.com/us/artist/thefatrat/395664545?uo=4",
       collectionViewUrl:
-        "https://music.apple.com/us/album/her-smooth-love/500693518?i=500693684&uo=4",
+        "https://music.apple.com/us/album/monody-feat-laura-brehm-bimonte-remix/1515508181?i=1515508187&uo=4",
       trackViewUrl:
-        "https://music.apple.com/us/album/her-smooth-love/500693518?i=500693684&uo=4",
+        "https://music.apple.com/us/album/monody-feat-laura-brehm-bimonte-remix/1515508181?i=1515508187&uo=4",
       previewUrl:
-        "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/3f/8c/50/3f8c5048-d7f8-b05e-d1eb-021484dde659/mzaf_16545835205238101576.plus.aac.p.m4a",
+        "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/51/d3/df/51d3df20-32c6-8e9f-0b50-5b4aae36bd04/mzaf_13333891090426017302.plus.aac.p.m4a",
       artworkUrl30:
-        "https://is1-ssl.mzstatic.com/image/thumb/Music/e2/c2/f3/mzi.jtyktbpi.jpg/30x30bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/c7/e2/29/c7e22953-d57c-add0-a07f-cd67830b7888/cover_4064832005936.jpg/30x30bb.jpg",
       artworkUrl60:
-        "https://is1-ssl.mzstatic.com/image/thumb/Music/e2/c2/f3/mzi.jtyktbpi.jpg/60x60bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/c7/e2/29/c7e22953-d57c-add0-a07f-cd67830b7888/cover_4064832005936.jpg/60x60bb.jpg",
       artworkUrl100:
-        "https://is1-ssl.mzstatic.com/image/thumb/Music/e2/c2/f3/mzi.jtyktbpi.jpg/100x100bb.jpg",
-      collectionPrice: 9.99,
-      trackPrice: 1.29,
-      releaseDate: "2012-03-05T12:00:00Z",
+        "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/c7/e2/29/c7e22953-d57c-add0-a07f-cd67830b7888/cover_4064832005936.jpg/100x100bb.jpg",
+      collectionPrice: 2.99,
+      trackPrice: 0.99,
+      releaseDate: "2020-06-12T12:00:00Z",
       collectionExplicitness: "notExplicit",
       trackExplicitness: "notExplicit",
       discCount: 1,
       discNumber: 1,
+      trackCount: 6,
+      trackNumber: 2,
+      trackTimeMillis: 268437,
+      country: "USA",
+      currency: "USD",
+      primaryGenreName: "Electronic",
+      isStreamable: true,
+    },
+    {
+      wrapperType: "track",
+      kind: "song",
+      artistId: 431879109,
+      collectionId: 515623985,
+      trackId: 515629561,
+      artistName: "Monody",
+      collectionName: "Electronic Saviors, Vol. 2: Recurrence",
+      trackName: "In Between (Irradiated Mix)",
+      collectionCensoredName: "Electronic Saviors, Vol. 2: Recurrence",
+      trackCensoredName: "In Between (Irradiated Mix)",
+      collectionArtistId: 4035426,
+      collectionArtistName: "Various Artists",
+      artistViewUrl: "https://music.apple.com/us/artist/monody/431879109?uo=4",
+      collectionViewUrl:
+        "https://music.apple.com/us/album/in-between-irradiated-mix/515623985?i=515629561&uo=4",
+      trackViewUrl:
+        "https://music.apple.com/us/album/in-between-irradiated-mix/515623985?i=515629561&uo=4",
+      previewUrl:
+        "https://audio-ssl.itunes.apple.com/itunes-assets/Music/5e/44/b3/mzm.paysubko.aac.p.m4a",
+      artworkUrl30:
+        "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/18/2b/42/182b42fa-383b-a454-0651-b729452d82e3/Cover.jpg/30x30bb.jpg",
+      artworkUrl60:
+        "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/18/2b/42/182b42fa-383b-a454-0651-b729452d82e3/Cover.jpg/60x60bb.jpg",
+      artworkUrl100:
+        "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/18/2b/42/182b42fa-383b-a454-0651-b729452d82e3/Cover.jpg/100x100bb.jpg",
+      collectionPrice: 29.99,
+      trackPrice: 0.99,
+      releaseDate: "2012-05-08T12:00:00Z",
+      collectionExplicitness: "notExplicit",
+      trackExplicitness: "notExplicit",
+      discCount: 6,
+      discNumber: 6,
       trackCount: 18,
       trackNumber: 10,
-      trackTimeMillis: 293013,
+      trackTimeMillis: 196912,
       country: "USA",
       currency: "USD",
-      primaryGenreName: "Dance",
+      primaryGenreName: "Electronic",
       isStreamable: true,
     },
     {
       wrapperType: "track",
       kind: "song",
-      artistId: 1480395567,
-      collectionId: 419609289,
-      trackId: 419609359,
-      artistName: "Clarity",
-      collectionName: "New Blood 011",
-      trackName: "Underneath the Leaves",
-      collectionCensoredName: "New Blood 011",
-      trackCensoredName: "Underneath the Leaves",
-      collectionArtistId: 4940310,
-      collectionArtistName: "Various Artists",
-      artistViewUrl:
-        "https://music.apple.com/us/artist/clarity/1480395567?uo=4",
+      artistId: 431879109,
+      collectionId: 431879091,
+      trackId: 431879469,
+      artistName: "Monody",
+      collectionName: "Of Iron and Clay",
+      trackName: "Ends and the Means (Assemblage 23 Mix)",
+      collectionCensoredName: "Of Iron and Clay",
+      trackCensoredName: "Ends and the Means (Assemblage 23 Mix)",
+      artistViewUrl: "https://music.apple.com/us/artist/monody/431879109?uo=4",
       collectionViewUrl:
-        "https://music.apple.com/us/album/underneath-the-leaves/419609289?i=419609359&uo=4",
+        "https://music.apple.com/us/album/ends-and-the-means-assemblage-23-mix/431879091?i=431879469&uo=4",
       trackViewUrl:
-        "https://music.apple.com/us/album/underneath-the-leaves/419609289?i=419609359&uo=4",
+        "https://music.apple.com/us/album/ends-and-the-means-assemblage-23-mix/431879091?i=431879469&uo=4",
       previewUrl:
-        "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/10/fb/a5/10fba51c-c45f-a3dd-3f80-0d5723fa37da/mzaf_6068847280894955151.plus.aac.p.m4a",
+        "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/75/cc/54/75cc5416-8ac0-7c22-4402-4be4337cd3f9/mzaf_11304598679457028491.plus.aac.p.m4a",
       artworkUrl30:
-        "https://is1-ssl.mzstatic.com/image/thumb/Music/88/b9/c3/mzi.lrwzswsd.jpg/30x30bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/Music/5e/18/cd/mzi.joupdueh.jpg/30x30bb.jpg",
       artworkUrl60:
-        "https://is1-ssl.mzstatic.com/image/thumb/Music/88/b9/c3/mzi.lrwzswsd.jpg/60x60bb.jpg",
+        "https://is1-ssl.mzstatic.com/image/thumb/Music/5e/18/cd/mzi.joupdueh.jpg/60x60bb.jpg",
       artworkUrl100:
-        "https://is1-ssl.mzstatic.com/image/thumb/Music/88/b9/c3/mzi.lrwzswsd.jpg/100x100bb.jpg",
-      collectionPrice: 9.99,
+        "https://is1-ssl.mzstatic.com/image/thumb/Music/5e/18/cd/mzi.joupdueh.jpg/100x100bb.jpg",
+      collectionPrice: 10.99,
       trackPrice: 0.99,
-      releaseDate: "2011-03-27T12:00:00Z",
+      releaseDate: "2011-04-29T12:00:00Z",
       collectionExplicitness: "notExplicit",
       trackExplicitness: "notExplicit",
       discCount: 1,
       discNumber: 1,
-      trackCount: 17,
-      trackNumber: 14,
-      trackTimeMillis: 294998,
+      trackCount: 15,
+      trackNumber: 15,
+      trackTimeMillis: 281486,
       country: "USA",
       currency: "USD",
-      primaryGenreName: "Dance",
+      primaryGenreName: "Alternative",
+      isStreamable: true,
+    },
+    {
+      wrapperType: "track",
+      kind: "song",
+      artistId: 395664545,
+      collectionId: 1515508181,
+      trackId: 1515508189,
+      artistName: "TheFatRat",
+      collectionName: "Classics Remixed - EP",
+      trackName: "Monody (feat. Laura Brehm) [Ephixa Remix]",
+      collectionCensoredName: "Classics Remixed - EP",
+      trackCensoredName: "Monody (feat. Laura Brehm) [Ephixa Remix]",
+      artistViewUrl:
+        "https://music.apple.com/us/artist/thefatrat/395664545?uo=4",
+      collectionViewUrl:
+        "https://music.apple.com/us/album/monody-feat-laura-brehm-ephixa-remix/1515508181?i=1515508189&uo=4",
+      trackViewUrl:
+        "https://music.apple.com/us/album/monody-feat-laura-brehm-ephixa-remix/1515508181?i=1515508189&uo=4",
+      previewUrl:
+        "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/b7/27/f2/b727f223-9846-f8c9-5d91-4da82142b8d4/mzaf_8969136293220000670.plus.aac.p.m4a",
+      artworkUrl30:
+        "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/c7/e2/29/c7e22953-d57c-add0-a07f-cd67830b7888/cover_4064832005936.jpg/30x30bb.jpg",
+      artworkUrl60:
+        "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/c7/e2/29/c7e22953-d57c-add0-a07f-cd67830b7888/cover_4064832005936.jpg/60x60bb.jpg",
+      artworkUrl100:
+        "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/c7/e2/29/c7e22953-d57c-add0-a07f-cd67830b7888/cover_4064832005936.jpg/100x100bb.jpg",
+      collectionPrice: 2.99,
+      trackPrice: 0.99,
+      releaseDate: "2020-06-12T12:00:00Z",
+      collectionExplicitness: "notExplicit",
+      trackExplicitness: "notExplicit",
+      discCount: 1,
+      discNumber: 1,
+      trackCount: 6,
+      trackNumber: 4,
+      trackTimeMillis: 198133,
+      country: "USA",
+      currency: "USD",
+      primaryGenreName: "Electronic",
+      isStreamable: true,
+    },
+    {
+      wrapperType: "track",
+      kind: "song",
+      artistId: 431879109,
+      collectionId: 431879091,
+      trackId: 431879390,
+      artistName: "Monody",
+      collectionName: "Of Iron and Clay",
+      trackName: "Absent",
+      collectionCensoredName: "Of Iron and Clay",
+      trackCensoredName: "Absent",
+      artistViewUrl: "https://music.apple.com/us/artist/monody/431879109?uo=4",
+      collectionViewUrl:
+        "https://music.apple.com/us/album/absent/431879091?i=431879390&uo=4",
+      trackViewUrl:
+        "https://music.apple.com/us/album/absent/431879091?i=431879390&uo=4",
+      previewUrl:
+        "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/be/52/38/be52388d-0ec9-a4e0-aadc-d6d2adda9378/mzaf_5675104315840671038.plus.aac.p.m4a",
+      artworkUrl30:
+        "https://is1-ssl.mzstatic.com/image/thumb/Music/5e/18/cd/mzi.joupdueh.jpg/30x30bb.jpg",
+      artworkUrl60:
+        "https://is1-ssl.mzstatic.com/image/thumb/Music/5e/18/cd/mzi.joupdueh.jpg/60x60bb.jpg",
+      artworkUrl100:
+        "https://is1-ssl.mzstatic.com/image/thumb/Music/5e/18/cd/mzi.joupdueh.jpg/100x100bb.jpg",
+      collectionPrice: 10.99,
+      trackPrice: 0.99,
+      releaseDate: "2011-04-29T12:00:00Z",
+      collectionExplicitness: "notExplicit",
+      trackExplicitness: "notExplicit",
+      discCount: 1,
+      discNumber: 1,
+      trackCount: 15,
+      trackNumber: 12,
+      trackTimeMillis: 381653,
+      country: "USA",
+      currency: "USD",
+      primaryGenreName: "Alternative",
       isStreamable: true,
     },
   ],
 } as ItunesSearchResponse;
 
 export default function Dev() {
+  const globals = useContext(GlobalsContext);
+
   const [songName, setSongName] = useDebounce<string>("", 600);
   const [searchedSongs, setSearchedSongs] = createSignal<ItunesSong[]>(
     dummy_data.results
   );
   const [pickedSong, setPickedSong] = createSignal<ItunesSong | null>(
-    dummy_data.results[2]
+    dummy_data.results[0]
   );
+
+  let audioElementRef: HTMLAudioElement;
 
   createEffect(() => {
     if (songName() !== "") setQuerriedSongs();
+  });
+
+  createEffect(() => {
+    if (globals && audioElementRef!) {
+      audioElementRef.volume = globals.volumeInPercantage() / 100;
+    }
   });
 
   async function setQuerriedSongs() {
@@ -262,26 +314,64 @@ export default function Dev() {
     setSongName(e.target.value);
   }
 
+  function handlePickSong(song: ItunesSong) {
+    setPickedSong(song);
+    console.log(globals);
+    if (globals) {
+      audioElementRef!.volume = globals.volumeInPercantage() / 100;
+    }
+
+    // TODO: Delete later
+    audioElementRef!.volume = 0.05;
+  }
+
   return (
     <div>
-      <div class="w-80 mx-auto">
-        <audio src={pickedSong()?.previewUrl} muted controls></audio>
+      <div class="w-80 mx-auto pt-4">
+        <Show when={pickedSong()}>
+          <div class="flex flex-col mb-4">
+            <div class={`${styles.effect} relative overflow-hiddens`}>
+              <img
+                src={pickedSong()!.artworkUrl100}
+                alt="Picked song"
+                class={`mx-auto`}
+              />
+            </div>
+            <audio
+              ref={audioElementRef!}
+              src={pickedSong()!.previewUrl}
+              muted
+              controls
+            ></audio>
+          </div>
+        </Show>
         <TextFieldRoot>
           <TextFieldLabel for="name" class="block text-center">
             Pick song for others to guess:
           </TextFieldLabel>
-          <TextField
-            type="text"
-            name="name"
-            placeholder="Name"
-            on:input={handleInputChange}
-            min={1}
-            autocomplete="off"
-            class="text-lg py-6"
-          />
+          <div class="flex focus-within:ring-2 ring-primary-accent rounded-md duration-150">
+            <TextField
+              type="text"
+              name="name"
+              placeholder="Name"
+              on:input={handleInputChange}
+              min={1}
+              autocomplete="off"
+              class="text-lg py-6 border-r-0 rounded-r-none focus-visible:ring-0"
+            />
+            <button class="group border border-primary bg-primary rounded-r-md px-2 grid place-content-center hover:bg-primary-darker duration-100">
+              <Icon
+                icon="charm:tick"
+                class="text-2xl text-background-DEAFULT group-hover:text-foreground duration-100"
+              />
+            </button>
+          </div>
         </TextFieldRoot>
         <Popover open={!!searchedSongs().length}>
-          <PopoverTrigger class="w-full"></PopoverTrigger>
+          <PopoverTrigger
+            class="w-full pointer-events-none"
+            tabindex={"-1"}
+          ></PopoverTrigger>
           <PopoverContent
             class="w-80 -translate-y-4 p-0 overflow-hidden"
             withoutCloseButton
@@ -292,14 +382,12 @@ export default function Dev() {
                   return (
                     <button
                       type="button"
-                      class="flex items-center gap-2 p-2 hover:bg-background-DEAFULT duration-150"
+                      class="flex items-center gap-2 p-2 hover:bg-background-DEAFULT duration-150 focus-within:outline-none focus-within:bg-background-DEAFULT"
+                      on:click={() => handlePickSong(song())}
+                      title={song().trackName}
                     >
-                      <img
-                        src={song().artworkUrl60}
-                        alt=""
-                        class="rounded-md"
-                      />
-                      <span class="text-base font-semibold">
+                      <img src={song().artworkUrl60} alt="" class="size-14" />
+                      <span class="text-base font-semibold overflow-hidden whitespace-nowrap text-ellipsis">
                         {song().trackName}
                       </span>
                     </button>
