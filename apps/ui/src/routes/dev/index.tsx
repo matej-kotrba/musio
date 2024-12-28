@@ -1,4 +1,5 @@
-import { createEffect } from "solid-js";
+import { ItunesSearchResponse, ItunesSong } from "shared";
+import { createEffect, createSignal, Index } from "solid-js";
 import {
   TextField,
   TextFieldLabel,
@@ -11,16 +12,38 @@ type SolidEvent = Event & {
   target: HTMLInputElement;
 };
 
+async function sendItunesRequest(query: string) {
+  const data = await fetch(
+    `https://itunes.apple.com/search?term=${query.replaceAll(
+      " ",
+      "+"
+    )}&limit=5&media=music`
+  );
+
+  if (!data.ok) return;
+
+  const parsed = await data.json();
+  return parsed as ItunesSearchResponse;
+}
+
 export default function Dev() {
-  const [songName, setSongName] = useDebounce<string>("", 400);
+  const [songName, setSongName] = useDebounce<string>("", 600);
+  const [searchedSongs, setSearchedSongs] = createSignal<ItunesSong[]>([]);
+
+  createEffect(() => {
+    if (songName() !== "") setQuerriedSongs();
+  });
+
+  async function setQuerriedSongs() {
+    const data = await sendItunesRequest(songName());
+    if (data) {
+      setSearchedSongs(data.results);
+    }
+  }
 
   function handleInputChange(e: SolidEvent) {
     setSongName(e.target.value);
   }
-
-  // createEffect(() => {
-  //   console.log(songName());
-  // });
 
   return (
     <div>
@@ -41,7 +64,15 @@ export default function Dev() {
         </TextFieldRoot>
       </div>
       <div>
-        <p>{songName()}</p>
+        <Index each={searchedSongs()}>
+          {(song) => {
+            return (
+              <div>
+                <p>{song().trackName}</p>
+              </div>
+            );
+          }}
+        </Index>
       </div>
     </div>
   );
