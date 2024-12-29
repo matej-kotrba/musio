@@ -1,0 +1,46 @@
+/* Thumb styling */
+.volume[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+
+  width: 12px;
+  height: 12px;
+  background: hsl(var(--foreground));
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+
+  transition: 100ms;
+}
+
+.volume[type="range"]::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: hsl(var(--foreground));
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+
+  transition: 100ms;
+}
+
+.volume[type="range"]:hover::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+}
+
+.volume[type="range"]::-moz-range-track {
+  height: 1px;
+  border-radius: 100px;
+  @apply bg-gray-500;
+}
+
+.volume[type="range"]::-webkit-slider-runnable-track {
+  height: 16px;
+  border-radius: 100px;
+  @apply bg-gray-500;
+}
+
+/* Focus styles */
+.volume[type="range"]:focus {
+  outline: none;
+}

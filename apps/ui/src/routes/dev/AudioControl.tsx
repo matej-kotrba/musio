@@ -1,3 +1,4 @@
+import styles from "./AudioControl.module.css";
 import { Icon } from "@iconify-icon/solid";
 import {
   createEffect,
@@ -27,13 +28,6 @@ const AudioControl: Component<Props> = (props) => {
   const [isPlaying, setIsPlaying] = createSignal<boolean>(false);
   const [volume, setVolume] = createSignal<number>(props.volume || 0.5);
 
-  function handleVolumeChange(e: SolidEvent) {
-    const rect = e.target.getBoundingClientRect();
-    const x = e.x - rect.left;
-    const ratio = x / rect.width;
-    setVolume(ratio);
-  }
-
   return (
     <div
       {...rest}
@@ -50,18 +44,20 @@ const AudioControl: Component<Props> = (props) => {
           <MotionIcon icon={"material-symbols:pause-rounded"} />
         </Show>
       </button>
-      <div
-        class="w-24 relative group py-2"
-        onMouseDown={handleVolumeChange}
-        onMouseMove={handleVolumeChange}
-      >
-        <div class="w-full h-[1px] bg-foreground/60 rounded-full"></div>
-        <button
-          type="button"
-          class="bg-foreground size-2 rounded-full absolute top-1/2 -translate-y-1/2 -translate-x-1/2 duration-100 group-hover:size-3"
-          style={{ left: `${volume() * 100}%` }}
-        ></button>
-      </div>
+      <button type="button">
+        <Show
+          when={volume() > 0}
+          fallback={<MotionIcon icon={"mynaui:volume-x-solid"} />}
+        >
+          <MotionIcon icon={"icon-park-solid:volume-notice"} />
+        </Show>
+      </button>
+      <input
+        type="range"
+        class={`${styles.volume} w-24 bg-transparent`}
+        value={volume()}
+        on:change={(e) => setVolume(Number(e.target.value))}
+      />
     </div>
   );
 };
