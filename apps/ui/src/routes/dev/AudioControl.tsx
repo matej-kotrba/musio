@@ -1,5 +1,6 @@
 import { Icon } from "@iconify-icon/solid";
 import {
+  createEffect,
   createSignal,
   Show,
   splitProps,
@@ -8,16 +9,30 @@ import {
 } from "solid-js";
 import { cn } from "~/libs/cn";
 import { Presence, Motion } from "solid-motionone";
+import type { DOMElement } from "solid-js/jsx-runtime";
 
 type Props = JSX.HTMLAttributes<HTMLDivElement> & {
   volume?: number;
   muted?: boolean;
 };
 
+type SolidEvent = MouseEvent & {
+  currentTarget: HTMLDivElement;
+  target: DOMElement;
+};
+
 const AudioControl: Component<Props> = (props) => {
   const [local, rest] = splitProps(props, ["volume", "muted", "class"]);
 
   const [isPlaying, setIsPlaying] = createSignal<boolean>(false);
+  const [volume, setVolume] = createSignal<number>(props.volume || 0.5);
+
+  function handleVolumeChange(e: SolidEvent) {
+    const rect = e.target.getBoundingClientRect();
+    const x = e.x - rect.left;
+    const ratio = x / rect.width;
+    setVolume(ratio);
+  }
 
   return (
     <div
@@ -35,28 +50,17 @@ const AudioControl: Component<Props> = (props) => {
           <MotionIcon icon={"material-symbols:pause-rounded"} />
         </Show>
       </button>
-      <div class="w-24">
-        <svg
-          viewBox="0 0 200 50"
-          xmlns="http://www.w3.org/2000/svg"
-          class={`${styles}`}
-        >
-          <line
-            x1={0}
-            x2={200}
-            y1={25}
-            y2={25}
-            stroke="hsl(var(--foreground))"
-            stroke-width={2}
-          ></line>
-          <circle
-            cx="100"
-            cy="25"
-            r="10"
-            fill="white"
-            class="group-hover:r-"
-          ></circle>
-        </svg>
+      <div
+        class="w-24 relative group py-2"
+        onMouseDown={handleVolumeChange}
+        onMouseMove={handleVolumeChange}
+      >
+        <div class="w-full h-[1px] bg-foreground/60 rounded-full"></div>
+        <button
+          type="button"
+          class="bg-foreground size-2 rounded-full absolute top-1/2 -translate-y-1/2 -translate-x-1/2 duration-100 group-hover:size-3"
+          style={{ left: `${volume() * 100}%` }}
+        ></button>
       </div>
     </div>
   );
@@ -69,7 +73,7 @@ const MotionIcon: Component<{ icon: string }> = (props) => {
       initial={{ opacity: 0, scale: 0.6 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.6 }}
-      class="grid place-content-center"
+      class="grid place-content-center size-4"
     >
       <Icon icon={props.icon} class="text-2xl text-foreground duration-100" />
     </Motion>
