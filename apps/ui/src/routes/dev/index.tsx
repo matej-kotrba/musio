@@ -23,25 +23,12 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { Button } from "~/components/ui/button";
+import AudioControl from "./AudioControl";
 
 type SolidEvent = Event & {
   currentTarget: HTMLInputElement;
   target: HTMLInputElement;
 };
-
-async function sendItunesRequest(query: string) {
-  const data = await fetch(
-    `https://itunes.apple.com/search?term=${query.replaceAll(
-      " ",
-      "+"
-    )}&limit=5&media=music`
-  );
-
-  if (!data.ok) return;
-
-  const parsed = await data.json();
-  return parsed as ItunesSearchResponse;
-}
 
 const dummy_data = {
   resultCount: 6,
@@ -289,6 +276,20 @@ const dummy_data = {
   ],
 } as ItunesSearchResponse;
 
+async function sendItunesRequest(query: string) {
+  const data = await fetch(
+    `https://itunes.apple.com/search?term=${query.replaceAll(
+      " ",
+      "+"
+    )}&limit=5&media=music`
+  );
+
+  if (!data.ok) return;
+
+  const parsed = await data.json();
+  return parsed as ItunesSearchResponse;
+}
+
 export default function Dev() {
   const globals = useContext(GlobalsContext);
 
@@ -296,9 +297,7 @@ export default function Dev() {
   const [searchedSongs, setSearchedSongs] = createSignal<ItunesSong[]>(
     dummy_data.results
   );
-  const [selectedSong, setSelectedSong] = createSignal<ItunesSong | null>(
-    dummy_data.results[0]
-  );
+  const [selectedSong, setSelectedSong] = createSignal<ItunesSong | null>(null);
 
   const [isConfirmDialogOpened, setIsConfirmDialogOpened] =
     createSignal<boolean>(false);
@@ -309,8 +308,11 @@ export default function Dev() {
   });
 
   createEffect(() => {
-    if (globals && audioElementRef!) {
+    selectedSong();
+
+    if (globals && audioElementRef! && selectedSong()) {
       audioElementRef.volume = globals.volumeInPercantage() / 100;
+      audioElementRef!.play();
     }
   });
 
@@ -327,13 +329,6 @@ export default function Dev() {
 
   function handlePickSong(song: ItunesSong) {
     setSelectedSong(song);
-    console.log(globals);
-    if (globals) {
-      audioElementRef!.volume = globals.volumeInPercantage() / 100;
-    }
-
-    // TODO: Delete later
-    audioElementRef!.volume = 0.05;
   }
 
   function handleSongConfirm() {
@@ -363,6 +358,7 @@ export default function Dev() {
         </DialogContent>
       </Dialog>
       <div class="w-80 mx-auto pt-4">
+        <AudioControl />
         <Show when={selectedSong()}>
           <div class="flex flex-col mb-4">
             <div class={`${styles.effect} relative overflow-hiddens`}>
@@ -372,12 +368,12 @@ export default function Dev() {
                 class={`mx-auto`}
               />
             </div>
-            <audio
+            {/* <audio
               ref={audioElementRef!}
               src={selectedSong()!.previewUrl}
               muted
               controls
-            ></audio>
+            ></audio> */}
           </div>
         </Show>
         <TextFieldRoot>
@@ -395,46 +391,38 @@ export default function Dev() {
               class="text-lg py-6 border-r-0 rounded-r-none focus-visible:ring-0"
             />
             <button
-              class="group border border-primary bg-primary rounded-r-md px-2 grid place-content-center hover:bg-primary-darker duration-100"
+              class="group border border-primary bg-primary rounded-r-md px-2 grid place-content-center hover:bg-primary-darker duration-100 disabled:bg-background-accent"
+              disabled={!selectedSong()}
               on:click={handleSongConfirm}
             >
               <Icon
                 icon="charm:tick"
-                class="text-2xl text-background-DEAFULT group-hover:text-foreground duration-100"
+                class="text-2xl text-background-DEAFULT group-hover:text-foreground duration-100 group-disabled:text-gray-500"
               />
             </button>
           </div>
         </TextFieldRoot>
-        <Popover open={!!searchedSongs().length}>
-          <PopoverTrigger
-            class="w-full pointer-events-none"
-            tabindex={"-1"}
-          ></PopoverTrigger>
-          <PopoverContent
-            class="w-80 -translate-y-4 p-0 overflow-hidden"
-            withoutCloseButton
-          >
-            <div class="flex flex-col divide-y-[1px] divide-white/40">
-              <Index each={searchedSongs()}>
-                {(song) => {
-                  return (
-                    <button
-                      type="button"
-                      class="flex items-center gap-2 p-2 hover:bg-background-DEAFULT duration-150 focus-within:outline-none focus-within:bg-background-DEAFULT"
-                      on:click={() => handlePickSong(song())}
-                      title={song().trackName}
-                    >
-                      <img src={song().artworkUrl60} alt="" class="size-14" />
-                      <span class="text-base font-semibold overflow-hidden whitespace-nowrap text-ellipsis">
-                        {song().trackName}
-                      </span>
-                    </button>
-                  );
-                }}
-              </Index>
-            </div>
-          </PopoverContent>
-        </Popover>
+        <div class="w-80 overflow-hidden border border-foreground rounded-md mt-2">
+          <div class="flex flex-col divide-y-[1px] divide-white/40">
+            <Index each={searchedSongs()}>
+              {(song) => {
+                return (
+                  <button
+                    type="button"
+                    class="flex items-center gap-2 p-2 hover:bg-background-DEAFULT duration-150 focus-within:outline-none focus-within:bg-background-DEAFULT"
+                    on:click={() => handlePickSong(song())}
+                    title={song().trackName}
+                  >
+                    <img src={song().artworkUrl60} alt="" class="size-14" />
+                    <span class="text-base font-semibold overflow-hidden whitespace-nowrap text-ellipsis">
+                      {song().trackName}
+                    </span>
+                  </button>
+                );
+              }}
+            </Index>
+          </div>
+        </div>
       </div>
     </div>
   );
