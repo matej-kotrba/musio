@@ -310,10 +310,6 @@ export default function Dev() {
     createSignal<boolean>(false);
   let audioElementRef: HTMLAudioElement;
 
-  onMount(() => {
-    setSelectedSong(dummy_data.results[0]);
-  });
-
   createEffect(() => {
     if (songName() !== "") setQuerriedSongs();
   });
@@ -372,7 +368,7 @@ export default function Dev() {
         <Show when={selectedSong()}>
           <AudioControl audioUrl={selectedSong()!.previewUrl} />
         </Show>
-        {/* <Show when={selectedSong()}>
+        <Show when={selectedSong()}>
           <div class="flex flex-col mb-4">
             <div class={`${styles.effect} relative overflow-hiddens`}>
               <img
@@ -382,7 +378,7 @@ export default function Dev() {
               />
             </div>
           </div>
-        </Show> */}
+        </Show>
         {/* <audio
               ref={audioElementRef!}
               src={selectedSong()!.previewUrl}

@@ -1,7 +1,6 @@
 .volume[type="range"] {
   -webkit-appearance: none; /* Remove default Chrome styles */
   appearance: none; /* Remove default styles for all browsers */
-  width: 100%;
   height: 16px; /* Matches the track height for consistency */
   background: transparent; /* Ensures no default background interferes */
 }
@@ -59,12 +58,13 @@
 .track[type="range"] {
   -webkit-appearance: none; /* Remove default Chrome styles */
   appearance: none; /* Remove default styles for all browsers */
-  width: 100%;
   height: 8px; /* Matches the track height for consistency */
-  background: var(
-    --percentage,
-    0
-  ); /* Ensures no default background interferes */
+  background-image: linear-gradient(
+    to right,
+    hsl(var(--foreground)) var(--percentage),
+    transparent var(--percentage)
+  );
+  @apply bg-gray-500 rounded-md;
 }
 
 /* Thumb styling */

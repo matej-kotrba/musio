@@ -3,6 +3,7 @@ import { Icon } from "@iconify-icon/solid";
 import {
   createEffect,
   createSignal,
+  onCleanup,
   Show,
   splitProps,
   type Component,
@@ -27,8 +28,9 @@ const AudioControl: Component<Props> = (props) => {
     new Audio(props.audioUrl)
   );
   const [isPlaying, setIsPlaying] = createSignal<boolean>(!audio()?.paused);
-  const [volume, setVolume] = createSignal<number>(props.volume || 0.5);
+  const [volume, setVolume] = createSignal<number>(props.volume || 50);
   const prevVolume = usePrevious(volume);
+  const [time, setTime] = createSignal<number>(0);
 
   function handlePlayPauseButton() {
     if (!audio()) return;
@@ -56,6 +58,30 @@ const AudioControl: Component<Props> = (props) => {
     if (isPlaying()) audio().play();
   }
 
+  const handleAnimFrame = () => {
+    if (isPlaying()) requestAnimationFrame(handleAnimFrame);
+    setTime(audio().currentTime);
+  };
+
+  createEffect(() => {
+    setAudio(new Audio(props.audioUrl));
+    setTime(0);
+  });
+
+  createEffect(() => {
+    audio().addEventListener("play", handleAnimFrame);
+    audio().addEventListener("timeupdate", handleAnimFrame);
+
+    onCleanup(() => {
+      audio().removeEventListener("play", handleAnimFrame);
+      audio().removeEventListener("timeupdate", handleAnimFrame);
+    });
+  });
+
+  createEffect(() => {
+    audio().volume = volume() / 100;
+  });
+
   return (
     <div
       {...rest}
@@ -77,9 +103,11 @@ const AudioControl: Component<Props> = (props) => {
         class={`${styles.track} w-36 mr-auto`}
         min={0}
         max={30}
-        value={audio().currentTime}
+        value={time()}
         on:input={handleTrackChange}
-        style={`--percentage: ${audio()!.currentTime}%;`}
+        style={`--percentage: ${
+          (time() / 30) * 100 + 3 - 3 * 2 * (time() / 30)
+        }%;`}
       />
       <button type="button" on:click={handleVolumeButtonClick}>
         <Show
@@ -91,9 +119,11 @@ const AudioControl: Component<Props> = (props) => {
       </button>
       <input
         type="range"
-        class={`${styles.volume} w-24 bg-transparent`}
+        class={`${styles.volume} w-16 bg-transparent`}
+        min={0}
+        max={100}
         value={volume()}
-        on:change={(e) => setVolume(Number(e.target.value))}
+        on:input={(e) => setVolume(Number(e.target.value))}
       />
     </div>
   );
