@@ -1,6 +1,15 @@
+.volume[type="range"] {
+  -webkit-appearance: none; /* Remove default Chrome styles */
+  appearance: none; /* Remove default styles for all browsers */
+  width: 100%;
+  height: 16px; /* Matches the track height for consistency */
+  background: transparent; /* Ensures no default background interferes */
+}
+
 /* Thumb styling */
 .volume[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
+  appearance: none;
 
   width: 12px;
   height: 12px;
@@ -8,6 +17,7 @@
   border: none;
   border-radius: 50%;
   cursor: pointer;
+  transform: translateY(-45%);
 
   transition: 100ms;
 }
@@ -23,6 +33,7 @@
   transition: 100ms;
 }
 
+.volume[type="range"]:hover::-webkit-slider-thumb,
 .volume[type="range"]:hover::-moz-range-thumb {
   width: 16px;
   height: 16px;
@@ -35,12 +46,69 @@
 }
 
 .volume[type="range"]::-webkit-slider-runnable-track {
-  height: 16px;
+  height: 1px;
   border-radius: 100px;
   @apply bg-gray-500;
 }
 
 /* Focus styles */
 .volume[type="range"]:focus {
+  outline: none;
+}
+
+.track[type="range"] {
+  -webkit-appearance: none; /* Remove default Chrome styles */
+  appearance: none; /* Remove default styles for all browsers */
+  width: 100%;
+  height: 8px; /* Matches the track height for consistency */
+  background: var(
+    --percentage,
+    0
+  ); /* Ensures no default background interferes */
+}
+
+/* Thumb styling */
+.track[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+
+  width: 8px;
+  height: 8px;
+  background: hsl(var(--foreground));
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transform: translateY(-45%);
+
+  transition: 100ms;
+}
+
+.track[type="range"]::-moz-range-thumb {
+  width: 8px;
+  height: 8px;
+  background: hsl(var(--foreground));
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+
+  transition: 100ms;
+}
+
+.track[type="range"]:hover::-webkit-slider-thumb,
+.track[type="range"]:hover::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+}
+
+.track[type="range"]::-moz-range-track {
+  height: 8px;
+}
+
+.track[type="range"]::-webkit-slider-runnable-track {
+  height: 8px;
+}
+
+/* Focus styles */
+.track[type="range"]:focus {
   outline: none;
 }

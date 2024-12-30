@@ -1,5 +1,12 @@
 import { ItunesSearchResponse, ItunesSong } from "shared";
-import { createEffect, createSignal, Index, Show, useContext } from "solid-js";
+import {
+  createEffect,
+  createSignal,
+  Index,
+  onMount,
+  Show,
+  useContext,
+} from "solid-js";
 import {
   Popover,
   PopoverContent,
@@ -303,6 +310,10 @@ export default function Dev() {
     createSignal<boolean>(false);
   let audioElementRef: HTMLAudioElement;
 
+  onMount(() => {
+    setSelectedSong(dummy_data.results[0]);
+  });
+
   createEffect(() => {
     if (songName() !== "") setQuerriedSongs();
   });
@@ -358,8 +369,10 @@ export default function Dev() {
         </DialogContent>
       </Dialog>
       <div class="w-80 mx-auto pt-4">
-        <AudioControl />
         <Show when={selectedSong()}>
+          <AudioControl audioUrl={selectedSong()!.previewUrl} />
+        </Show>
+        {/* <Show when={selectedSong()}>
           <div class="flex flex-col mb-4">
             <div class={`${styles.effect} relative overflow-hiddens`}>
               <img
@@ -368,14 +381,14 @@ export default function Dev() {
                 class={`mx-auto`}
               />
             </div>
-            {/* <audio
+          </div>
+        </Show> */}
+        {/* <audio
               ref={audioElementRef!}
               src={selectedSong()!.previewUrl}
               muted
               controls
             ></audio> */}
-          </div>
-        </Show>
         <TextFieldRoot>
           <TextFieldLabel for="name" class="block text-center">
             Pick song for others to guess:
