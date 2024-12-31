@@ -434,7 +434,8 @@ export default function Dev() {
                 return (
                   <button
                     type="button"
-                    class="flex items-center gap-2 p-2 hover:bg-background-DEAFULT duration-150 focus-within:outline-none focus-within:bg-background-DEAFULT"
+                    class={`${styles.song} isolate relative flex items-center gap-2 p-2 hover:bg-background-DEAFULT duration-150 focus-within:outline-none focus-within:bg-background-DEAFULT`}
+                    data-selected={song().trackId === selectedSong()?.trackId}
                     on:click={() => handlePickSong(song())}
                     title={song().trackName}
                   >

@@ -43,3 +43,32 @@
     --deg: 360deg;
   }
 }
+
+@property --gradient-color {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+.song::before {
+  --gradient-color: transparent;
+
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  inset: 0;
+  z-index: -100;
+  background-image: linear-gradient(to top, var(--gradient-color), transparent);
+  transition: --gradient-color 400ms;
+}
+
+.song[data-selected="true"]::before {
+  --gradient-color: hsl(var(--primary) / 0.2);
+
+  background-image: linear-gradient(
+    to top,
+    var(--gradient-color),
+    transparent
+  ) !important;
+}
