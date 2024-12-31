@@ -304,7 +304,9 @@ export default function Dev() {
   const [searchedSongs, setSearchedSongs] = createSignal<ItunesSong[]>(
     dummy_data.results
   );
-  const [selectedSong, setSelectedSong] = createSignal<ItunesSong | null>(null);
+  const [selectedSong, setSelectedSong] = createSignal<ItunesSong | null>(
+    dummy_data.results[0]
+  );
 
   const [isConfirmDialogOpened, setIsConfirmDialogOpened] =
     createSignal<boolean>(false);
@@ -366,10 +368,7 @@ export default function Dev() {
       </Dialog>
       <div class="w-80 mx-auto pt-4">
         <Show when={selectedSong()}>
-          <AudioControl audioUrl={selectedSong()!.previewUrl} />
-        </Show>
-        <Show when={selectedSong()}>
-          <div class="flex flex-col mb-4">
+          <div class="flex flex-col">
             <div class={`${styles.effect} relative overflow-hiddens`}>
               <img
                 src={selectedSong()!.artworkUrl100}
@@ -378,14 +377,15 @@ export default function Dev() {
               />
             </div>
           </div>
+          <AudioControl audioUrl={selectedSong()!.previewUrl} />
         </Show>
         {/* <audio
-              ref={audioElementRef!}
-              src={selectedSong()!.previewUrl}
-              muted
-              controls
-            ></audio> */}
-        <TextFieldRoot>
+          ref={audioElementRef!}
+          src={selectedSong()!.previewUrl}
+          muted
+          controls
+        ></audio> */}
+        <TextFieldRoot class="mt-4">
           <TextFieldLabel for="name" class="block text-center">
             Pick song for others to guess:
           </TextFieldLabel>

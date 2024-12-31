@@ -11,9 +11,7 @@ import {
 } from "solid-js";
 import { cn } from "~/libs/cn";
 import { Motion } from "solid-motionone";
-import type { DOMElement } from "solid-js/jsx-runtime";
 import usePrevious from "~/hooks/usePrevious";
-import { isServer } from "solid-js/web";
 
 type Props = JSX.HTMLAttributes<HTMLDivElement> & {
   volume?: number;
@@ -33,10 +31,6 @@ const AudioControl: Component<Props> = (props) => {
   const [time, setTime] = createSignal<number>(0);
 
   function handlePlayPauseButton() {
-    if (!audio()) return;
-
-    isPlaying() ? audio()!.pause() : audio()!.play();
-
     setIsPlaying((old) => !old);
   }
 
@@ -63,9 +57,17 @@ const AudioControl: Component<Props> = (props) => {
     setTime(audio().currentTime);
   };
 
-  createEffect(() => {
-    setAudio(new Audio(props.audioUrl));
+  createEffect((prevAudio: HTMLAudioElement | undefined) => {
+    if (prevAudio) {
+      prevAudio.pause();
+    }
+    const newAudio = new Audio(props.audioUrl);
+
+    setAudio(newAudio);
     setTime(0);
+    // setIsPlaying(true);
+
+    return newAudio;
   });
 
   createEffect(() => {
@@ -76,6 +78,10 @@ const AudioControl: Component<Props> = (props) => {
       audio().removeEventListener("play", handleAnimFrame);
       audio().removeEventListener("timeupdate", handleAnimFrame);
     });
+  });
+
+  createEffect(() => {
+    isPlaying() ? audio()!.play() : audio()!.pause();
   });
 
   createEffect(() => {
@@ -100,7 +106,7 @@ const AudioControl: Component<Props> = (props) => {
       </button>
       <input
         type="range"
-        class={`${styles.track} w-36 mr-auto`}
+        class={`${styles.track} w-28`}
         min={0}
         max={30}
         value={time()}
@@ -109,6 +115,9 @@ const AudioControl: Component<Props> = (props) => {
           (time() / 30) * 100 + 3 - 3 * 2 * (time() / 30)
         }%;`}
       />
+      <span class="text-xs mr-auto">
+        {Math.floor(time() / 60)}:{time().toFixed(0).padStart(2, "0")}/0:30
+      </span>
       <button type="button" on:click={handleVolumeButtonClick}>
         <Show
           when={volume() > 0}
