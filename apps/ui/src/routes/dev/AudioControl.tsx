@@ -12,6 +12,7 @@ import {
 import { cn } from "~/libs/cn";
 import { Motion } from "solid-motionone";
 import usePrevious from "~/hooks/usePrevious";
+import { clientOnly } from "@solidjs/start";
 
 type Props = JSX.HTMLAttributes<HTMLDivElement> & {
   volume?: number;

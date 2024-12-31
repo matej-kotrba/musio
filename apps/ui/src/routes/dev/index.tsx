@@ -1,17 +1,5 @@
 import { ItunesSearchResponse, ItunesSong } from "shared";
-import {
-  createEffect,
-  createSignal,
-  Index,
-  onMount,
-  Show,
-  useContext,
-} from "solid-js";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
+import { createEffect, createSignal, Index, Show, useContext } from "solid-js";
 import {
   TextField,
   TextFieldLabel,
@@ -25,12 +13,13 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
 import { Button } from "~/components/ui/button";
-import AudioControl from "./AudioControl";
+import { clientOnly } from "@solidjs/start";
+
+const ClientOnlyAudioController = clientOnly(() => import("./AudioControl"));
 
 type SolidEvent = Event & {
   currentTarget: HTMLInputElement;
@@ -304,6 +293,7 @@ export default function Dev() {
   const [searchedSongs, setSearchedSongs] = createSignal<ItunesSong[]>(
     dummy_data.results
   );
+  const [editedSongName, setEditedSongName] = createSignal<string>();
   const [selectedSong, setSelectedSong] = createSignal<ItunesSong | null>(
     dummy_data.results[0]
   );
@@ -314,6 +304,10 @@ export default function Dev() {
 
   createEffect(() => {
     if (songName() !== "") setQuerriedSongs();
+  });
+
+  createEffect(() => {
+    setEditedSongName(selectedSong()?.trackName);
   });
 
   createEffect(() => {
@@ -358,16 +352,38 @@ export default function Dev() {
               Are you sure sure you want to pick this song?
             </DialogTitle>
             <DialogDescription>
+              <TextFieldRoot class="my-4">
+                <TextFieldLabel for="edited-name">
+                  You can change the original song name:
+                </TextFieldLabel>
+                <TextField
+                  type="text"
+                  name="edited-name"
+                  placeholder="Name"
+                  min={1}
+                  autocomplete="off"
+                  value={editedSongName()}
+                  on:input={(e) => setEditedSongName(e.target.value)}
+                />
+              </TextFieldRoot>
               <div class="flex gap-2 w-fit ml-auto">
-                <Button variant={"destructive"}>Close</Button>
                 <Button variant={"default"}>Confirm</Button>
               </div>
             </DialogDescription>
           </DialogHeader>
         </DialogContent>
       </Dialog>
-      <div class="w-80 mx-auto pt-4">
-        <Show when={selectedSong()}>
+      <div class="w-80 mx-auto pt-4 relative overflow-hidden">
+        <Show
+          when={selectedSong()}
+          fallback={<div class="size-[100px] rounded-none mx-auto" />}
+        >
+          <p
+            title={selectedSong()!.trackName}
+            class={`text-center text-ellipsis overflow-hidden font-semibold whitespace-nowrap mb-2`}
+          >
+            {selectedSong()!.trackName}
+          </p>
           <div class="flex flex-col">
             <div class={`${styles.effect} relative overflow-hiddens`}>
               <img
@@ -377,14 +393,14 @@ export default function Dev() {
               />
             </div>
           </div>
-          <AudioControl audioUrl={selectedSong()!.previewUrl} />
         </Show>
-        {/* <audio
-          ref={audioElementRef!}
-          src={selectedSong()!.previewUrl}
-          muted
-          controls
-        ></audio> */}
+        <Show when={selectedSong()} fallback={<div class="w-full h-8" />}>
+          <ClientOnlyAudioController
+            audioUrl={selectedSong()!.previewUrl}
+            fallback={<div class="w-full h-8" />}
+          />
+        </Show>
+
         <TextFieldRoot class="mt-4">
           <TextFieldLabel for="name" class="block text-center">
             Pick song for others to guess:
