@@ -1,3 +1,4 @@
+import type { GameState } from "./lobby";
 import type { PlayerServerWithoutWS } from "./player";
 
 export type WS_MessageMapServer = {
@@ -5,6 +6,9 @@ export type WS_MessageMapServer = {
     allPlayers: PlayerServerWithoutWS[];
   };
   PLAYER_JOIN: PlayerServerWithoutWS;
+  CHANGE_GAME_STATE: {
+    properties: GameState;
+  };
 };
 
 export type WS_MessageMapClient = {
@@ -18,6 +22,7 @@ export type WS_MESSAGE = WS_MessageMapServer | WS_MessageMapClient;
 export const WS_MESSAGE_TO_SERVER: (keyof WS_MessageMapServer)[] = [
   "PLAYER_INIT",
   "PLAYER_JOIN",
+  "CHANGE_GAME_STATE",
 ] as const;
 export const WS_MESSAGE_TO_CLIENT: (keyof WS_MessageMapClient)[] = [
   "PICK_SONG",

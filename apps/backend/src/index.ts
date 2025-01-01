@@ -13,6 +13,7 @@ import {
   playerNameValidator,
   playerIconNameValidator,
   createNewMessageToClient,
+  type PlayerServerWithoutWS,
 } from "shared";
 
 const app = new Hono();
@@ -51,9 +52,6 @@ app.get("/getLobbyId", (c) => {
 
   return c.json(lobbies.get(lobbyId)!.id);
 });
-
-const CHANNEL_NAME = "chat";
-const SERVER_ID = "server";
 
 app.get(
   "/ws",

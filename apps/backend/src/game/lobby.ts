@@ -1,4 +1,4 @@
-import type { Player, PlayerServerWithoutWS } from "shared";
+import type { GameState, Player, PlayerServerWithoutWS } from "shared";
 import { getRandomId } from "./utils.js";
 import type { WSContext } from "hono/ws";
 import type { LobbyMap } from "./map.js";
@@ -11,6 +11,7 @@ export type LobbiesMap = LobbyMap<string, Lobby>;
 
 export type Lobby = {
   id: string;
+  stateProperties: GameState;
   players: PlayerServer[];
 };
 
@@ -51,8 +52,11 @@ export function createNewLobby(lobbies: LobbiesMap) {
   const id = getRandomId();
   const lobby = {
     id,
+    stateProperties: {
+      state: "lobby",
+    },
     players: [],
-  };
+  } satisfies Lobby;
 
   lobbies.set(id, lobby);
   return lobby;
