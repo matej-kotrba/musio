@@ -4,6 +4,8 @@ import { createStore, type SetStoreFunction } from "solid-js/store";
 export type WsContext = {
   ws: WebSocket | undefined;
   href: string;
+  lobbyId: string;
+  playerId: string;
   onMessage: (event: MessageEvent<string>) => void;
   log: (user: string, ...args: Array<string>) => void;
   clear: () => void;

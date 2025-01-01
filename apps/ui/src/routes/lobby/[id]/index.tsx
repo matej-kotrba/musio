@@ -13,7 +13,11 @@ import { useParams, useNavigate } from "@solidjs/router";
 import ProfileSelection, {
   ProfileData,
 } from "~/components/lobby/profile/ProfileSelection";
-import { createNewMessageToServer, fromMessage } from "shared";
+import {
+  createNewMessageToServer,
+  fromMessage,
+  toPayloadToServer,
+} from "shared";
 import { getLobbyURL as getLobbyId } from "~/utils/rscs";
 import { Player, WS_MessageMapServer } from "shared/index.types";
 import { playerServerToPlayer } from "~/utils/game/common";
@@ -45,19 +49,21 @@ export default function Lobby() {
     if (!pd) return;
 
     ctx.log("ws", "Connecting to", ctx.href, "…");
-    const ws = new WebSocket(ctx.href);
+    const new_ws = new WebSocket(ctx.href);
 
-    ws.addEventListener("message", ctx.onMessage);
-    ws.addEventListener("open", () => {
-      ctx.ws = ws;
-      // ws.send(
-      //   JSON.stringify(
-      //     createNewMessageToServer(lobbyId, "PLAYER_INIT", {
-      //       name: pd.name,
-      //       icon: pd.icon,
-      //     })
-      //   )
-      // );
+    new_ws.addEventListener("message", ctx.onMessage);
+    new_ws.addEventListener("open", () => {
+      ctx.ws = new_ws;
+      console.log("ON OPEN");
+      new_ws.send(
+        toPayloadToServer(
+          ctx.playerId,
+          createNewMessageToServer(lobbyId, "PICK_SONG", {
+            lobbyId: lobbyId,
+            song: "Love to Lose",
+          })
+        )
+      );
       ctx.log("ws", "Connected!");
     });
   }
@@ -72,6 +78,7 @@ export default function Lobby() {
     ws?.setConnection({
       ws: undefined,
       href: `ws://localhost:5173/ws?lobbyId=${newLobbyId}&name=${data.name}&icon=${data.icon}`,
+      lobbyId: newLobbyId,
       onMessage,
       log: () => {},
       clear: () => {},
@@ -89,19 +96,28 @@ export default function Lobby() {
     switch (data.message.type) {
       // TODO: Possible race conditions when handling new player join
       case "PLAYER_INIT": {
-        const allPlayers =
-          data.message.payload.allPlayers.map(playerServerToPlayer);
-        console.log(allPlayers[0].icon.url);
+        const payload = data.message.payload;
+        const allPlayers = payload.allPlayers.map(playerServerToPlayer);
         setPlayers(allPlayers);
+        console.log("PLAYER INIT");
+        ws?.setConnection((old) => {
+          return {
+            ...old,
+            playerId: payload.id,
+          };
+        });
 
         break;
       }
       case "PLAYER_JOIN": {
-        setPlayers((old) => [
-          ...old,
-          playerServerToPlayer(data.message.payload),
-        ]);
+        const payload = data.message.payload;
+        setPlayers((old) => [...old, playerServerToPlayer(payload)]);
 
+        break;
+      }
+
+      case "CHANGE_GAME_STATE": {
+        console.log(data.message.payload);
         break;
       }
     }

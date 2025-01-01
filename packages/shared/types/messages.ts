@@ -13,6 +13,7 @@ export type WS_MessageMapServer = {
 
 export type WS_MessageMapClient = {
   PICK_SONG: {
+    lobbyId: string;
     song: string;
   };
 };

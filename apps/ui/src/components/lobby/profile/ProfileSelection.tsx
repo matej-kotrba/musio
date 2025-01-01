@@ -161,14 +161,20 @@ export default function ProfileSelection(props: Props) {
                 <div
                   class={`${styles.icons} min-h-[8rem]`}
                   style={{
-                    "grid-template-columns": icons
+                    "grid-template-columns": `${
+                      carouselIconTypes[getCarouselIconType(-1)].cssSize
+                    } ${icons
                       .map((_, idx) => {
                         return carouselIconTypes[getCarouselIconType(idx)]
                           .cssSize;
                       })
-                      .join(" "),
+                      .join(" ")} ${
+                      carouselIconTypes[getCarouselIconType(icons.length)]
+                        .cssSize
+                    }`,
                   }}
                 >
+                  <div></div>
                   {icons.map((icon, idx) => {
                     return (
                       <CarouselIcon
@@ -177,6 +183,7 @@ export default function ProfileSelection(props: Props) {
                       />
                     );
                   })}
+                  <div></div>
                 </div>
                 <button
                   type="button"

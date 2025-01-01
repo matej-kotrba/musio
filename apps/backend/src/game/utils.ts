@@ -1,18 +1,8 @@
-import { createNewMessageToClient } from "shared";
-
 // Id handling
 // ****
 export function getRandomId() {
   return crypto.getRandomValues(new Uint32Array(1))[0].toString(16);
 }
-// ****
-
-// Meesage handling
-// ****
-export const toPayload = (
-  from: String,
-  message: ReturnType<typeof createNewMessageToClient>
-) => JSON.stringify({ user: from, message: message });
 // ****
 
 // Dev utils

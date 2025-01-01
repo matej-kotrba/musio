@@ -7,13 +7,16 @@ import {
   type LobbiesMap,
   type Lobby,
 } from "./game/lobby.js";
-import { getRandomId, isDev, toPayload } from "./game/utils.js";
+import { getRandomId, isDev } from "./game/utils.js";
 import { LobbyMap } from "./game/map.js";
 import {
   playerNameValidator,
   playerIconNameValidator,
   createNewMessageToClient,
   type PlayerServerWithoutWS,
+  type WS_MessageMapClient,
+  toPayloadToClient,
+  fromMessage,
 } from "shared";
 
 const app = new Hono();
@@ -84,7 +87,7 @@ app.get(
 
         console.log("[ws] open - ", newPlayer.name);
         ws.send(
-          toPayload(
+          toPayloadToClient(
             "server",
             createNewMessageToClient(lobby!.id, "PLAYER_INIT", {
               id: newPlayer.id,
@@ -104,7 +107,7 @@ app.get(
         lobbies.publish(
           lobbyId,
           newPlayer.id,
-          toPayload(
+          toPayloadToClient(
             "server",
             createNewMessageToClient(lobby!.id, "PLAYER_JOIN", {
               id: newPlayer.id,
@@ -114,6 +117,25 @@ app.get(
             })
           )
         );
+      },
+      onMessage: (event, ws) => {
+        console.log("[ws] message");
+
+        let parsed: ReturnType<typeof fromMessage<WS_MessageMapClient>>;
+        try {
+          if (typeof event.data === "string") {
+            parsed = fromMessage<WS_MessageMapClient>(event.data);
+          } else {
+            throw new Error("Invalid message format");
+          }
+
+          switch (parsed.message.type) {
+            case "PICK_SONG": {
+              console.log("PICK_SONG", parsed.message.payload);
+              break;
+            }
+          }
+        } catch {}
       },
       // },
       // onMessage(event, ws) {

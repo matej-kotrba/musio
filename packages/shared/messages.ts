@@ -7,6 +7,21 @@ import type {
   WS_MessageMapServer,
 } from "./types/messages";
 
+const toPayload = <T extends () => unknown>(
+  from: String,
+  message: ReturnType<T>
+) => JSON.stringify({ user: from, message: message });
+
+export const toPayloadToClient = (
+  from: String,
+  message: ReturnType<typeof createNewMessageToClient>
+) => toPayload(from, message);
+
+export const toPayloadToServer = (
+  from: String,
+  message: ReturnType<typeof createNewMessageToServer>
+) => toPayload(from, message);
+
 function createNewMessage<R extends WS_MESSAGE, T extends keyof R>(
   lobbyId: string,
   type: T,
