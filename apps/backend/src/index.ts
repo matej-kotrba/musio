@@ -84,6 +84,9 @@ app.get(
         const lobby = lobbies.get(lobbyId);
 
         const newPlayer = createNewPlayer(ws, getRandomId(), name!, icon!);
+        if (lobby?.players.length === 0) {
+          lobby.leaderPlayerId = newPlayer.id;
+        }
         lobby!.players.push(newPlayer);
 
         console.log("[ws] open - ", newPlayer.name);
@@ -101,6 +104,7 @@ app.get(
                 icon: player.icon,
                 points: player.points,
               })),
+              leaderId: lobby!.leaderPlayerId!,
             })
           )
         );

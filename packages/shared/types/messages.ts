@@ -4,6 +4,7 @@ import type { PlayerServerWithoutWS } from "./player";
 export type WS_MessageMapServer = {
   PLAYER_INIT: PlayerServerWithoutWS & {
     allPlayers: PlayerServerWithoutWS[];
+    leaderId: string;
   };
   PLAYER_JOIN: PlayerServerWithoutWS;
   CHANGE_GAME_STATE: {

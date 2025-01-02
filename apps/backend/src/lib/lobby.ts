@@ -13,6 +13,7 @@ export type Lobby = {
   id: string;
   stateProperties: GameState;
   players: PlayerServer[];
+  leaderPlayerId?: string;
 };
 
 export function initPlayerToLobby(

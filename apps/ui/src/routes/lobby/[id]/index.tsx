@@ -1,5 +1,12 @@
 import styles from "./index.module.css";
-import { createSignal, Show, useContext, onCleanup } from "solid-js";
+import {
+  createSignal,
+  Show,
+  useContext,
+  onCleanup,
+  Switch,
+  Match,
+} from "solid-js";
 import PlayerDisplay, { getAllIcons } from "~/components/lobby/Player";
 import WordToGuess from "~/components/lobby/WordToGuess";
 import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
@@ -19,23 +26,24 @@ import {
   toPayloadToServer,
 } from "shared";
 import { getLobbyURL as getLobbyId } from "~/utils/rscs";
-import { Player, WS_MessageMapServer } from "shared/index.types";
+import { GameState, Player, WS_MessageMapServer } from "shared/index.types";
 import { playerServerToPlayer } from "~/utils/game/common";
+import { createStore } from "solid-js/store";
 
 export default function Lobby() {
-  const [profileData, setProfileData] = createSignal<ProfileData | null>(null);
-
-  const [players, setPlayers] = createSignal<Player[]>([]);
-
   const params = useParams();
   const navigate = useNavigate();
 
-  const lobbyId = () => params.id;
   const ctx = useContext(WsConnectionContext);
 
-  // onCleanup(() => {
-  //   removeLobbyWhenEmpty(lobbyId());
-  // });
+  const [profileData, setProfileData] = createSignal<ProfileData | null>(null);
+  const [playerProperties, setPlayerProperties] = createStore<{
+    players: Player[];
+    thisPlayerId: string;
+    leaderId: string;
+  }>({ players: [], leaderId: "", thisPlayerId: "" });
+  const [gameState, setGameState] = createSignal<GameState>({ state: "lobby" });
+  const lobbyId = () => params.id;
 
   function wsConnect() {
     const context = ctx?.connection;
@@ -93,7 +101,7 @@ export default function Lobby() {
       case "PLAYER_INIT": {
         const payload = data.message.payload;
         const allPlayers = payload.allPlayers.map(playerServerToPlayer);
-        setPlayers(allPlayers);
+        setPlayerProperties("players", allPlayers);
 
         ctx.setConnection((old) => {
           return {
@@ -116,7 +124,10 @@ export default function Lobby() {
       }
       case "PLAYER_JOIN": {
         const payload = data.message.payload;
-        setPlayers((old) => [...old, playerServerToPlayer(payload)]);
+        setPlayerProperties("players", (old) => [
+          ...old,
+          playerServerToPlayer(payload),
+        ]);
 
         break;
       }
@@ -228,7 +239,7 @@ export default function Lobby() {
 
   return (
     <>
-      <ProfileSelection onProfileSelected={handleProfileSelected} />
+      {/* <ProfileSelection onProfileSelected={handleProfileSelected} /> */}
       <div
         class="relative grid grid-cols-[auto,1fr,auto] gap-4 h-full max-h-full"
         style={{
@@ -240,22 +251,44 @@ export default function Lobby() {
           class={`${styles.aside__scrollbar} relative flex flex-col gap-4 w-80 pr-2 overflow-x-clip h-full overflow-y-auto`}
         >
           <Show when={!!profileData()} fallback={<p>Selecting...</p>}>
-            {players().map((item) => (
+            {playerProperties.players.map((item) => (
               <PlayerDisplay maxPoints={100} player={item} />
             ))}
           </Show>
         </aside>
-        <Show when={!!profileData()} fallback={<p>Selecting...</p>}>
-          <section class="flex flex-col items-center">
-            <p class="text-xl mb-4 font-bold opacity-35">Guess the song:</p>
-            <div class="mb-4">
-              <div class="w-64 aspect-square overflow-hidden rounded-md">
-                <img src={dummySongImage} alt="Song to guess" class="blur-md" />
-              </div>
-            </div>
-            <WordToGuess wordChars={dummySongName} />
-          </section>
-        </Show>
+        <Switch>
+          <Match when={gameState().state === "lobby"}>
+            <section class="grid place-content-center">
+              <Show
+                fallback={<span>Waiting for other players</span>}
+                when={
+                  playerProperties.leaderId === playerProperties.thisPlayerId
+                }
+              >
+                <button>Start the game</button>
+              </Show>
+
+              <img src="/svgs/waiting.svg" alt="" class="w-80" />
+            </section>
+          </Match>
+          <Match when={gameState().state === "guessing"}>
+            <Show when={!!profileData()} fallback={<p>Selecting...</p>}>
+              <section class="flex flex-col items-center">
+                <p class="text-xl mb-4 font-bold opacity-35">Guess the song:</p>
+                <div class="mb-4">
+                  <div class="w-64 aspect-square overflow-hidden rounded-md">
+                    <img
+                      src={dummySongImage}
+                      alt="Song to guess"
+                      class="blur-md"
+                    />
+                  </div>
+                </div>
+                <WordToGuess wordChars={dummySongName} />
+              </section>
+            </Show>
+          </Match>
+        </Switch>
         <aside
           class="h-full max-h-full w-80"
           style={{
