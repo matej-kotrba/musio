@@ -5,8 +5,6 @@ export type Song = {
   trackUrl: string;
 };
 
-export type GameStateType = "lobby" | "picking" | "guessing" | "leaderboard";
-
 type LobbyGameState = {
   state: "lobby";
 };
@@ -34,3 +32,5 @@ export type GameState =
   | PickingGameState
   | GuessingGameState
   | LeaderboardGameState;
+
+export type GameStateType = GameState["state"];

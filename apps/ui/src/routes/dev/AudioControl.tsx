@@ -12,7 +12,6 @@ import {
 import { cn } from "~/libs/cn";
 import { Motion } from "solid-motionone";
 import usePrevious from "~/hooks/usePrevious";
-import { clientOnly } from "@solidjs/start";
 
 type Props = JSX.HTMLAttributes<HTMLDivElement> & {
   volume?: number;
@@ -26,10 +25,12 @@ const AudioControl: Component<Props> = (props) => {
   const [audio, setAudio] = createSignal<HTMLAudioElement>(
     new Audio(props.audioUrl)
   );
+
   const [isPlaying, setIsPlaying] = createSignal<boolean>(!audio()?.paused);
   const [volume, setVolume] = createSignal<number>(props.volume || 50);
   const prevVolume = usePrevious(volume);
   const [time, setTime] = createSignal<number>(0);
+  const [maxTime, setMaxTime] = createSignal<number>(0);
 
   function handlePlayPauseButton() {
     setIsPlaying((old) => !old);
@@ -58,6 +59,12 @@ const AudioControl: Component<Props> = (props) => {
     setTime(audio().currentTime);
   };
 
+  const handleAudioSrcLoad = () => {
+    if (audio().duration) {
+      setMaxTime(+audio().duration.toFixed(0));
+    }
+  };
+
   createEffect((prevAudio: HTMLAudioElement | undefined) => {
     if (prevAudio) {
       prevAudio.pause();
@@ -74,10 +81,12 @@ const AudioControl: Component<Props> = (props) => {
   createEffect(() => {
     audio().addEventListener("play", handleAnimFrame);
     audio().addEventListener("timeupdate", handleAnimFrame);
+    audio().addEventListener("canplaythrough", handleAudioSrcLoad);
 
     onCleanup(() => {
       audio().removeEventListener("play", handleAnimFrame);
       audio().removeEventListener("timeupdate", handleAnimFrame);
+      audio().removeEventListener("canplaythrough", handleAudioSrcLoad);
     });
   });
 
@@ -109,7 +118,7 @@ const AudioControl: Component<Props> = (props) => {
         type="range"
         class={`${styles.track} w-28`}
         min={0}
-        max={30}
+        max={maxTime()}
         value={time()}
         on:input={handleTrackChange}
         style={`--percentage: ${

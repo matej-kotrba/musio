@@ -31,40 +31,33 @@ export default function Lobby() {
   const navigate = useNavigate();
 
   const lobbyId = () => params.id;
-  const ws = useContext(WsConnectionContext);
+  const ctx = useContext(WsConnectionContext);
 
   // onCleanup(() => {
   //   removeLobbyWhenEmpty(lobbyId());
   // });
 
-  function wsConnect(ctx: WsContext, lobbyId: string) {
-    if (ctx.ws) {
-      ctx.log("ws", "Closing previous connection before reconnecting…");
-      ctx.ws.close();
-      ctx.ws = undefined;
-      ctx.clear();
+  function wsConnect() {
+    const context = ctx?.connection;
+    if (!context) return;
+
+    if (context.ws) {
+      context.log("ws", "Closing previous connection before reconnecting…");
+      context.ws.close();
+      context.ws = undefined;
+      context.clear();
     }
 
     const pd = profileData();
     if (!pd) return;
 
-    ctx.log("ws", "Connecting to", ctx.href, "…");
-    const new_ws = new WebSocket(ctx.href);
+    context.log("ws", "Connecting to", context.href, "…");
+    const new_ws = new WebSocket(context.href);
 
-    new_ws.addEventListener("message", ctx.onMessage);
+    new_ws.addEventListener("message", context.onMessage);
     new_ws.addEventListener("open", () => {
-      ctx.ws = new_ws;
-      console.log("ON OPEN");
-      new_ws.send(
-        toPayloadToServer(
-          ctx.playerId,
-          createNewMessageToServer(lobbyId, "PICK_SONG", {
-            lobbyId: lobbyId,
-            song: "Love to Lose",
-          })
-        )
-      );
-      ctx.log("ws", "Connected!");
+      ctx.setConnection("ws", new_ws);
+      context.log("ws", "Connected!");
     });
   }
 
@@ -75,22 +68,24 @@ export default function Lobby() {
       navigate(`/lobby/${newLobbyId}`, { replace: true });
     }
 
-    ws?.setConnection({
+    ctx?.setConnection({
       ws: undefined,
       href: `ws://localhost:5173/ws?lobbyId=${newLobbyId}&name=${data.name}&icon=${data.icon}`,
       lobbyId: newLobbyId,
       onMessage,
       log: () => {},
       clear: () => {},
-      send: (data) => ws.connection.ws?.send(data),
+      send: (data) => ctx.connection.ws?.send(data),
     });
 
-    if (ws && isWsConnectionContext(ws?.connection)) {
-      wsConnect(ws?.connection, lobbyId());
+    if (ctx && isWsConnectionContext(ctx?.connection)) {
+      wsConnect();
     }
   }
 
   const onMessage = (event: MessageEvent<string>) => {
+    if (!ctx?.connection) return;
+
     const data = fromMessage<WS_MessageMapServer>(event.data);
     console.log(data);
     switch (data.message.type) {
@@ -99,13 +94,23 @@ export default function Lobby() {
         const payload = data.message.payload;
         const allPlayers = payload.allPlayers.map(playerServerToPlayer);
         setPlayers(allPlayers);
-        console.log("PLAYER INIT");
-        ws?.setConnection((old) => {
+
+        ctx.setConnection((old) => {
           return {
             ...old,
             playerId: payload.id,
           };
         });
+
+        ctx.connection.ws?.send(
+          toPayloadToServer(
+            ctx.connection.playerId,
+            createNewMessageToServer(ctx.connection.playerId, "PICK_SONG", {
+              lobbyId: ctx.connection.lobbyId,
+              song: "Love to Lose",
+            })
+          )
+        );
 
         break;
       }

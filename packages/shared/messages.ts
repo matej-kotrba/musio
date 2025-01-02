@@ -1,3 +1,4 @@
+import type { GameStateType } from "./index.types";
 import type {
   WS_MESSAGE,
   WS_MESSAGE_TO_CLIENT_TYPE,
@@ -6,6 +7,16 @@ import type {
   WS_MessageMapClient,
   WS_MessageMapServer,
 } from "./types/messages";
+
+export const messageToClientGameState: Record<
+  GameStateType,
+  WS_MESSAGE_TO_CLIENT_TYPE[]
+> = {
+  lobby: [],
+  guessing: [],
+  picking: ["PICK_SONG"],
+  leaderboard: [],
+} as const;
 
 const toPayload = <T extends () => unknown>(
   from: String,

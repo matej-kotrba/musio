@@ -6,9 +6,9 @@ import {
   createNewPlayer,
   type LobbiesMap,
   type Lobby,
-} from "./game/lobby.js";
-import { getRandomId, isDev } from "./game/utils.js";
-import { LobbyMap } from "./game/map.js";
+} from "./lib/lobby.js";
+import { getRandomId, isDev } from "./lib/utils.js";
+import { LobbyMap } from "./lib/map.js";
 import {
   playerNameValidator,
   playerIconNameValidator,
@@ -18,6 +18,7 @@ import {
   toPayloadToClient,
   fromMessage,
 } from "shared";
+import { isMessageTypeForGameState } from "./lib/game.js";
 
 const app = new Hono();
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
@@ -122,6 +123,7 @@ app.get(
         console.log("[ws] message");
 
         let parsed: ReturnType<typeof fromMessage<WS_MessageMapClient>>;
+
         try {
           if (typeof event.data === "string") {
             parsed = fromMessage<WS_MessageMapClient>(event.data);
@@ -129,9 +131,21 @@ app.get(
             throw new Error("Invalid message format");
           }
 
+          const lobby = lobbies.get(parsed.message.lobbyId);
+
+          if (!lobby) throw new Error("Invalid lobbyId");
+
+          // If the event is not compatible with the current game state, ignore it
+          if (
+            !isMessageTypeForGameState(
+              lobby.stateProperties.state,
+              parsed.message.type
+            )
+          )
+            throw new Error("Invalid message type for current game state");
+
           switch (parsed.message.type) {
             case "PICK_SONG": {
-              console.log("PICK_SONG", parsed.message.payload);
               break;
             }
           }
