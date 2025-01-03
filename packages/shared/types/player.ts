@@ -4,13 +4,11 @@ export type Icon = {
 };
 
 export type Player = {
-  id: string;
   name: string;
   icon: Icon;
   points: number;
+  isHost: boolean;
+  isMe: boolean;
 };
 
-export type PlayerServerWithoutWS = Omit<Player, "icon" | "ws"> & {
-  icon: string;
-  ws?: never;
-};
+export type PlayerFromServer = Omit<Player, "icon"> & { icon: string };

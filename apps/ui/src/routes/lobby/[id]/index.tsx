@@ -9,7 +9,9 @@ import {
   WsConnectionContext,
 } from "~/contexts/connection";
 import { useParams, useNavigate } from "@solidjs/router";
-import { ProfileData } from "~/components/lobby/profile/ProfileSelection";
+import ProfileSelection, {
+  ProfileData,
+} from "~/components/lobby/profile/ProfileSelection";
 import {
   createNewMessageToServer,
   fromMessage,
@@ -23,6 +25,11 @@ import { Button } from "~/components/ui/button";
 import { TextField, TextFieldRoot } from "~/components/ui/textfield";
 import { useCopyToClipboard } from "~/hooks";
 import { Icon } from "@iconify-icon/solid";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
 
 export default function Lobby() {
   const params = useParams();
@@ -35,8 +42,7 @@ export default function Lobby() {
   const [playerProperties, setPlayerProperties] = createStore<{
     players: Player[];
     thisPlayerId: string;
-    leaderId: string;
-  }>({ players: [], leaderId: "", thisPlayerId: "" });
+  }>({ players: [], thisPlayerId: "" });
   const [gameState, setGameState] = createSignal<GameState>({ state: "lobby" });
   const lobbyId = () => params.id;
 
@@ -97,11 +103,12 @@ export default function Lobby() {
         const payload = data.message.payload;
         const allPlayers = payload.allPlayers.map(playerServerToPlayer);
         setPlayerProperties("players", allPlayers);
+        setPlayerProperties("thisPlayerId", payload.thisPlayerId);
 
         ctx.setConnection((old) => {
           return {
             ...old,
-            playerId: payload.id,
+            playerId: playerProperties.thisPlayerId,
           };
         });
 
@@ -143,76 +150,85 @@ export default function Lobby() {
 
   const dummy_players: Player[] = [
     {
-      id: "1",
       name: "Very Long cool name asd asd asd awsdasd",
       icon: getAllIcons()[
         Math.round(Math.random() * (getAllIcons().length - 1))
       ],
       points: 100,
+      isHost: true,
+      isMe: true,
     },
     {
-      id: "2",
       name: "Player 2",
       icon: getAllIcons()[
         Math.round(Math.random() * (getAllIcons().length - 1))
       ],
       points: 89,
+      isHost: false,
+      isMe: false,
     },
     {
-      id: "3",
       name: "Player 3",
       icon: getAllIcons()[
         Math.round(Math.random() * (getAllIcons().length - 1))
       ],
       points: 76,
+      isHost: false,
+      isMe: false,
     },
     {
-      id: "1",
       name: "Very Long cool name",
       icon: getAllIcons()[
         Math.round(Math.random() * (getAllIcons().length - 1))
       ],
       points: 67,
+      isHost: false,
+      isMe: false,
     },
     {
-      id: "2",
       name: "Player 2",
       icon: getAllIcons()[
         Math.round(Math.random() * (getAllIcons().length - 1))
       ],
       points: 56,
+      isHost: false,
+      isMe: false,
     },
     {
-      id: "3",
       name: "Player 3",
       icon: getAllIcons()[
         Math.round(Math.random() * (getAllIcons().length - 1))
       ],
       points: 43,
+      isHost: false,
+      isMe: false,
     },
     {
-      id: "1",
       name: "Very Long cool name",
       icon: getAllIcons()[
         Math.round(Math.random() * (getAllIcons().length - 1))
       ],
       points: 39,
+      isHost: false,
+      isMe: false,
     },
     {
-      id: "2",
       name: "Player 2",
       icon: getAllIcons()[
         Math.round(Math.random() * (getAllIcons().length - 1))
       ],
       points: 28,
+      isHost: false,
+      isMe: false,
     },
     {
-      id: "3",
       name: "Player 3",
       icon: getAllIcons()[
         Math.round(Math.random() * (getAllIcons().length - 1))
       ],
       points: 13,
+      isHost: false,
+      isMe: false,
     },
   ];
 
@@ -234,7 +250,7 @@ export default function Lobby() {
 
   return (
     <>
-      {/* <ProfileSelection onProfileSelected={handleProfileSelected} /> */}
+      <ProfileSelection onProfileSelected={handleProfileSelected} />
       <div
         class="relative grid grid-cols-[auto,1fr,auto] gap-4 h-full max-h-full"
         style={{
@@ -254,52 +270,64 @@ export default function Lobby() {
         <Switch>
           <Match when={gameState().state === "lobby"}>
             <section class="grid place-content-center">
-              <Show
-                fallback={<span>Waiting for other players</span>}
-                when={
-                  playerProperties.leaderId === playerProperties.thisPlayerId
+              <p class="text-foreground/70">
+                Currently{" "}
+                <span class="font-bold text-foreground">
+                  {playerProperties.players.length}
+                </span>{" "}
+                players in lobby
+              </p>
+              {/* <Show
+                fallback={
+                  <span class="text-lg font-semibold">
+                    Waiting for the host to start next round
+                  </span>
                 }
+                when={}
+              > */}
+              <Button
+                variant={"default"}
+                class="mb-2"
+                disabled={playerProperties.players.length === 0}
               >
-                <p>
-                  Currently{" "}
-                  <span class="font-bold">
-                    {playerProperties.players.length}
-                  </span>{" "}
-                  players in lobby
-                </p>
-                <Button
-                  variant={"default"}
-                  class="mb-2"
-                  disabled={playerProperties.players.length === 0}
-                >
-                  Start next round
-                </Button>
-                <div class="flex gap-1 mb-4">
-                  <TextFieldRoot class="w-full">
-                    <TextField
-                      type="text"
-                      name="lobbyId"
-                      autocomplete="off"
-                      readOnly
-                      value={lobbyId()}
-                      class="text-center uppercase font-bold tracking-wider"
-                    />
-                  </TextFieldRoot>
-                  <Button
-                    type="button"
-                    variant={"outline"}
-                    on:click={() => copyToClipboard(window.location.href)}
-                  >
-                    <Icon
-                      icon="solar:copy-bold-duotone"
-                      class="text-2xl py-1 text-foreground"
-                    />
-                  </Button>
-                </div>
-              </Show>
+                Start next round
+              </Button>
+              <div class="flex gap-1 mb-4">
+                <TextFieldRoot class="w-full">
+                  <TextField
+                    type="text"
+                    name="lobbyId"
+                    autocomplete="off"
+                    readOnly
+                    value={lobbyId()}
+                    class="text-center uppercase font-bold tracking-wider"
+                  />
+                </TextFieldRoot>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Button
+                      type="button"
+                      variant={"outline"}
+                      on:click={() => copyToClipboard(window.location.href)}
+                    >
+                      <Icon
+                        icon="solar:copy-bold-duotone"
+                        class="text-2xl py-1 text-foreground"
+                      />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Copy URL</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              {/* </Show> */}
 
               <img src="/svgs/waiting.svg" alt="" class="w-80 aspect-[2/3]" />
             </section>
+          </Match>
+          <Match when={gameState().state === "picking"}>
+            <p>PICKING PHASE</p>
           </Match>
           <Match when={gameState().state === "guessing"}>
             <Show when={!!profileData()} fallback={<p>Selecting...</p>}>

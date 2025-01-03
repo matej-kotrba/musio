@@ -1,10 +1,19 @@
-import type { GameState, Player, PlayerServerWithoutWS } from "shared";
+import type { GameState, Player } from "shared";
 import { getRandomId } from "./utils.js";
 import type { WSContext } from "hono/ws";
 import type { LobbyMap } from "./map.js";
 
 export type PlayerServer = Omit<PlayerServerWithoutWS, "ws"> & {
   ws: WSContext<unknown>;
+};
+
+export type PlayerServerWithoutWS = Omit<
+  Player,
+  "icon" | "ws" | "isHost" | "isMe"
+> & {
+  id: string;
+  icon: string;
+  ws?: never;
 };
 
 export type LobbiesMap = LobbyMap<string, Lobby>;

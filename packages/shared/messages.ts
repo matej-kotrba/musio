@@ -63,7 +63,7 @@ export function createNewMessageToServer<T extends WS_MESSAGE_TO_CLIENT_TYPE>(
 
 export function fromMessage<T extends WS_MESSAGE>(seriliazedMessage: string) {
   return JSON.parse(seriliazedMessage) as {
-    user: string;
+    userId: string;
     message: WS_MessageInterface<T>[keyof T];
   };
 }

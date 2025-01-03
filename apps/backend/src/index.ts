@@ -13,12 +13,16 @@ import {
   playerNameValidator,
   playerIconNameValidator,
   createNewMessageToClient,
-  type PlayerServerWithoutWS,
+  type PlayerFromServer,
   type WS_MessageMapClient,
   toPayloadToClient,
   fromMessage,
 } from "shared";
-import { isMessageTypeForGameState } from "./lib/game.js";
+import {
+  isHost,
+  isMessageTypeForGameState as isMessageTypeValidForGameState,
+} from "./lib/game.js";
+import { SONG_PICKING_DURATION } from "./lib/constants.js";
 
 const app = new Hono();
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
@@ -94,17 +98,14 @@ app.get(
           toPayloadToClient(
             "server",
             createNewMessageToClient(lobby!.id, "PLAYER_INIT", {
-              id: newPlayer.id,
-              icon: newPlayer.icon,
-              name: newPlayer.name,
-              points: newPlayer.points,
               allPlayers: lobby!.players.map((player) => ({
-                id: player.id,
                 name: player.name,
                 icon: player.icon,
                 points: player.points,
+                isHost: isHost(player.id, lobby!),
+                isMe: player.id === newPlayer.id,
               })),
-              leaderId: lobby!.leaderPlayerId!,
+              thisPlayerId: newPlayer.id,
             })
           )
         );
@@ -115,10 +116,11 @@ app.get(
           toPayloadToClient(
             "server",
             createNewMessageToClient(lobby!.id, "PLAYER_JOIN", {
-              id: newPlayer.id,
               name: newPlayer.name,
               icon: newPlayer.icon,
               points: newPlayer.points,
+              isHost: isHost(newPlayer.id, lobby!),
+              isMe: false,
             })
           )
         );
@@ -141,7 +143,7 @@ app.get(
 
           // If the event is not compatible with the current game state, ignore it
           if (
-            !isMessageTypeForGameState(
+            !isMessageTypeValidForGameState(
               lobby.stateProperties.state,
               parsed.message.type
             )
@@ -149,6 +151,27 @@ app.get(
             throw new Error("Invalid message type for current game state");
 
           switch (parsed.message.type) {
+            case "START_GAME": {
+              if (!isHost(parsed.userId, lobby)) return;
+              lobby.stateProperties.state = "picking";
+              lobbies.publish(
+                lobby.id,
+                "server",
+                toPayloadToClient(
+                  "server",
+                  createNewMessageToClient(lobby.id, "CHANGE_GAME_STATE", {
+                    properties: {
+                      state: "picking",
+                      initialTimeRemaining: SONG_PICKING_DURATION,
+                      playersWhoPickedIds: [],
+                    },
+                  })
+                )
+              );
+
+              break;
+            }
+
             case "PICK_SONG": {
               break;
             }

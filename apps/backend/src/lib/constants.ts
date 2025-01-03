@@ -1,0 +1,2 @@
+export const SONG_PICKING_DURATION = 60;
+export const SONG_GUESSING_DURATION = 30;

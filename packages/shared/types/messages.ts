@@ -1,12 +1,9 @@
 import type { GameState } from "./lobby";
-import type { PlayerServerWithoutWS } from "./player";
+import { PlayerFromServer } from "./player";
 
 export type WS_MessageMapServer = {
-  PLAYER_INIT: PlayerServerWithoutWS & {
-    allPlayers: PlayerServerWithoutWS[];
-    leaderId: string;
-  };
-  PLAYER_JOIN: PlayerServerWithoutWS;
+  PLAYER_INIT: { allPlayers: PlayerFromServer[]; thisPlayerId: string };
+  PLAYER_JOIN: PlayerFromServer;
   CHANGE_GAME_STATE: {
     properties: GameState;
   };
@@ -16,6 +13,9 @@ export type WS_MessageMapClient = {
   PICK_SONG: {
     lobbyId: string;
     song: string;
+  };
+  START_GAME: {
+    lobbyId: string;
   };
 };
 
