@@ -21,6 +21,7 @@ module.exports = {
         background: {
           DEAFULT: "hsl(var(--background) / <alpha-value>)",
           accent: "hsl(var(--background-accent) / <alpha-value>)",
+          highlight: "hsl(var(--background-highlight) / <alpha-value>)",
         },
         primary: {
           DEFAULT: "hsl(var(--primary) / <alpha-value>)",

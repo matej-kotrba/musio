@@ -220,6 +220,7 @@ export default function ProfileSelection(props: Props) {
                     name="name"
                     placeholder="Name"
                     value={localStorageName() ?? ""}
+                    autocomplete="off"
                     min={1}
                   />
                   <TextFieldErrorMessage>{nameError()}</TextFieldErrorMessage>

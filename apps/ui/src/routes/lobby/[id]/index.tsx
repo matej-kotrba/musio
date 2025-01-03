@@ -1,12 +1,5 @@
 import styles from "./index.module.css";
-import {
-  createSignal,
-  Show,
-  useContext,
-  onCleanup,
-  Switch,
-  Match,
-} from "solid-js";
+import { createSignal, Show, useContext, Switch, Match } from "solid-js";
 import PlayerDisplay, { getAllIcons } from "~/components/lobby/Player";
 import WordToGuess from "~/components/lobby/WordToGuess";
 import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
@@ -14,12 +7,9 @@ import Chat from "~/components/lobby/chat/Chat";
 import {
   isWsConnectionContext,
   WsConnectionContext,
-  WsContext,
 } from "~/contexts/connection";
 import { useParams, useNavigate } from "@solidjs/router";
-import ProfileSelection, {
-  ProfileData,
-} from "~/components/lobby/profile/ProfileSelection";
+import { ProfileData } from "~/components/lobby/profile/ProfileSelection";
 import {
   createNewMessageToServer,
   fromMessage,
@@ -29,10 +19,15 @@ import { getLobbyURL as getLobbyId } from "~/utils/rscs";
 import { GameState, Player, WS_MessageMapServer } from "shared/index.types";
 import { playerServerToPlayer } from "~/utils/game/common";
 import { createStore } from "solid-js/store";
+import { Button } from "~/components/ui/button";
+import { TextField, TextFieldRoot } from "~/components/ui/textfield";
+import { useCopyToClipboard } from "~/hooks";
+import { Icon } from "@iconify-icon/solid";
 
 export default function Lobby() {
   const params = useParams();
   const navigate = useNavigate();
+  const copyToClipboard = useCopyToClipboard();
 
   const ctx = useContext(WsConnectionContext);
 
@@ -265,10 +260,45 @@ export default function Lobby() {
                   playerProperties.leaderId === playerProperties.thisPlayerId
                 }
               >
-                <button>Start the game</button>
+                <p>
+                  Currently{" "}
+                  <span class="font-bold">
+                    {playerProperties.players.length}
+                  </span>{" "}
+                  players in lobby
+                </p>
+                <Button
+                  variant={"default"}
+                  class="mb-2"
+                  disabled={playerProperties.players.length === 0}
+                >
+                  Start next round
+                </Button>
+                <div class="flex gap-1 mb-4">
+                  <TextFieldRoot class="w-full">
+                    <TextField
+                      type="text"
+                      name="lobbyId"
+                      autocomplete="off"
+                      readOnly
+                      value={lobbyId()}
+                      class="text-center uppercase font-bold tracking-wider"
+                    />
+                  </TextFieldRoot>
+                  <Button
+                    type="button"
+                    variant={"outline"}
+                    on:click={() => copyToClipboard(window.location.href)}
+                  >
+                    <Icon
+                      icon="solar:copy-bold-duotone"
+                      class="text-2xl py-1 text-foreground"
+                    />
+                  </Button>
+                </div>
               </Show>
 
-              <img src="/svgs/waiting.svg" alt="" class="w-80" />
+              <img src="/svgs/waiting.svg" alt="" class="w-80 aspect-[2/3]" />
             </section>
           </Match>
           <Match when={gameState().state === "guessing"}>
