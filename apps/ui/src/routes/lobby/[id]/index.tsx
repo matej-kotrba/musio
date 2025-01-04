@@ -327,7 +327,7 @@ export default function Lobby() {
             </section>
           </Match>
           <Match when={gameState().state === "picking"}>
-            <p>PICKING PHASE</p>
+            <p>PICKING PHASE!</p>
           </Match>
           <Match when={gameState().state === "guessing"}>
             <Show when={!!profileData()} fallback={<p>Selecting...</p>}>
