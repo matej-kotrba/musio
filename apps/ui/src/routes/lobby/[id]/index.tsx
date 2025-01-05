@@ -43,6 +43,89 @@ import {
   TooltipTrigger,
 } from "~/components/ui/tooltip";
 import Timer from "~/components/lobby/picking-phase/Timer";
+import SongPicker from "~/components/lobby/picking-phase/SongPicker";
+
+const dummy_players: Player[] = [
+  {
+    name: "Very Long cool name asd asd asd awsdasd",
+    icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
+    points: 100,
+    isHost: true,
+    isMe: true,
+  },
+  {
+    name: "Player 2",
+    icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
+    points: 89,
+    isHost: false,
+    isMe: false,
+  },
+  {
+    name: "Player 3",
+    icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
+    points: 76,
+    isHost: false,
+    isMe: false,
+  },
+  {
+    name: "Very Long cool name",
+    icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
+    points: 67,
+    isHost: false,
+    isMe: false,
+  },
+  {
+    name: "Player 2",
+    icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
+    points: 56,
+    isHost: false,
+    isMe: false,
+  },
+  {
+    name: "Player 3",
+    icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
+    points: 43,
+    isHost: false,
+    isMe: false,
+  },
+  {
+    name: "Very Long cool name",
+    icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
+    points: 39,
+    isHost: false,
+    isMe: false,
+  },
+  {
+    name: "Player 2",
+    icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
+    points: 28,
+    isHost: false,
+    isMe: false,
+  },
+  {
+    name: "Player 3",
+    icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
+    points: 13,
+    isHost: false,
+    isMe: false,
+  },
+];
+
+const dummySongName = [
+  "R",
+  null,
+  null,
+  null,
+  " ",
+  null,
+  null,
+  "t",
+  null,
+  null,
+  "m",
+];
+
+const dummySongImage = "/2000x2000bb.jpg";
 
 export default function Lobby() {
   const params = useParams();
@@ -52,9 +135,13 @@ export default function Lobby() {
   const ctx = useContext(WsConnectionContext);
 
   const [profileData, setProfileData] = createSignal<ProfileData | null>(null);
-  const [players, setPlayers] = createSignal<Player[]>([]);
+  const [players, setPlayers] = createSignal<Player[]>(dummy_players);
   const [thisPlayerId, setThisPlayerId] = createSignal<string>("");
-  const [gameState, setGameState] = createSignal<GameState>({ state: "lobby" });
+  const [gameState, setGameState] = createSignal<GameState>({
+    state: "picking",
+    initialTimeRemaining: 30,
+    playersWhoPickedIds: [],
+  });
   const lobbyId = () => params.id;
 
   const getLobbyHost = () => players().find((player) => player.isHost);
@@ -167,109 +254,9 @@ export default function Lobby() {
       )
     );
 
-  const dummy_players: Player[] = [
-    {
-      name: "Very Long cool name asd asd asd awsdasd",
-      icon: getAllIcons()[
-        Math.round(Math.random() * (getAllIcons().length - 1))
-      ],
-      points: 100,
-      isHost: true,
-      isMe: true,
-    },
-    {
-      name: "Player 2",
-      icon: getAllIcons()[
-        Math.round(Math.random() * (getAllIcons().length - 1))
-      ],
-      points: 89,
-      isHost: false,
-      isMe: false,
-    },
-    {
-      name: "Player 3",
-      icon: getAllIcons()[
-        Math.round(Math.random() * (getAllIcons().length - 1))
-      ],
-      points: 76,
-      isHost: false,
-      isMe: false,
-    },
-    {
-      name: "Very Long cool name",
-      icon: getAllIcons()[
-        Math.round(Math.random() * (getAllIcons().length - 1))
-      ],
-      points: 67,
-      isHost: false,
-      isMe: false,
-    },
-    {
-      name: "Player 2",
-      icon: getAllIcons()[
-        Math.round(Math.random() * (getAllIcons().length - 1))
-      ],
-      points: 56,
-      isHost: false,
-      isMe: false,
-    },
-    {
-      name: "Player 3",
-      icon: getAllIcons()[
-        Math.round(Math.random() * (getAllIcons().length - 1))
-      ],
-      points: 43,
-      isHost: false,
-      isMe: false,
-    },
-    {
-      name: "Very Long cool name",
-      icon: getAllIcons()[
-        Math.round(Math.random() * (getAllIcons().length - 1))
-      ],
-      points: 39,
-      isHost: false,
-      isMe: false,
-    },
-    {
-      name: "Player 2",
-      icon: getAllIcons()[
-        Math.round(Math.random() * (getAllIcons().length - 1))
-      ],
-      points: 28,
-      isHost: false,
-      isMe: false,
-    },
-    {
-      name: "Player 3",
-      icon: getAllIcons()[
-        Math.round(Math.random() * (getAllIcons().length - 1))
-      ],
-      points: 13,
-      isHost: false,
-      isMe: false,
-    },
-  ];
-
-  const dummySongName = [
-    "R",
-    null,
-    null,
-    null,
-    " ",
-    null,
-    null,
-    "t",
-    null,
-    null,
-    "m",
-  ];
-
-  const dummySongImage = "/2000x2000bb.jpg";
-
   return (
     <>
-      <ProfileSelection onProfileSelected={handleProfileSelected} />
+      {/* <ProfileSelection onProfileSelected={handleProfileSelected} /> */}
       <div
         class="relative grid grid-cols-[auto,1fr,auto] gap-4 h-full max-h-full"
         style={{
@@ -280,7 +267,7 @@ export default function Lobby() {
         <aside
           class={`${styles.aside__scrollbar} relative flex flex-col gap-4 w-80 pr-2 overflow-x-clip h-full overflow-y-auto`}
         >
-          <Show when={!!profileData()} fallback={<p>Selecting...</p>}>
+          <Show when={!!profileData() || true} fallback={<p>Selecting...</p>}>
             {players().map((item) => (
               <PlayerDisplay maxPoints={100} player={item} />
             ))}
@@ -347,13 +334,15 @@ export default function Lobby() {
             </section>
           </Match>
           <Match when={gameState().state === "picking"}>
-            <p>PICKING PHASE!</p>
-            <Timer
-              maxTime={(gameState() as PickingGameState).initialTimeRemaining}
-              currentTime={
-                (gameState() as PickingGameState).initialTimeRemaining
-              }
-            />
+            <div class="flex flex-col items-center">
+              <Timer
+                maxTime={(gameState() as PickingGameState).initialTimeRemaining}
+                currentTime={
+                  (gameState() as PickingGameState).initialTimeRemaining
+                }
+              />
+              <SongPicker />
+            </div>
           </Match>
           <Match when={gameState().state === "guessing"}>
             <Show when={!!profileData()} fallback={<p>Selecting...</p>}>

@@ -12,9 +12,7 @@ export default function LobbyLayout(props: Props) {
     <GlobalsContextProvider>
       <WsConnectionContextProvider>
         <div class="container mx-auto">
-          <div class="p-4 bg-background-accent rounded-md">
-            {props.children}
-          </div>
+          <div class="p-4 rounded-md">{props.children}</div>
         </div>
       </WsConnectionContextProvider>
     </GlobalsContextProvider>

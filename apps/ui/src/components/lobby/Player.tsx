@@ -26,21 +26,27 @@ export default function PlayerDisplay(props: Props) {
 
   return (
     <div class="flex gap-2">
-      <img src={props.player.icon.url} alt="" class="rounded-lg w-24" />
+      <img src={props.player.icon.url} alt="" class="rounded-lg w-20" />
       <div class="min-w-0 self-start w-full">
-        <div class="text-xl font-semibold overflow-hidden whitespace-nowrap text-ellipsis">
+        <div
+          class="text-lg font-semibold overflow-hidden whitespace-nowrap text-ellipsis"
+          title={props.player.name}
+        >
           {props.player.name}
         </div>
         <div class="grid grid-cols-[auto,1fr] items-center">
           <div class="px-1 rounded-full bg-background-DEAFULT border-2 border-primary">
             {props.player.points}
           </div>
-          <div
-            class="h-2 text-sm text-foreground-dark my-2 bg-primary rounded-r-full -translate-x-[1px]"
-            style={{
-              width: `${displayPointsInPercentage()}%`,
-            }}
-          ></div>
+          <div class="relative h-2 text-sm text-foreground-dark my-2 -translate-x-[1px]">
+            <div class="w-full h-full bg-secondary absolute left-0 top-0 -z-10 rounded-r-full"></div>
+            <div
+              style={{
+                width: `${displayPointsInPercentage()}%`,
+              }}
+              class="w-full h-full bg-primary rounded-r-full"
+            ></div>
+          </div>
         </div>
       </div>
     </div>

@@ -11,11 +11,12 @@ export default function Timer(props: Props) {
   let af: number;
 
   const setTimeForFrame = (timeFromStart: number) => {
-    console.log(timeFromStart);
     setTime(props.maxTime - timeFromStart / 1000);
 
     if (time() > 0) {
       af = requestAnimationFrame(setTimeForFrame);
+    } else {
+      setTime(0);
     }
   };
 
@@ -36,7 +37,7 @@ export default function Timer(props: Props) {
       <div
         class={`aspect-square min-w-28 w-fit grid place-content-center rounded-full text-lg font-bold`}
       >
-        asd
+        {time().toFixed(0)}
       </div>
     </div>
   );
