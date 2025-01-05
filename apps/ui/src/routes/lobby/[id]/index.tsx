@@ -25,7 +25,13 @@ import {
   toPayloadToServer,
 } from "shared";
 import { getLobbyURL as getLobbyId } from "~/utils/rscs";
-import { GameState, Player, WS_MessageMapServer } from "shared/index.types";
+import {
+  GameState,
+  LobbyGameState,
+  PickingGameState,
+  Player,
+  WS_MessageMapServer,
+} from "shared/index.types";
 import { playerServerToPlayer } from "~/utils/game/common";
 import { Button } from "~/components/ui/button";
 import { TextField, TextFieldRoot } from "~/components/ui/textfield";
@@ -36,6 +42,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "~/components/ui/tooltip";
+import Timer from "~/components/lobby/picking-phase/Timer";
 
 export default function Lobby() {
   const params = useParams();
@@ -138,7 +145,8 @@ export default function Lobby() {
       }
 
       case "CHANGE_GAME_STATE": {
-        console.log(data.message.payload);
+        const payload = data.message.payload;
+        setGameState(payload.properties);
         break;
       }
     }
@@ -340,6 +348,12 @@ export default function Lobby() {
           </Match>
           <Match when={gameState().state === "picking"}>
             <p>PICKING PHASE!</p>
+            <Timer
+              maxTime={(gameState() as PickingGameState).initialTimeRemaining}
+              currentTime={
+                (gameState() as PickingGameState).initialTimeRemaining
+              }
+            />
           </Match>
           <Match when={gameState().state === "guessing"}>
             <Show when={!!profileData()} fallback={<p>Selecting...</p>}>

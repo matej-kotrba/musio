@@ -1,0 +1,74 @@
+@property --deg {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.effect::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-image: conic-gradient(
+      from var(--deg),
+      #669900,
+      #99cc33,
+      #ccee66,
+      #006699,
+      #3399cc,
+      #990066,
+      #cc3399,
+      #ff6600,
+      #ff9900,
+      #ffcc00,
+      #669900
+    )
+    0 0 1 0 / 0 0 20px 0;
+  filter: blur(1rem);
+  mask: linear-gradient(
+    to right,
+    transparent 0,
+    black 30%,
+    black 70%,
+    transparent 100%
+  );
+  animation: spin 10s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    --deg: 0deg;
+  }
+  to {
+    --deg: 360deg;
+  }
+}
+
+@property --gradient-color {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+.song::before {
+  --gradient-color: transparent;
+
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  inset: 0;
+  z-index: -100;
+  background-image: linear-gradient(to top, var(--gradient-color), transparent);
+  transition: --gradient-color 400ms;
+}
+
+.song[data-selected="true"]::before {
+  --gradient-color: hsl(var(--primary) / 0.2);
+
+  background-image: linear-gradient(
+    to top,
+    var(--gradient-color),
+    transparent
+  ) !important;
+}

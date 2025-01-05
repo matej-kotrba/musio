@@ -1,0 +1,7 @@
+.bg {
+  background-image: conic-gradient(
+    transparent var(--deg),
+    hsl(var(--primary)) var(--deg)
+  );
+  mask: radial-gradient(circle, transparent 50%, black 51%);
+}

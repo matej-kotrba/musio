@@ -5,17 +5,17 @@ export type Song = {
   trackUrl: string;
 };
 
-type LobbyGameState = {
+export type LobbyGameState = {
   state: "lobby";
 };
 
-type PickingGameState = {
+export type PickingGameState = {
   state: "picking";
   playersWhoPickedIds: string[];
   initialTimeRemaining: number;
 };
 
-type GuessingGameState = {
+export type GuessingGameState = {
   state: "guessing";
   songsToGuessQueue: Song[];
   currentSongIndex: number;
@@ -23,7 +23,7 @@ type GuessingGameState = {
   currentInitialTimeRemaining: number;
 };
 
-type LeaderboardGameState = {
+export type LeaderboardGameState = {
   state: "leaderboard";
 };
 

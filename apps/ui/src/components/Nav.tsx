@@ -5,9 +5,9 @@ import { NAV_HEIGHT } from "~/utils/constants";
 
 export default function Nav() {
   return (
-    <div class={`${styles.nav} sticky top-0 left-0 z-[10]`}>
+    <div class={`container ${styles.nav} sticky top-0 left-0 z-[10]`}>
       <nav
-        class={`flex items-center justify-between px-4 container mx-auto`}
+        class={`flex items-center justify-between`}
         style={{ height: NAV_HEIGHT }}
       >
         <img src={musioLogo} alt="" class="w-16" />
