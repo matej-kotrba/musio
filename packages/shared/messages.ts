@@ -12,24 +12,29 @@ export const messageToClientGameState: Record<
   GameStateType,
   WS_MESSAGE_TO_CLIENT_TYPE[]
 > = {
-  lobby: [],
+  lobby: ["START_GAME"],
   guessing: [],
   picking: ["PICK_SONG"],
   leaderboard: [],
 } as const;
 
+type PayloadData<T> = { userId: string; message: T };
+
 const toPayload = <T extends () => unknown>(
-  from: String,
+  from: string,
   message: ReturnType<T>
-) => JSON.stringify({ user: from, message: message });
+) =>
+  JSON.stringify({ userId: from, message: message } satisfies PayloadData<
+    ReturnType<T>
+  >);
 
 export const toPayloadToClient = (
-  from: String,
+  from: string,
   message: ReturnType<typeof createNewMessageToClient>
 ) => toPayload(from, message);
 
 export const toPayloadToServer = (
-  from: String,
+  from: string,
   message: ReturnType<typeof createNewMessageToServer>
 ) => toPayload(from, message);
 
@@ -62,8 +67,7 @@ export function createNewMessageToServer<T extends WS_MESSAGE_TO_CLIENT_TYPE>(
 }
 
 export function fromMessage<T extends WS_MESSAGE>(seriliazedMessage: string) {
-  return JSON.parse(seriliazedMessage) as {
-    userId: string;
-    message: WS_MessageInterface<T>[keyof T];
-  };
+  return JSON.parse(seriliazedMessage) as PayloadData<
+    WS_MessageInterface<T>[keyof T]
+  >;
 }

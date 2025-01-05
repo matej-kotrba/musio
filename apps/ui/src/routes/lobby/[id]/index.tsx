@@ -1,5 +1,12 @@
 import styles from "./index.module.css";
-import { createSignal, Show, useContext, Switch, Match } from "solid-js";
+import {
+  createSignal,
+  Show,
+  useContext,
+  Switch,
+  Match,
+  createEffect,
+} from "solid-js";
 import PlayerDisplay, { getAllIcons } from "~/components/lobby/Player";
 import WordToGuess from "~/components/lobby/WordToGuess";
 import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
@@ -20,7 +27,6 @@ import {
 import { getLobbyURL as getLobbyId } from "~/utils/rscs";
 import { GameState, Player, WS_MessageMapServer } from "shared/index.types";
 import { playerServerToPlayer } from "~/utils/game/common";
-import { createStore } from "solid-js/store";
 import { Button } from "~/components/ui/button";
 import { TextField, TextFieldRoot } from "~/components/ui/textfield";
 import { useCopyToClipboard } from "~/hooks";
@@ -39,12 +45,13 @@ export default function Lobby() {
   const ctx = useContext(WsConnectionContext);
 
   const [profileData, setProfileData] = createSignal<ProfileData | null>(null);
-  const [playerProperties, setPlayerProperties] = createStore<{
-    players: Player[];
-    thisPlayerId: string;
-  }>({ players: [], thisPlayerId: "" });
+  const [players, setPlayers] = createSignal<Player[]>([]);
+  const [thisPlayerId, setThisPlayerId] = createSignal<string>("");
   const [gameState, setGameState] = createSignal<GameState>({ state: "lobby" });
   const lobbyId = () => params.id;
+
+  const getLobbyHost = () => players().find((player) => player.isHost);
+  const getThisPlayer = () => players().find((player) => player.isMe);
 
   function wsConnect() {
     const context = ctx?.connection;
@@ -102,13 +109,13 @@ export default function Lobby() {
       case "PLAYER_INIT": {
         const payload = data.message.payload;
         const allPlayers = payload.allPlayers.map(playerServerToPlayer);
-        setPlayerProperties("players", allPlayers);
-        setPlayerProperties("thisPlayerId", payload.thisPlayerId);
+        setPlayers(allPlayers);
+        setThisPlayerId(payload.thisPlayerId);
 
         ctx.setConnection((old) => {
           return {
             ...old,
-            playerId: playerProperties.thisPlayerId,
+            playerId: payload.thisPlayerId,
           };
         });
 
@@ -116,7 +123,6 @@ export default function Lobby() {
           toPayloadToServer(
             ctx.connection.playerId,
             createNewMessageToServer(ctx.connection.playerId, "PICK_SONG", {
-              lobbyId: ctx.connection.lobbyId,
               song: "Love to Lose",
             })
           )
@@ -126,10 +132,7 @@ export default function Lobby() {
       }
       case "PLAYER_JOIN": {
         const payload = data.message.payload;
-        setPlayerProperties("players", (old) => [
-          ...old,
-          playerServerToPlayer(payload),
-        ]);
+        setPlayers((old) => [...old, playerServerToPlayer(payload)]);
 
         break;
       }
@@ -147,6 +150,14 @@ export default function Lobby() {
 
     // console.log(user, message);
   };
+
+  const onNextRoundStartButtonClick = () =>
+    ctx?.connection.ws?.send(
+      toPayloadToServer(
+        thisPlayerId(),
+        createNewMessageToServer(lobbyId(), "START_GAME", {})
+      )
+    );
 
   const dummy_players: Player[] = [
     {
@@ -262,7 +273,7 @@ export default function Lobby() {
           class={`${styles.aside__scrollbar} relative flex flex-col gap-4 w-80 pr-2 overflow-x-clip h-full overflow-y-auto`}
         >
           <Show when={!!profileData()} fallback={<p>Selecting...</p>}>
-            {playerProperties.players.map((item) => (
+            {players().map((item) => (
               <PlayerDisplay maxPoints={100} player={item} />
             ))}
           </Show>
@@ -273,55 +284,56 @@ export default function Lobby() {
               <p class="text-foreground/70">
                 Currently{" "}
                 <span class="font-bold text-foreground">
-                  {playerProperties.players.length}
+                  {players().length}
                 </span>{" "}
                 players in lobby
               </p>
-              {/* <Show
+              <Show
                 fallback={
                   <span class="text-lg font-semibold">
                     Waiting for the host to start next round
                   </span>
                 }
-                when={}
-              > */}
-              <Button
-                variant={"default"}
-                class="mb-2"
-                disabled={playerProperties.players.length === 0}
+                when={getLobbyHost()?.isMe}
               >
-                Start next round
-              </Button>
-              <div class="flex gap-1 mb-4">
-                <TextFieldRoot class="w-full">
-                  <TextField
-                    type="text"
-                    name="lobbyId"
-                    autocomplete="off"
-                    readOnly
-                    value={lobbyId()}
-                    class="text-center uppercase font-bold tracking-wider"
-                  />
-                </TextFieldRoot>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Button
-                      type="button"
-                      variant={"outline"}
-                      on:click={() => copyToClipboard(window.location.href)}
-                    >
-                      <Icon
-                        icon="solar:copy-bold-duotone"
-                        class="text-2xl py-1 text-foreground"
-                      />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Copy URL</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              {/* </Show> */}
+                <Button
+                  variant={"default"}
+                  class="mb-2"
+                  disabled={players().length === 0}
+                  on:click={onNextRoundStartButtonClick}
+                >
+                  Start next round
+                </Button>
+                <div class="flex gap-1 mb-4">
+                  <TextFieldRoot class="w-full">
+                    <TextField
+                      type="text"
+                      name="lobbyId"
+                      autocomplete="off"
+                      readOnly
+                      value={lobbyId()}
+                      class="text-center uppercase font-bold tracking-wider"
+                    />
+                  </TextFieldRoot>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Button
+                        type="button"
+                        variant={"outline"}
+                        on:click={() => copyToClipboard(window.location.href)}
+                      >
+                        <Icon
+                          icon="solar:copy-bold-duotone"
+                          class="text-2xl py-1 text-foreground"
+                        />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Copy URL</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+              </Show>
 
               <img src="/svgs/waiting.svg" alt="" class="w-80 aspect-[2/3]" />
             </section>

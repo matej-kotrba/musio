@@ -11,12 +11,9 @@ export type WS_MessageMapServer = {
 
 export type WS_MessageMapClient = {
   PICK_SONG: {
-    lobbyId: string;
     song: string;
   };
-  START_GAME: {
-    lobbyId: string;
-  };
+  START_GAME: {};
 };
 
 export type WS_MESSAGE = WS_MessageMapServer | WS_MessageMapClient;
