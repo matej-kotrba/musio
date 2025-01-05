@@ -1,8 +1,9 @@
-import { Icon, Player } from "shared/index.types";
+import { Icon } from "@iconify-icon/solid";
+import { Icon as IconType, Player } from "shared/index.types";
 
 const icons = import.meta.glob("/public/avatars/*", { query: "?url" });
 
-export function getAllIcons(): Icon[] {
+export function getAllIcons(): IconType[] {
   return Object.keys(icons).map((iconPath) => {
     const name = iconPath.split("/").at(-1)!.split(".")[0];
     name[0].toUpperCase();
@@ -10,13 +11,14 @@ export function getAllIcons(): Icon[] {
     return {
       url: "/" + iconPath.split("/").slice(2).join("/"),
       name: name,
-    } as Icon;
+    } as IconType;
   });
 }
 
 type Props = {
   player: Player;
   maxPoints: number;
+  isLeading?: boolean;
 };
 
 export default function PlayerDisplay(props: Props) {
@@ -25,8 +27,13 @@ export default function PlayerDisplay(props: Props) {
   }
 
   return (
-    <div class="flex gap-2">
-      <img src={props.player.icon.url} alt="" class="rounded-lg w-20" />
+    <div class="relative flex gap-2">
+      <div class="relative w-28">
+        <img src={props.player.icon.url} alt="" class="rounded-lg" />
+        <div class="absolute right-0 top-0 rotate-45">
+          <Icon icon={"solar:crown-bold"} class="text-xl text-yellow-400" />
+        </div>
+      </div>
       <div class="min-w-0 self-start w-full">
         <div
           class="text-lg font-semibold overflow-hidden whitespace-nowrap text-ellipsis"
