@@ -178,7 +178,6 @@ app.get(
           }
         } catch {}
       },
-      // },
       // onMessage(event, ws) {
       //   ws.
       //   const playerId = userIdFromId(peer.id);
