@@ -1,4 +1,4 @@
-import type { GameState } from "./lobby";
+import type { GameState, Song } from "./lobby";
 import { PlayerFromServer } from "./player";
 
 export type WS_MessageMapServer = {
@@ -10,9 +10,7 @@ export type WS_MessageMapServer = {
 };
 
 export type WS_MessageMapClient = {
-  PICK_SONG: {
-    song: string;
-  };
+  PICK_SONG: Omit<Song, "fromPlayerById">;
   START_GAME: {};
 };
 

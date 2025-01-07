@@ -288,7 +288,11 @@ async function sendItunesRequest(query: string) {
   return parsed as ItunesSearchResponse;
 }
 
-export default function SongPicker() {
+type Props = {
+  onSongSelect: (selectedSong: ItunesSong) => void;
+};
+
+export default function SongPicker(props: Props) {
   const globals = useContext(GlobalsContext);
 
   const [songName, setSongName] = useDebounce<string>("", 600);
@@ -341,10 +345,17 @@ export default function SongPicker() {
     setSelectedSong(song);
   }
 
-  function handleSongConfirm() {
+  function handleSongConfirmDialogOpen() {
     if (selectedSong()) {
       setIsConfirmDialogOpened(true);
     }
+  }
+
+  function handleSongConfirm() {
+    if (!selectedSong()) return;
+
+    props.onSongSelect(selectedSong()!);
+    setIsConfirmDialogOpened(false);
   }
 
   return (
@@ -374,7 +385,9 @@ export default function SongPicker() {
                 />
               </TextFieldRoot>
               <div class="flex gap-2 w-fit ml-auto">
-                <Button variant={"default"}>Confirm</Button>
+                <Button variant={"default"} on:click={handleSongConfirm}>
+                  Confirm
+                </Button>
               </div>
             </DialogDescription>
           </DialogHeader>
@@ -427,7 +440,7 @@ export default function SongPicker() {
                 as={"button"}
                 class="group border border-primary bg-primary rounded-r-md px-2 grid place-content-center hover:bg-primary-darker duration-100 disabled:bg-background-accent"
                 disabled={!selectedSong()}
-                on:click={handleSongConfirm}
+                on:click={handleSongConfirmDialogOpen}
               >
                 <Icon
                   icon="charm:tick"

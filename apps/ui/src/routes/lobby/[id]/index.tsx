@@ -27,6 +27,7 @@ import {
 import { getLobbyURL as getLobbyId } from "~/utils/rscs";
 import {
   GameState,
+  ItunesSong,
   LobbyGameState,
   PickingGameState,
   Player,
@@ -213,15 +214,6 @@ export default function Lobby() {
           };
         });
 
-        ctx.connection.ws?.send(
-          toPayloadToServer(
-            ctx.connection.playerId,
-            createNewMessageToServer(ctx.connection.playerId, "PICK_SONG", {
-              song: "Love to Lose",
-            })
-          )
-        );
-
         break;
       }
       case "PLAYER_JOIN": {
@@ -237,13 +229,6 @@ export default function Lobby() {
         break;
       }
     }
-
-    // console.log(event);
-    // const { user, message } = event.data.startsWith("{")
-    //   ? (JSON.parse(event.data) as { user: string; message: unknown })
-    //   : { user: "Kamos", message: event.data };
-
-    // console.log(user, message);
   };
 
   const onNextRoundStartButtonClick = () =>
@@ -251,6 +236,18 @@ export default function Lobby() {
       toPayloadToServer(
         thisPlayerId(),
         createNewMessageToServer(lobbyId(), "START_GAME", {})
+      )
+    );
+
+  const handleSongSelection = (selectedSong: ItunesSong) =>
+    ctx?.connection.ws?.send(
+      toPayloadToServer(
+        thisPlayerId(),
+        createNewMessageToServer(lobbyId(), "PICK_SONG", {
+          name: selectedSong.trackName,
+          artist: selectedSong.artistName,
+          trackUrl: selectedSong.trackViewUrl,
+        })
       )
     );
 
@@ -350,7 +347,7 @@ export default function Lobby() {
                   (gameState() as PickingGameState).initialTimeRemaining
                 }
               />
-              <SongPicker />
+              <SongPicker onSongSelect={handleSongSelection} />
             </div>
           </Match>
           <Match when={gameState().state === "guessing"}>
