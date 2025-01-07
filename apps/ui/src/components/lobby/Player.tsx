@@ -1,5 +1,6 @@
 import { Icon } from "@iconify-icon/solid";
 import { Icon as IconType, Player } from "shared/index.types";
+import { Show } from "solid-js";
 
 const icons = import.meta.glob("/public/avatars/*", { query: "?url" });
 
@@ -30,9 +31,15 @@ export default function PlayerDisplay(props: Props) {
     <div class="relative flex gap-2">
       <div class="relative w-28">
         <img src={props.player.icon.url} alt="" class="rounded-lg" />
-        <div class="absolute right-0 top-0 rotate-45">
-          <Icon icon={"solar:crown-bold"} class="text-xl text-yellow-400" />
-        </div>
+        <Show when={props.isLeading}>
+          <div class="absolute right-1 top-1 rotate-45">
+            <Icon
+              icon={"solar:crown-bold"}
+              class="text-xl text-yellow-400"
+              style={{ filter: "drop-shadow(0 0 2px black)" }}
+            />
+          </div>
+        </Show>
       </div>
       <div class="min-w-0 self-start w-full">
         <div

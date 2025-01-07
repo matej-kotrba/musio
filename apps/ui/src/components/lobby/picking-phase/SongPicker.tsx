@@ -18,6 +18,11 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { Button } from "~/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
 
 const ClientOnlyAudioController = clientOnly(
   () => import("~/components/common/audio-controller/AudioControl")
@@ -417,32 +422,45 @@ export default function SongPicker() {
               autocomplete="off"
               class="text-lg py-6 border-r-0 rounded-r-none focus-visible:ring-0"
             />
-            <button
-              class="group border border-primary bg-primary rounded-r-md px-2 grid place-content-center hover:bg-primary-darker duration-100 disabled:bg-background-accent"
-              disabled={!selectedSong()}
-              on:click={handleSongConfirm}
-            >
-              <Icon
-                icon="charm:tick"
-                class="text-2xl text-background-DEAFULT group-hover:text-foreground duration-100 group-disabled:text-gray-500"
-              />
-            </button>
+            <Tooltip>
+              <TooltipTrigger
+                as={"button"}
+                class="group border border-primary bg-primary rounded-r-md px-2 grid place-content-center hover:bg-primary-darker duration-100 disabled:bg-background-accent"
+                disabled={!selectedSong()}
+                on:click={handleSongConfirm}
+              >
+                <Icon
+                  icon="charm:tick"
+                  class="text-2xl text-background-DEAFULT group-hover:text-foreground duration-100 group-disabled:text-gray-500"
+                />
+              </TooltipTrigger>
+              <TooltipContent>Pick this song</TooltipContent>
+            </Tooltip>
           </div>
         </TextFieldRoot>
         <Show when={searchedSongs().length > 0}>
           <div class="w-full overflow-hidden border border-foreground rounded-md mt-2">
-            <div class="flex flex-col divide-y-[1px] divide-white/40">
+            <div
+              class="flex flex-col divide-y-[1px] divide-white/40 overflow-y-scroll max-h-[calc(var(--item-overflow-count)*var(--item-height))]"
+              style={"--item-height: 4rem; --item-overflow-count: 3;"}
+            >
               <Index each={searchedSongs()}>
                 {(song) => {
                   return (
                     <button
                       type="button"
-                      class={`${styles.song} isolate relative flex items-center gap-2 p-2 hover:bg-background-DEAFULT duration-150 focus-within:outline-none focus-within:bg-background-DEAFULT`}
+                      class={`${styles.song} h-[var(--item-height)] isolate relative flex items-center gap-2 p-2 hover:bg-background-DEAFULT duration-150 focus-within:outline-none focus-within:bg-background-DEAFULT`}
                       data-selected={song().trackId === selectedSong()?.trackId}
                       on:click={() => handlePickSong(song())}
                       title={song().trackName}
                     >
-                      <img src={song().artworkUrl60} alt="" class="size-14" />
+                      <img
+                        src={song().artworkUrl60}
+                        width={56}
+                        height={56}
+                        alt=""
+                        class="size-14"
+                      />
                       <span class="text-base font-semibold overflow-hidden whitespace-nowrap text-ellipsis">
                         {song().trackName}
                       </span>

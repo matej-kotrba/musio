@@ -1,5 +1,4 @@
 import { JSXElement } from "solid-js";
-import { Toaster } from "solid-toast";
 import { WsConnectionContextProvider } from "~/contexts/connection";
 import { GlobalsContextProvider } from "~/contexts/globals";
 

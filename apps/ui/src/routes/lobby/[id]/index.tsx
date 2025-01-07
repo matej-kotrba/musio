@@ -258,7 +258,7 @@ export default function Lobby() {
     <>
       {/* <ProfileSelection onProfileSelected={handleProfileSelected} /> */}
       <div
-        class="relative grid grid-cols-[auto,1fr,auto] gap-4 h-full max-h-full"
+        class="relative grid grid-cols-[auto,1fr,auto] gap-4 h-full max-h-full overflow-hidden"
         style={{
           "--custom-height": `calc(100vh - ${NAV_HEIGHT} - ${LOBBY_LAYOUT_HEIGHT} * 2 - 2rem)`,
           height: "var(--custom-height)",
@@ -266,11 +266,20 @@ export default function Lobby() {
       >
         <aside
           class={`${styles.aside__scrollbar} relative flex flex-col gap-4 w-80 pr-2 overflow-x-clip h-full overflow-y-auto`}
+          style={{
+            height: "var(--custom-height)",
+          }}
         >
           <Show when={!!profileData() || true} fallback={<p>Selecting...</p>}>
-            {players().map((item) => (
-              <PlayerDisplay maxPoints={100} player={item} />
-            ))}
+            {players()
+              .toSorted((a, b) => b.points - a.points)
+              .map((item, index) => (
+                <PlayerDisplay
+                  maxPoints={100}
+                  player={item}
+                  isLeading={!index}
+                />
+              ))}
           </Show>
         </aside>
         <Switch>
@@ -368,7 +377,7 @@ export default function Lobby() {
             height: "var(--custom-height)",
           }}
         >
-          <Show when={!!profileData()} fallback={<p>Selecting...</p>}>
+          <Show when={!!profileData() || true} fallback={<p>Selecting...</p>}>
             <Chat />
           </Show>
         </aside>
