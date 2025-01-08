@@ -52,63 +52,63 @@ const dummy_players: Player[] = [
     icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
     points: 100,
     isHost: true,
-    isMe: true,
+    publicId: "1",
   },
   {
     name: "Player 2",
     icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
     points: 89,
     isHost: false,
-    isMe: false,
+    publicId: "2",
   },
   {
     name: "Player 3",
     icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
     points: 76,
     isHost: false,
-    isMe: false,
+    publicId: "3",
   },
   {
     name: "Very Long cool name",
     icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
     points: 67,
     isHost: false,
-    isMe: false,
+    publicId: "4",
   },
   {
     name: "Player 2",
     icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
     points: 56,
     isHost: false,
-    isMe: false,
+    publicId: "5",
   },
   {
     name: "Player 3",
     icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
     points: 43,
     isHost: false,
-    isMe: false,
+    publicId: "6",
   },
   {
     name: "Very Long cool name",
     icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
     points: 39,
     isHost: false,
-    isMe: false,
+    publicId: "7",
   },
   {
     name: "Player 2",
     icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
     points: 28,
     isHost: false,
-    isMe: false,
+    publicId: "8",
   },
   {
     name: "Player 3",
     icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
     points: 13,
     isHost: false,
-    isMe: false,
+    publicId: "9",
   },
 ];
 
@@ -137,7 +137,10 @@ export default function Lobby() {
 
   const [profileData, setProfileData] = createSignal<ProfileData | null>(null);
   const [players, setPlayers] = createSignal<Player[]>(dummy_players);
-  const [thisPlayerId, setThisPlayerId] = createSignal<string>("");
+  const [thisPlayerIds, setThisPlayerIds] = createSignal<{
+    public: string;
+    private: string;
+  }>();
   const [gameState, setGameState] = createSignal<GameState>({
     state: "picking",
     initialTimeRemaining: 30,
@@ -146,7 +149,8 @@ export default function Lobby() {
   const lobbyId = () => params.id;
 
   const getLobbyHost = () => players().find((player) => player.isHost);
-  const getThisPlayer = () => players().find((player) => player.isMe);
+  const getThisPlayer = () =>
+    players().find((player) => player.publicId === thisPlayerIds()?.public);
 
   function wsConnect() {
     const context = ctx?.connection;
@@ -205,12 +209,15 @@ export default function Lobby() {
         const payload = data.message.payload;
         const allPlayers = payload.allPlayers.map(playerServerToPlayer);
         setPlayers(allPlayers);
-        setThisPlayerId(payload.thisPlayerId);
+        setThisPlayerIds({
+          private: payload.thisPlayerPrivateId,
+          public: payload.thisPlayerPublicId,
+        });
 
         ctx.setConnection((old) => {
           return {
             ...old,
-            playerId: payload.thisPlayerId,
+            playerId: payload.thisPlayerPrivateId,
           };
         });
 
@@ -231,18 +238,23 @@ export default function Lobby() {
     }
   };
 
-  const onNextRoundStartButtonClick = () =>
+  const onNextRoundStartButtonClick = () => {
+    if (!thisPlayerIds()?.private) return;
+
     ctx?.connection.ws?.send(
       toPayloadToServer(
-        thisPlayerId(),
+        thisPlayerIds()!.private,
         createNewMessageToServer(lobbyId(), "START_GAME", {})
       )
     );
+  };
 
-  const handleSongSelection = (selectedSong: ItunesSong) =>
+  const handleSongSelection = (selectedSong: ItunesSong) => {
+    if (!thisPlayerIds()?.private) return;
+
     ctx?.connection.ws?.send(
       toPayloadToServer(
-        thisPlayerId(),
+        thisPlayerIds()!.private,
         createNewMessageToServer(lobbyId(), "PICK_SONG", {
           name: selectedSong.trackName,
           artist: selectedSong.artistName,
@@ -250,6 +262,7 @@ export default function Lobby() {
         })
       )
     );
+  };
 
   return (
     <>
@@ -295,7 +308,7 @@ export default function Lobby() {
                     Waiting for the host to start next round
                   </span>
                 }
-                when={getLobbyHost()?.isMe}
+                when={getLobbyHost()?.publicId === thisPlayerIds()?.public}
               >
                 <Button
                   variant={"default"}

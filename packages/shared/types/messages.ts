@@ -3,11 +3,16 @@ import type { GameState } from "./lobby";
 import { PlayerFromServer } from "./player";
 
 export type WS_MessageMapServer = {
-  PLAYER_INIT: { allPlayers: PlayerFromServer[]; thisPlayerId: string };
+  PLAYER_INIT: {
+    allPlayers: PlayerFromServer[];
+    thisPlayerPublicId: string;
+    thisPlayerPrivateId: string;
+  };
   PLAYER_JOIN: PlayerFromServer;
   CHANGE_GAME_STATE: {
     properties: GameState;
   };
+  PLAYER_PICKED_SONG: {};
 };
 
 export type WS_MessageMapClient = {

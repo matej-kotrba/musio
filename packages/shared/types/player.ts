@@ -4,11 +4,11 @@ export type Icon = {
 };
 
 export type Player = {
+  publicId: string;
   name: string;
   icon: Icon;
   points: number;
   isHost: boolean;
-  isMe: boolean;
 };
 
 export type PlayerFromServer = Omit<Player, "icon"> & { icon: string };

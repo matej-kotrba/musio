@@ -90,9 +90,15 @@ app.get(
 
         const lobby = lobbies.get(lobbyId);
 
-        const newPlayer = createNewPlayer(ws, getRandomId(), name!, icon!);
+        const newPlayer = createNewPlayer(
+          ws,
+          getRandomId(),
+          getRandomId(),
+          name!,
+          icon!
+        );
         if (lobby?.players.length === 0) {
-          lobby.leaderPlayerId = newPlayer.id;
+          lobby.leaderPlayerId = newPlayer.privateId;
         }
         lobby!.players.push(newPlayer);
 
@@ -102,28 +108,29 @@ app.get(
             "server",
             createNewMessageToClient(lobby!.id, "PLAYER_INIT", {
               allPlayers: lobby!.players.map((player) => ({
+                publicId: player.publicId,
                 name: player.name,
                 icon: player.icon,
                 points: player.points,
-                isHost: isHost(player.id, lobby!),
-                isMe: player.id === newPlayer.id,
+                isHost: isHost(player.privateId, lobby!),
               })),
-              thisPlayerId: newPlayer.id,
+              thisPlayerPrivateId: newPlayer.privateId,
+              thisPlayerPublicId: newPlayer.publicId,
             })
           )
         );
 
         lobbies.publish(
           lobbyId,
-          newPlayer.id,
+          newPlayer.publicId,
           toPayloadToClient(
             "server",
             createNewMessageToClient(lobby!.id, "PLAYER_JOIN", {
+              publicId: newPlayer.publicId,
               name: newPlayer.name,
               icon: newPlayer.icon,
               points: newPlayer.points,
-              isHost: isHost(newPlayer.id, lobby!),
-              isMe: false,
+              isHost: isHost(newPlayer.privateId, lobby!),
             })
           )
         );
@@ -163,6 +170,7 @@ app.get(
                 case "START_GAME": {
                   if (!isHost(parsed.userId, lobby)) return;
                   changeLobbyState(lobby, getInitialPickingGameState());
+
                   lobbies.publish(
                     lobby.id,
                     "server",
@@ -176,17 +184,31 @@ app.get(
 
                   break;
                 }
+
+                default:
+                  break;
               }
+
+              break;
             }
 
             case "picking": {
-              switch (parsed.message.type) {
+              switch (
+                parsed.message
+                  .type as (typeof messageToClientGameState)["picking"][number]
+              ) {
                 case "PICK_SONG": {
-                  const { artist, name, trackUrl } = parsed.message.payload;
+                  // const { artist, name, trackUrl } = parsed.message.payload;
+                  // lobby.stateProperties.;
 
                   break;
                 }
+
+                default:
+                  break;
               }
+
+              break;
             }
           }
         } catch {}

@@ -12,7 +12,7 @@ export type PlayerServerWithoutWS = Omit<
   Player,
   "icon" | "ws" | "isHost" | "isMe"
 > & {
-  id: string;
+  privateId: string;
   icon: string;
   ws?: never;
 };
@@ -45,14 +45,16 @@ export function initPlayerToLobby(
 
 export function createNewPlayer(
   ws: WSContext<unknown>,
-  id: string,
+  privateId: string,
+  publicId: string,
   name: string,
   icon: string,
   points?: number
 ): PlayerServer {
   return {
     ws,
-    id,
+    privateId,
+    publicId,
     name,
     icon,
     points: points ?? 0,
