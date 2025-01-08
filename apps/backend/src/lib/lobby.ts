@@ -1,7 +1,8 @@
-import type { GameState, Player } from "shared";
+import type { GameState, PickingGameState, Player } from "shared";
 import { getRandomId } from "./utils.js";
 import type { WSContext } from "hono/ws";
 import type { LobbyMap } from "./map.js";
+import { SONG_PICKING_DURATION } from "./constants.js";
 
 export type PlayerServer = Omit<PlayerServerWithoutWS, "ws"> & {
   ws: WSContext<unknown>;
@@ -71,3 +72,13 @@ export function createNewLobby(lobbies: LobbiesMap) {
   lobbies.set(id, lobby);
   return lobby;
 }
+
+export function changeLobbyState(lobby: Lobby, state: GameState) {
+  lobby.stateProperties = state;
+}
+
+export const getInitialPickingGameState: () => PickingGameState = () => ({
+  state: "picking",
+  playersWhoPickedIds: [],
+  initialTimeRemaining: SONG_PICKING_DURATION,
+});

@@ -1,4 +1,5 @@
-import type { GameState, Song } from "./lobby";
+import type { messageConfig } from "../messages";
+import type { GameState } from "./lobby";
 import { PlayerFromServer } from "./player";
 
 export type WS_MessageMapServer = {
@@ -10,8 +11,7 @@ export type WS_MessageMapServer = {
 };
 
 export type WS_MessageMapClient = {
-  PICK_SONG: Omit<Song, "fromPlayerById">;
-  START_GAME: {};
+  [State in keyof typeof messageConfig as keyof (typeof messageConfig)[State]]: (typeof messageConfig)[State][keyof (typeof messageConfig)[State]];
 };
 
 export type WS_MESSAGE = WS_MessageMapServer | WS_MessageMapClient;

@@ -2,8 +2,10 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { createNodeWebSocket } from "@hono/node-ws";
 import {
+  changeLobbyState,
   createNewLobby,
   createNewPlayer,
+  getInitialPickingGameState,
   type LobbiesMap,
   type Lobby,
 } from "./lib/lobby.js";
@@ -17,6 +19,7 @@ import {
   type WS_MessageMapClient,
   toPayloadToClient,
   fromMessage,
+  messageToClientGameState,
 } from "shared";
 import {
   isHost,
@@ -147,33 +150,43 @@ app.get(
               lobby.stateProperties.state,
               parsed.message.type
             )
-          )
+          ) {
             throw new Error("Invalid message type for current game state");
+          }
 
-          switch (parsed.message.type) {
-            case "START_GAME": {
-              if (!isHost(parsed.userId, lobby)) return;
-              lobby.stateProperties.state = "picking";
-              lobbies.publish(
-                lobby.id,
-                "server",
-                toPayloadToClient(
-                  "server",
-                  createNewMessageToClient(lobby.id, "CHANGE_GAME_STATE", {
-                    properties: {
-                      state: "picking",
-                      initialTimeRemaining: SONG_PICKING_DURATION,
-                      playersWhoPickedIds: [],
-                    },
-                  })
-                )
-              );
+          switch (lobby.stateProperties.state) {
+            case "lobby": {
+              switch (
+                parsed.message
+                  .type as (typeof messageToClientGameState)["lobby"][number]
+              ) {
+                case "START_GAME": {
+                  if (!isHost(parsed.userId, lobby)) return;
+                  changeLobbyState(lobby, getInitialPickingGameState());
+                  lobbies.publish(
+                    lobby.id,
+                    "server",
+                    toPayloadToClient(
+                      "server",
+                      createNewMessageToClient(lobby.id, "CHANGE_GAME_STATE", {
+                        properties: lobby.stateProperties,
+                      })
+                    )
+                  );
 
-              break;
+                  break;
+                }
+              }
             }
 
-            case "PICK_SONG": {
-              break;
+            case "picking": {
+              switch (parsed.message.type) {
+                case "PICK_SONG": {
+                  const { artist, name, trackUrl } = parsed.message.payload;
+
+                  break;
+                }
+              }
             }
           }
         } catch {}

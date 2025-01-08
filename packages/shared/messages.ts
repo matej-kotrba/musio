@@ -1,4 +1,4 @@
-import type { GameStateType } from "./index.types";
+import type { GameStateType, Song } from "./index.types";
 import type {
   WS_MESSAGE,
   WS_MESSAGE_TO_CLIENT_TYPE,
@@ -8,15 +8,22 @@ import type {
   WS_MessageMapServer,
 } from "./types/messages";
 
-export const messageToClientGameState: Record<
-  GameStateType,
-  WS_MESSAGE_TO_CLIENT_TYPE[]
-> = {
-  lobby: ["START_GAME"],
-  guessing: [],
-  picking: ["PICK_SONG"],
-  leaderboard: [],
+export const messageConfig = {
+  lobby: {
+    START_GAME: {} as {},
+  },
+  guessing: {},
+  picking: {
+    PICK_SONG: {} as Omit<Song, "fromPlayerById">,
+  },
+  leaderboard: {},
 } as const;
+
+export const messageToClientGameState = Object.fromEntries(
+  Object.entries(messageConfig).map(([key, value]) => [key, Object.keys(value)])
+) as {
+  [K in keyof typeof messageConfig]: (keyof (typeof messageConfig)[K])[];
+};
 
 type PayloadData<T> = { userId: string; message: T };
 
