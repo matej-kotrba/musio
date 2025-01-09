@@ -1,4 +1,16 @@
-import type { GameState, PickingGameState, Player } from "shared";
+import type {
+  fromMessage,
+  GameState,
+  GameStateType,
+  GuessingGameState,
+  LeaderboardGameState,
+  LobbyGameState,
+  messageToClientGameState,
+  PickingGameState,
+  Player,
+  WS_MESSAGE_TO_CLIENT_TYPE,
+  WS_MessageMapClient,
+} from "shared";
 import { getRandomId } from "./utils.js";
 import type { WSContext } from "hono/ws";
 import type { LobbyMap } from "./map.js";
@@ -78,6 +90,30 @@ export function createNewLobby(lobbies: LobbiesMap) {
 export function changeLobbyState(lobby: Lobby, state: GameState) {
   lobby.stateProperties = state;
 }
+
+export function isLobbyState<T extends GameState>(
+  props: GameState,
+  condition: GameStateType
+): props is T {
+  return props.state === condition;
+}
+
+// type A = typeof messageToClientGameState;
+
+// export function isMessageType<T extends keyof A, K extends A[T][number]>(
+//   lobbyState: T,
+//   messageType: WS_MESSAGE_TO_CLIENT_TYPE,
+//   targetMessageType: K
+// ): messageType is K {
+//   return messageType === targetMessageType;
+// }
+
+// isMessageType("lobby", "", "START_GAME")
+
+// export function isPayloadMessageType(
+//   message: ReturnType<typeof fromMessage<WS_MessageMapClient>>,
+//   type: WS_MESSAGE_TO_CLIENT_TYPE
+// ): message is  {}
 
 export const getInitialPickingGameState: () => PickingGameState = () => ({
   state: "picking",

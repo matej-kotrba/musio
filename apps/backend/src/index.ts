@@ -6,6 +6,7 @@ import {
   createNewLobby,
   createNewPlayer,
   getInitialPickingGameState,
+  isLobbyState,
   type LobbiesMap,
   type Lobby,
 } from "./lib/lobby.js";
@@ -20,6 +21,8 @@ import {
   toPayloadToClient,
   fromMessage,
   messageToClientGameState,
+  type LobbyGameState,
+  type PickingGameState,
 } from "shared";
 import {
   isHost,
@@ -161,54 +164,26 @@ app.get(
             throw new Error("Invalid message type for current game state");
           }
 
-          switch (lobby.stateProperties.state) {
-            case "lobby": {
-              switch (
-                parsed.message
-                  .type as (typeof messageToClientGameState)["lobby"][number]
-              ) {
-                case "START_GAME": {
-                  if (!isHost(parsed.userId, lobby)) return;
-                  changeLobbyState(lobby, getInitialPickingGameState());
+          if (isLobbyState<LobbyGameState>(lobby.stateProperties, "lobby")) {
+            if (parsed.message.type === "START_GAME") {
+              if (!isHost(parsed.userId, lobby)) return;
+              changeLobbyState(lobby, getInitialPickingGameState());
 
-                  lobbies.publish(
-                    lobby.id,
-                    "server",
-                    toPayloadToClient(
-                      "server",
-                      createNewMessageToClient(lobby.id, "CHANGE_GAME_STATE", {
-                        properties: lobby.stateProperties,
-                      })
-                    )
-                  );
-
-                  break;
-                }
-
-                default:
-                  break;
-              }
-
-              break;
+              lobbies.publish(
+                lobby.id,
+                "server",
+                toPayloadToClient(
+                  "server",
+                  createNewMessageToClient(lobby.id, "CHANGE_GAME_STATE", {
+                    properties: lobby.stateProperties,
+                  })
+                )
+              );
             }
-
-            case "picking": {
-              switch (
-                parsed.message
-                  .type as (typeof messageToClientGameState)["picking"][number]
-              ) {
-                case "PICK_SONG": {
-                  // const { artist, name, trackUrl } = parsed.message.payload;
-                  // lobby.stateProperties.;
-
-                  break;
-                }
-
-                default:
-                  break;
-              }
-
-              break;
+          } else if (
+            isLobbyState<PickingGameState>(lobby.stateProperties, "picking")
+          ) {
+            if (parsed.message.type === "PICK_SONG") {
             }
           }
         } catch {}
