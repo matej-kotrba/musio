@@ -5,6 +5,7 @@ import {
   changeLobbyState,
   createNewLobby,
   createNewPlayer,
+  getEventInLobby,
   getInitialPickingGameState,
   isLobbyState,
   type LobbiesMap,
@@ -165,7 +166,10 @@ app.get(
           }
 
           if (isLobbyState<LobbyGameState>(lobby.stateProperties, "lobby")) {
-            if (parsed.message.type === "START_GAME") {
+            if (
+              parsed.message.type ===
+              getEventInLobby(lobby.stateProperties.state, "START_GAME")
+            ) {
               if (!isHost(parsed.userId, lobby)) return;
               changeLobbyState(lobby, getInitialPickingGameState());
 

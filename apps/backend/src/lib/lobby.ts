@@ -98,6 +98,15 @@ export function isLobbyState<T extends GameState>(
   return props.state === condition;
 }
 
+type MessageToClientGameState = typeof messageToClientGameState;
+
+export function getEventInLobby<T extends keyof MessageToClientGameState>(
+  lobbyState: T,
+  event: MessageToClientGameState[T][number]
+) {
+  return event;
+}
+
 // type A = typeof messageToClientGameState;
 
 // export function isMessageType<T extends keyof A, K extends A[T][number]>(
