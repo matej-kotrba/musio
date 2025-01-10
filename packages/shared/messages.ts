@@ -12,11 +12,15 @@ export const messageConfig = {
   lobby: {
     START_GAME: {} as {},
   },
-  guessing: {},
+  guessing: {
+    GUESS_SONG: {} as {},
+  },
   picking: {
     PICK_SONG: {} as Omit<Song, "fromPlayerById">,
   },
-  leaderboard: {},
+  leaderboard: {
+    UPDATE_LEADERBOARD: {} as {},
+  },
 } as const;
 
 export const messageToClientGameState = Object.fromEntries(

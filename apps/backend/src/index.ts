@@ -5,9 +5,9 @@ import {
   changeLobbyState,
   createNewLobby,
   createNewPlayer,
-  getEventInLobby,
   getInitialPickingGameState,
   isLobbyState,
+  isMessageType,
   type LobbiesMap,
   type Lobby,
 } from "./lib/lobby.js";
@@ -25,10 +25,7 @@ import {
   type LobbyGameState,
   type PickingGameState,
 } from "shared";
-import {
-  isHost,
-  isMessageTypeForGameState as isMessageTypeValidForGameState,
-} from "./lib/game.js";
+import { isHost, isMessageTypeForGameState as isMessageTypeValidForGameState } from "./lib/game.js";
 import { SONG_PICKING_DURATION } from "./lib/constants.js";
 
 const app = new Hono();
@@ -94,13 +91,7 @@ app.get(
 
         const lobby = lobbies.get(lobbyId);
 
-        const newPlayer = createNewPlayer(
-          ws,
-          getRandomId(),
-          getRandomId(),
-          name!,
-          icon!
-        );
+        const newPlayer = createNewPlayer(ws, getRandomId(), getRandomId(), name!, icon!);
         if (lobby?.players.length === 0) {
           lobby.leaderPlayerId = newPlayer.privateId;
         }
@@ -156,20 +147,13 @@ app.get(
           if (!lobby) throw new Error("Invalid lobbyId");
 
           // If the event is not compatible with the current game state, ignore it
-          if (
-            !isMessageTypeValidForGameState(
-              lobby.stateProperties.state,
-              parsed.message.type
-            )
-          ) {
+          if (!isMessageTypeValidForGameState(lobby.stateProperties.state, parsed.message.type)) {
             throw new Error("Invalid message type for current game state");
           }
 
-          if (isLobbyState<LobbyGameState>(lobby.stateProperties, "lobby")) {
-            if (
-              parsed.message.type ===
-              getEventInLobby(lobby.stateProperties.state, "START_GAME")
-            ) {
+          if (isLobbyState(lobby.stateProperties, "lobby")) {
+            lobby.stateProperties.state;
+            if (isMessageType(lobby.stateProperties.state, parsed.message, "START_GAME")) {
               if (!isHost(parsed.userId, lobby)) return;
               changeLobbyState(lobby, getInitialPickingGameState());
 
@@ -184,9 +168,7 @@ app.get(
                 )
               );
             }
-          } else if (
-            isLobbyState<PickingGameState>(lobby.stateProperties, "picking")
-          ) {
+          } else if (isLobbyState(lobby.stateProperties, "picking")) {
             if (parsed.message.type === "PICK_SONG") {
             }
           }

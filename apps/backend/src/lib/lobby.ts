@@ -1,15 +1,16 @@
-import type {
-  fromMessage,
-  GameState,
-  GameStateType,
-  GuessingGameState,
-  LeaderboardGameState,
-  LobbyGameState,
+import {
   messageToClientGameState,
-  PickingGameState,
-  Player,
-  WS_MESSAGE_TO_CLIENT_TYPE,
-  WS_MessageMapClient,
+  type fromMessage,
+  type GameState,
+  type GameStateType,
+  type GuessingGameState,
+  type LeaderboardGameState,
+  type LobbyGameState,
+  type PickingGameState,
+  type Player,
+  type WS_MESSAGE_TO_CLIENT_TYPE,
+  type WS_MessageInterface,
+  type WS_MessageMapClient,
 } from "shared";
 import { getRandomId } from "./utils.js";
 import type { WSContext } from "hono/ws";
@@ -91,38 +92,45 @@ export function changeLobbyState(lobby: Lobby, state: GameState) {
   lobby.stateProperties = state;
 }
 
-export function isLobbyState<T extends GameState>(
+export function isLobbyState<T extends GameStateType>(
   props: GameState,
-  condition: GameStateType
-): props is T {
+  condition: T
+): props is Extract<typeof props, { state: T }> {
   return props.state === condition;
 }
 
-type MessageToClientGameState = typeof messageToClientGameState;
+// type A = MessageToClientGameState[keyof MessageToClientGameState][number];
 
-export function getEventInLobby<T extends keyof MessageToClientGameState>(
-  lobbyState: T,
-  event: MessageToClientGameState[T][number]
-) {
-  return event;
-}
-
-// type A = typeof messageToClientGameState;
-
-// export function isMessageType<T extends keyof A, K extends A[T][number]>(
-//   lobbyState: T,
-//   messageType: WS_MESSAGE_TO_CLIENT_TYPE,
-//   targetMessageType: K
-// ): messageType is K {
-//   return messageType === targetMessageType;
+// export function idk<T extends A, K extends keyof MessageToClientGameState>(
+//   state: T,
+//   lobbyType: K
+// ): state is MessageToClientGameState[K][number] extends T ? T : never {
+//   return messageToClientGameState[lobbyType].includes(state as never);
 // }
 
-// isMessageType("lobby", "", "START_GAME")
+// idk("PICK_SONG", "lobby");
 
-// export function isPayloadMessageType(
-//   message: ReturnType<typeof fromMessage<WS_MessageMapClient>>,
-//   type: WS_MESSAGE_TO_CLIENT_TYPE
-// ): message is  {}
+// export function getEventInLobby<T extends keyof MessageToClientGameState>(
+//   lobbyState: T,
+//   event: MessageToClientGameState[T][number]
+// ) {
+//   return event;
+// }
+
+type MessageToClientGameState = typeof messageToClientGameState;
+type Messages =
+  WS_MessageInterface<WS_MessageMapClient>[keyof WS_MessageMapClient];
+
+export function isMessageType<
+  T extends keyof MessageToClientGameState,
+  K extends MessageToClientGameState[T][number]
+>(
+  lobbyState: T,
+  message: Messages,
+  targetMessageType: K
+): message is Extract<Messages, { type: K }> {
+  return message.type === targetMessageType;
+}
 
 export const getInitialPickingGameState: () => PickingGameState = () => ({
   state: "picking",
