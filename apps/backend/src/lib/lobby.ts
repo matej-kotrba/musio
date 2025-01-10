@@ -1,30 +1,24 @@
 import {
   messageToClientGameState,
-  type fromMessage,
   type GameState,
   type GameStateType,
   type GuessingGameState,
-  type LeaderboardGameState,
-  type LobbyGameState,
   type PickingGameState,
   type Player,
-  type WS_MESSAGE_TO_CLIENT_TYPE,
+  type Song,
   type WS_MessageInterface,
   type WS_MessageMapClient,
 } from "shared";
-import { getRandomId } from "./utils.js";
 import type { WSContext } from "hono/ws";
 import type { LobbyMap } from "./map.js";
 import { SONG_PICKING_DURATION } from "./constants.js";
+import { shuffleArray } from "./utils.js";
 
 export type PlayerServer = Omit<PlayerServerWithoutWS, "ws"> & {
   ws: WSContext<unknown>;
 };
 
-export type PlayerServerWithoutWS = Omit<
-  Player,
-  "icon" | "ws" | "isHost" | "isMe"
-> & {
+export type PlayerServerWithoutWS = Omit<Player, "icon" | "ws" | "isHost" | "isMe"> & {
   privateId: string;
   icon: string;
   ws?: never;
@@ -39,11 +33,7 @@ export type Lobby = {
   leaderPlayerId?: string;
 };
 
-export function initPlayerToLobby(
-  lobbies: LobbiesMap,
-  lobbyId: string,
-  player: PlayerServer
-) {
+export function initPlayerToLobby(lobbies: LobbiesMap, lobbyId: string, player: PlayerServer) {
   console.log("Lobby: ", lobbyId);
   const lobby = lobbies.get(lobbyId);
   if (!lobby) {
@@ -54,38 +44,6 @@ export function initPlayerToLobby(
   console.log("Player joined", player);
 
   return player;
-}
-
-export function createNewPlayer(
-  ws: WSContext<unknown>,
-  privateId: string,
-  publicId: string,
-  name: string,
-  icon: string,
-  points?: number
-): PlayerServer {
-  return {
-    ws,
-    privateId,
-    publicId,
-    name,
-    icon,
-    points: points ?? 0,
-  };
-}
-
-export function createNewLobby(lobbies: LobbiesMap) {
-  const id = getRandomId();
-  const lobby = {
-    id,
-    stateProperties: {
-      state: "lobby",
-    },
-    players: [],
-  } satisfies Lobby;
-
-  lobbies.set(id, lobby);
-  return lobby;
 }
 
 export function changeLobbyState(lobby: Lobby, state: GameState) {
@@ -118,8 +76,7 @@ export function isLobbyState<T extends GameStateType>(
 // }
 
 type MessageToClientGameState = typeof messageToClientGameState;
-type Messages =
-  WS_MessageInterface<WS_MessageMapClient>[keyof WS_MessageMapClient];
+type Messages = WS_MessageInterface<WS_MessageMapClient>[keyof WS_MessageMapClient];
 
 export function isMessageType<
   T extends keyof MessageToClientGameState,
@@ -135,5 +92,14 @@ export function isMessageType<
 export const getInitialPickingGameState: () => PickingGameState = () => ({
   state: "picking",
   playersWhoPickedIds: [],
+  pickedSongs: [],
   initialTimeRemaining: SONG_PICKING_DURATION,
+});
+
+export const getInitialGuessingGameState: (songs: Song[]) => GuessingGameState = (songs) => ({
+  state: "guessing",
+  initialTimeRemaining: SONG_PICKING_DURATION,
+  currentInitialTimeRemaining: SONG_PICKING_DURATION,
+  currentSongIndex: 0,
+  songsToGuessQueue: shuffleArray(songs),
 });

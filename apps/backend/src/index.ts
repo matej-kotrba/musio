@@ -3,8 +3,7 @@ import { Hono } from "hono";
 import { createNodeWebSocket } from "@hono/node-ws";
 import {
   changeLobbyState,
-  createNewLobby,
-  createNewPlayer,
+  getInitialGuessingGameState,
   getInitialPickingGameState,
   isLobbyState,
   isMessageType,
@@ -17,16 +16,12 @@ import {
   playerNameValidator,
   playerIconNameValidator,
   createNewMessageToClient,
-  type PlayerFromServer,
   type WS_MessageMapClient,
   toPayloadToClient,
   fromMessage,
-  messageToClientGameState,
-  type LobbyGameState,
-  type PickingGameState,
 } from "shared";
-import { isHost, isMessageTypeForGameState as isMessageTypeValidForGameState } from "./lib/game.js";
-import { SONG_PICKING_DURATION } from "./lib/constants.js";
+import { isHost } from "./lib/game.js";
+import { createNewLobby, createNewPlayer, createNewSong } from "./lib/create.js";
 
 const app = new Hono();
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
@@ -147,9 +142,9 @@ app.get(
           if (!lobby) throw new Error("Invalid lobbyId");
 
           // If the event is not compatible with the current game state, ignore it
-          if (!isMessageTypeValidForGameState(lobby.stateProperties.state, parsed.message.type)) {
-            throw new Error("Invalid message type for current game state");
-          }
+          // if (!isMessageTypeValidForGameState(lobby.stateProperties.state, parsed.message.type)) {
+          //   throw new Error("Invalid message type for current game state");
+          // }
 
           if (isLobbyState(lobby.stateProperties, "lobby")) {
             lobby.stateProperties.state;
@@ -170,6 +165,18 @@ app.get(
             }
           } else if (isLobbyState(lobby.stateProperties, "picking")) {
             if (parsed.message.type === "PICK_SONG") {
+              if (lobby.stateProperties.playersWhoPickedIds.includes(parsed.userId)) return;
+              const { name, artist, trackUrl } = parsed.message.payload;
+
+              const newSong = createNewSong(name, artist, trackUrl, parsed.userId);
+              lobby.stateProperties.pickedSongs.push(newSong);
+
+              if (lobby.stateProperties.pickedSongs.length === lobby.players.length) {
+                changeLobbyState(
+                  lobby,
+                  getInitialGuessingGameState(lobby.stateProperties.pickedSongs)
+                );
+              }
             }
           }
         } catch {}
