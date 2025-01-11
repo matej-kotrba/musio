@@ -1,7 +1,8 @@
 import type { messageConfig } from "../messages";
 import type { GameState } from "./lobby";
-import { PlayerFromServer } from "./player";
+import type { PlayerFromServer } from "./player";
 
+// Player ids are never specified as they are passed with the ws messageToClient already
 export type WS_MessageMapServer = {
   PLAYER_INIT: {
     allPlayers: PlayerFromServer[];

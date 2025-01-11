@@ -6,6 +6,7 @@ export function iconNameToDisplayName(icon: string) {
 
 export function playerServerToPlayer(player: PlayerFromServer): Player {
   return {
+    publicId: player.publicId,
     name: player.name,
     icon: {
       url: `/avatars/${player.icon}.webp`,
@@ -13,6 +14,5 @@ export function playerServerToPlayer(player: PlayerFromServer): Player {
     },
     points: player.points,
     isHost: player.isHost,
-    isMe: player.isMe,
   };
 }

@@ -11,6 +11,9 @@ export function createNewLobby(lobbies: LobbiesMap) {
       state: "lobby",
     },
     players: [],
+    data: {
+      pickedSongs: [],
+    },
   } satisfies Lobby;
 
   lobbies.set(id, lobby);

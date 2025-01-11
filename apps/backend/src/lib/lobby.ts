@@ -31,6 +31,9 @@ export type Lobby = {
   stateProperties: GameState;
   players: PlayerServer[];
   leaderPlayerId?: string;
+  data: {
+    pickedSongs: Song[];
+  };
 };
 
 export function initPlayerToLobby(lobbies: LobbiesMap, lobbyId: string, player: PlayerServer) {
@@ -57,17 +60,6 @@ export function isLobbyState<T extends GameStateType>(
   return props.state === condition;
 }
 
-// type A = MessageToClientGameState[keyof MessageToClientGameState][number];
-
-// export function idk<T extends A, K extends keyof MessageToClientGameState>(
-//   state: T,
-//   lobbyType: K
-// ): state is MessageToClientGameState[K][number] extends T ? T : never {
-//   return messageToClientGameState[lobbyType].includes(state as never);
-// }
-
-// idk("PICK_SONG", "lobby");
-
 // export function getEventInLobby<T extends keyof MessageToClientGameState>(
 //   lobbyState: T,
 //   event: MessageToClientGameState[T][number]
@@ -92,7 +84,6 @@ export function isMessageType<
 export const getInitialPickingGameState: () => PickingGameState = () => ({
   state: "picking",
   playersWhoPickedIds: [],
-  pickedSongs: [],
   initialTimeRemaining: SONG_PICKING_DURATION,
 });
 

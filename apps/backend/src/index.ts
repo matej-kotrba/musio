@@ -46,6 +46,12 @@ app.get("/purgeLobbies", (c) => {
   lobbies.clear();
   return c.json("Lobbies purged");
 });
+
+app.get("/getLobby", (c) => {
+  if (isDev()) return c.notFound();
+
+  return c.json(lobbies.get(c.req.query("lobbyId")!));
+});
 // ****
 
 app.get("/getLobbyId", (c) => {
@@ -164,19 +170,27 @@ app.get(
               );
             }
           } else if (isLobbyState(lobby.stateProperties, "picking")) {
-            if (parsed.message.type === "PICK_SONG") {
+            console.log("Picking state", parsed.message);
+            if (isMessageType(lobby.stateProperties.state, parsed.message, "PICK_SONG")) {
               if (lobby.stateProperties.playersWhoPickedIds.includes(parsed.userId)) return;
               const { name, artist, trackUrl } = parsed.message.payload;
 
               const newSong = createNewSong(name, artist, trackUrl, parsed.userId);
-              lobby.stateProperties.pickedSongs.push(newSong);
+              lobby.data.pickedSongs.push(newSong);
 
-              if (lobby.stateProperties.pickedSongs.length === lobby.players.length) {
-                changeLobbyState(
-                  lobby,
-                  getInitialGuessingGameState(lobby.stateProperties.pickedSongs)
-                );
-              }
+              console.log("Picked songs: ", lobby.data.pickedSongs);
+
+              // if (lobby.data.pickedSongs.length === lobby.players.length) {
+              //   changeLobbyState(lobby, getInitialGuessingGameState(lobby.data.pickedSongs));
+              // } else {
+              lobbies.broadcast(
+                lobby.id,
+                toPayloadToClient(
+                  parsed.userId,
+                  createNewMessageToClient(lobby.id, "PLAYER_PICKED_SONG", {})
+                )
+              );
+              // }
             }
           }
         } catch {}

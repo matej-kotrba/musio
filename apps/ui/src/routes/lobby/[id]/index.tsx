@@ -1,29 +1,13 @@
 import styles from "./index.module.css";
-import {
-  createSignal,
-  Show,
-  useContext,
-  Switch,
-  Match,
-  createEffect,
-} from "solid-js";
+import { createSignal, Show, useContext, Switch, Match, createEffect } from "solid-js";
 import PlayerDisplay, { getAllIcons } from "~/components/lobby/Player";
 import WordToGuess from "~/components/lobby/WordToGuess";
 import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
 import Chat from "~/components/lobby/chat/Chat";
-import {
-  isWsConnectionContext,
-  WsConnectionContext,
-} from "~/contexts/connection";
+import { isWsConnectionContext, WsConnectionContext } from "~/contexts/connection";
 import { useParams, useNavigate } from "@solidjs/router";
-import ProfileSelection, {
-  ProfileData,
-} from "~/components/lobby/profile/ProfileSelection";
-import {
-  createNewMessageToServer,
-  fromMessage,
-  toPayloadToServer,
-} from "shared";
+import ProfileSelection, { ProfileData } from "~/components/lobby/profile/ProfileSelection";
+import { createNewMessageToServer, fromMessage, toPayloadToServer } from "shared";
 import { getLobbyURL as getLobbyId } from "~/utils/rscs";
 import {
   GameState,
@@ -38,11 +22,7 @@ import { Button } from "~/components/ui/button";
 import { TextField, TextFieldRoot } from "~/components/ui/textfield";
 import { useCopyToClipboard } from "~/hooks";
 import { Icon } from "@iconify-icon/solid";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "~/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
 import Timer from "~/components/lobby/picking-phase/Timer";
 import SongPicker from "~/components/lobby/picking-phase/SongPicker";
 
@@ -112,19 +92,7 @@ const dummy_players: Player[] = [
   },
 ];
 
-const dummySongName = [
-  "R",
-  null,
-  null,
-  null,
-  " ",
-  null,
-  null,
-  "t",
-  null,
-  null,
-  "m",
-];
+const dummySongName = ["R", null, null, null, " ", null, null, "t", null, null, "m"];
 
 const dummySongImage = "/2000x2000bb.jpg";
 
@@ -266,7 +234,7 @@ export default function Lobby() {
 
   return (
     <>
-      {/* <ProfileSelection onProfileSelected={handleProfileSelected} /> */}
+      <ProfileSelection onProfileSelected={handleProfileSelected} />
       <div
         class="relative grid grid-cols-[auto,1fr,auto] gap-4 h-full max-h-full overflow-hidden"
         style={{
@@ -284,11 +252,7 @@ export default function Lobby() {
             {players()
               .toSorted((a, b) => b.points - a.points)
               .map((item, index) => (
-                <PlayerDisplay
-                  maxPoints={100}
-                  player={item}
-                  isLeading={!index}
-                />
+                <PlayerDisplay maxPoints={100} player={item} isLeading={!index} />
               ))}
           </Show>
         </aside>
@@ -296,11 +260,8 @@ export default function Lobby() {
           <Match when={gameState().state === "lobby"}>
             <section class="grid place-content-center">
               <p class="text-foreground/70">
-                Currently{" "}
-                <span class="font-bold text-foreground">
-                  {players().length}
-                </span>{" "}
-                players in lobby
+                Currently <span class="font-bold text-foreground">{players().length}</span> players
+                in lobby
               </p>
               <Show
                 fallback={
@@ -356,9 +317,7 @@ export default function Lobby() {
             <div class="flex flex-col items-center">
               <Timer
                 maxTime={(gameState() as PickingGameState).initialTimeRemaining}
-                currentTime={
-                  (gameState() as PickingGameState).initialTimeRemaining
-                }
+                currentTime={(gameState() as PickingGameState).initialTimeRemaining}
               />
               <SongPicker onSongSelect={handleSongSelection} />
             </div>
@@ -369,11 +328,7 @@ export default function Lobby() {
                 <p class="text-xl mb-4 font-bold opacity-35">Guess the song:</p>
                 <div class="mb-4">
                   <div class="w-64 aspect-square overflow-hidden rounded-md">
-                    <img
-                      src={dummySongImage}
-                      alt="Song to guess"
-                      class="blur-md"
-                    />
+                    <img src={dummySongImage} alt="Song to guess" class="blur-md" />
                   </div>
                 </div>
                 <WordToGuess wordChars={dummySongName} />

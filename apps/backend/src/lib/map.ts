@@ -6,7 +6,7 @@ export class LobbyMap<K extends string, V extends Lobby> extends Map<K, V> {
     if (!lobby) return;
 
     lobby.players.forEach((player) => {
-      if (player.id === senderId) return;
+      if (player.privateId === senderId) return;
       player.ws.send(message);
     });
   }

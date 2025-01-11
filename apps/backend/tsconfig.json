@@ -4,8 +4,9 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "outDir": "./.dist",
     "paths": {
-      "shared": ["../../packages/shared/index.ts"]
+      "shared": ["../../packages/shared/index"]
     },
     "strict": true,
     "verbatimModuleSyntax": true,
@@ -13,5 +14,6 @@
     "types": ["node"],
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx"
-  }
+  },
+  "exclude": ["node_modules"]
 }
