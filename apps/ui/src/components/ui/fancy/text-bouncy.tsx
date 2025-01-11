@@ -16,7 +16,7 @@ export default function TextBouncy(props: Props) {
             initial={{ y: 0 }}
             transition={{
               duration: 2,
-              delay: 1 + index / 50,
+              delay: 1 + index / 20,
               easing: "ease-out",
               repeat: Infinity,
             }}

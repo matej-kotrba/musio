@@ -112,13 +112,16 @@ export default function Lobby() {
     private: string;
   }>();
   const [gameState, setGameState] = createSignal<GameState>({
-    state: "picking",
-    initialTimeRemaining: 30,
-    playersWhoPickedIds: [],
+    state: "lobby",
   });
+  // {
+  //   state: "picking",
+  //   initialTimeRemaining: 30,
+  //   playersWhoPickedIds: [],
+  // }
 
   // Temporary game state specific states
-  const [didPick, setDidPick] = createSignal<boolean>(true);
+  const [didPick, setDidPick] = createSignal<boolean>(false);
 
   const lobbyId = () => params.id;
 
@@ -251,7 +254,7 @@ export default function Lobby() {
 
   return (
     <>
-      {/* <ProfileSelection onProfileSelected={handleProfileSelected} /> */}
+      <ProfileSelection onProfileSelected={handleProfileSelected} />
       <div
         class="relative grid grid-cols-[auto,1fr,auto] gap-4 h-full max-h-full overflow-hidden"
         style={{
@@ -339,10 +342,14 @@ export default function Lobby() {
               <Show
                 when={!didPick()}
                 fallback={
-                  <TextBouncy text="Waiting for others to pick!" class="font-bold text-2xl" />
+                  <div class="mt-2">
+                    <div class="text-center font-bold text-4xl mb-2">
+                      {players().filter((player) => player.isChecked).length}/{players().length}
+                    </div>
+                    <TextBouncy text="Waiting for others to pick!" class="font-bold text-2xl" />
+                  </div>
                 }
               >
-                {/* <p class="font-bold text-2xl">Waiting for others to pick!</p> */}
                 <SongPicker onSongSelect={handleSongSelection} />
               </Show>
             </div>

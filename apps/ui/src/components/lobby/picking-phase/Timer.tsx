@@ -8,10 +8,12 @@ type Props = {
 
 export default function Timer(props: Props) {
   const [time, setTime] = createSignal<number>(props.currentTime);
+  let counterStartTime: number | null = null;
   let af: number;
 
   const setTimeForFrame = (timeFromStart: number) => {
-    setTime(props.maxTime - timeFromStart / 1000);
+    if (counterStartTime === null) counterStartTime = timeFromStart;
+    setTime(props.maxTime - (timeFromStart - counterStartTime) / 1000);
 
     if (time() > 0) {
       af = requestAnimationFrame(setTimeForFrame);
@@ -25,6 +27,7 @@ export default function Timer(props: Props) {
 
     onCleanup(() => {
       cancelAnimationFrame(af);
+      counterStartTime = null;
     });
   });
 

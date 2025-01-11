@@ -23,6 +23,7 @@ import {
 } from "shared";
 import { isHost } from "./lib/game.js";
 import { createNewLobby, createNewPlayer, createNewSong } from "./lib/create.js";
+import { setTimeout } from "timers/promises";
 
 const app = new Hono();
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
@@ -100,9 +101,9 @@ app.get(
         lobby!.players.push(newPlayer);
 
         //TODO: REMOVE THIS LINE
-        if (lobby) {
-          lobby.stateProperties = getInitialPickingGameState();
-        }
+        // if (lobby) {
+        //   lobby.stateProperties = getInitialPickingGameState();
+        // }
 
         console.log("[ws] open - ", newPlayer.name);
         ws.send(
@@ -164,9 +165,12 @@ app.get(
               if (!isHost(parsed.userId, lobby)) return;
               changeLobbyState(lobby, getInitialPickingGameState());
 
-              lobbies.publish(
+              setTimeout(5000).then(() => {
+                console.log("Timeout");
+              });
+
+              lobbies.broadcast(
                 lobby.id,
-                "server",
                 toPayloadToClient(
                   "server",
                   createNewMessageToClient(lobby.id, "CHANGE_GAME_STATE", {
@@ -190,17 +194,27 @@ app.get(
 
               console.log("Picked songs: ", lobby.data.pickedSongs);
 
-              // if (lobby.data.pickedSongs.length === lobby.players.length) {
-              //   changeLobbyState(lobby, getInitialGuessingGameState(lobby.data.pickedSongs));
-              // } else {
-              lobbies.broadcast(
-                lobby.id,
-                toPayloadToClient(
-                  player.publicId,
-                  createNewMessageToClient(lobby.id, "PLAYER_PICKED_SONG", {})
-                )
-              );
-              // }
+              if (lobby.data.pickedSongs.length === lobby.players.length) {
+                changeLobbyState(lobby, getInitialGuessingGameState(lobby.data.pickedSongs));
+
+                lobbies.broadcast(
+                  lobby.id,
+                  toPayloadToClient(
+                    "server",
+                    createNewMessageToClient(lobby.id, "CHANGE_GAME_STATE", {
+                      properties: lobby.stateProperties,
+                    })
+                  )
+                );
+              } else {
+                lobbies.broadcast(
+                  lobby.id,
+                  toPayloadToClient(
+                    player.publicId,
+                    createNewMessageToClient(lobby.id, "PLAYER_PICKED_SONG", {})
+                  )
+                );
+              }
             }
           }
         } catch {}
