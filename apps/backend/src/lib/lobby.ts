@@ -18,7 +18,10 @@ export type PlayerServer = Omit<PlayerServerWithoutWS, "ws"> & {
   ws: WSContext<unknown>;
 };
 
-export type PlayerServerWithoutWS = Omit<Player, "icon" | "ws" | "isHost" | "isMe"> & {
+export type PlayerServerWithoutWS = Omit<
+  Player,
+  "icon" | "ws" | "isHost" | "isMe" | "isChecked"
+> & {
   privateId: string;
   icon: string;
   ws?: never;
@@ -47,6 +50,10 @@ export function initPlayerToLobby(lobbies: LobbiesMap, lobbyId: string, player: 
   console.log("Player joined", player);
 
   return player;
+}
+
+export function getPlayerByPrivateId(lobby: Lobby, privateId: string) {
+  return lobby.players.find((player) => player.privateId === privateId);
 }
 
 export function changeLobbyState(lobby: Lobby, state: GameState) {

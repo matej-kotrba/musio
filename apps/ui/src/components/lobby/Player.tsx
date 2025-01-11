@@ -1,6 +1,7 @@
 import { Icon } from "@iconify-icon/solid";
 import { Icon as IconType, Player } from "shared/index.types";
 import { Show } from "solid-js";
+import { Motion } from "solid-motionone";
 
 const icons = import.meta.glob("/public/avatars/*", { query: "?url" });
 
@@ -39,6 +40,17 @@ export default function PlayerDisplay(props: Props) {
               style={{ filter: "drop-shadow(0 0 2px black)" }}
             />
           </div>
+        </Show>
+        <Show when={props.player.isChecked}>
+          <Motion
+            transition={{ duration: 0.4 }}
+            initial={{ rotateZ: -270, opacity: 0, scale: 0 }}
+            animate={{ rotateZ: 0, opacity: 1, scale: 1 }}
+            exit={{ rotateZ: -270, opacity: 0, scale: 0 }}
+            class="absolute grid place-content-center bottom-1 right-1 bg-primary-darker rounded-full p-1 shadow-md border border-primary-accent"
+          >
+            <Icon icon={"charm:tick"} class="text-xl text-white duration-100" />
+          </Motion>
         </Show>
       </div>
       <div class="min-w-0 self-start w-full">

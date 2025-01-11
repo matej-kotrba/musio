@@ -25,6 +25,7 @@ import { Icon } from "@iconify-icon/solid";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
 import Timer from "~/components/lobby/picking-phase/Timer";
 import SongPicker from "~/components/lobby/picking-phase/SongPicker";
+import TextBouncy from "~/components/ui/fancy/text-bouncy";
 
 const dummy_players: Player[] = [
   {
@@ -33,6 +34,7 @@ const dummy_players: Player[] = [
     points: 100,
     isHost: true,
     publicId: "1",
+    isChecked: true,
   },
   {
     name: "Player 2",
@@ -114,6 +116,10 @@ export default function Lobby() {
     initialTimeRemaining: 30,
     playersWhoPickedIds: [],
   });
+
+  // Temporary game state specific states
+  const [didPick, setDidPick] = createSignal<boolean>(true);
+
   const lobbyId = () => params.id;
 
   const getLobbyHost = () => players().find((player) => player.isHost);
@@ -171,6 +177,7 @@ export default function Lobby() {
 
     const data = fromMessage<WS_MessageMapServer>(event.data);
     console.log(data);
+
     switch (data.message.type) {
       // TODO: Possible race conditions when handling new player join
       case "PLAYER_INIT": {
@@ -203,6 +210,16 @@ export default function Lobby() {
         setGameState(payload.properties);
         break;
       }
+
+      case "PLAYER_PICKED_SONG": {
+        setPlayers((old) =>
+          old.map((player) => ({ ...player, isChecked: player.publicId === data.userId }))
+        );
+
+        if (thisPlayerIds()?.public === data.userId) {
+          setDidPick(true);
+        }
+      }
     }
   };
 
@@ -234,7 +251,7 @@ export default function Lobby() {
 
   return (
     <>
-      <ProfileSelection onProfileSelected={handleProfileSelected} />
+      {/* <ProfileSelection onProfileSelected={handleProfileSelected} /> */}
       <div
         class="relative grid grid-cols-[auto,1fr,auto] gap-4 h-full max-h-full overflow-hidden"
         style={{
@@ -319,7 +336,15 @@ export default function Lobby() {
                 maxTime={(gameState() as PickingGameState).initialTimeRemaining}
                 currentTime={(gameState() as PickingGameState).initialTimeRemaining}
               />
-              <SongPicker onSongSelect={handleSongSelection} />
+              <Show
+                when={!didPick()}
+                fallback={
+                  <TextBouncy text="Waiting for others to pick!" class="font-bold text-2xl" />
+                }
+              >
+                {/* <p class="font-bold text-2xl">Waiting for others to pick!</p> */}
+                <SongPicker onSongSelect={handleSongSelection} />
+              </Show>
             </div>
           </Match>
           <Match when={gameState().state === "guessing"}>

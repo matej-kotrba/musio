@@ -9,6 +9,8 @@ export type Player = {
   icon: Icon;
   points: number;
   isHost: boolean;
+
+  isChecked?: boolean;
 };
 
-export type PlayerFromServer = Omit<Player, "icon"> & { icon: string };
+export type PlayerFromServer = Omit<Player, "icon" | "isChecked"> & { icon: string };

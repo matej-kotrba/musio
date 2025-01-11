@@ -5,6 +5,7 @@ import {
   changeLobbyState,
   getInitialGuessingGameState,
   getInitialPickingGameState,
+  getPlayerByPrivateId,
   isLobbyState,
   isMessageType,
   type LobbiesMap,
@@ -98,6 +99,11 @@ app.get(
         }
         lobby!.players.push(newPlayer);
 
+        //TODO: REMOVE THIS LINE
+        if (lobby) {
+          lobby.stateProperties = getInitialPickingGameState();
+        }
+
         console.log("[ws] open - ", newPlayer.name);
         ws.send(
           toPayloadToClient(
@@ -118,7 +124,7 @@ app.get(
 
         lobbies.publish(
           lobbyId,
-          newPlayer.publicId,
+          newPlayer.privateId,
           toPayloadToClient(
             "server",
             createNewMessageToClient(lobby!.id, "PLAYER_JOIN", {
@@ -172,7 +178,11 @@ app.get(
           } else if (isLobbyState(lobby.stateProperties, "picking")) {
             console.log("Picking state", parsed.message);
             if (isMessageType(lobby.stateProperties.state, parsed.message, "PICK_SONG")) {
+              const player = getPlayerByPrivateId(lobby, parsed.userId);
+
+              if (!player) return;
               if (lobby.stateProperties.playersWhoPickedIds.includes(parsed.userId)) return;
+
               const { name, artist, trackUrl } = parsed.message.payload;
 
               const newSong = createNewSong(name, artist, trackUrl, parsed.userId);
@@ -186,7 +196,7 @@ app.get(
               lobbies.broadcast(
                 lobby.id,
                 toPayloadToClient(
-                  parsed.userId,
+                  player.publicId,
                   createNewMessageToClient(lobby.id, "PLAYER_PICKED_SONG", {})
                 )
               );

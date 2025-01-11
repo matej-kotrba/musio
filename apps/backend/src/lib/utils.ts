@@ -8,7 +8,6 @@ export function getRandomId() {
 // Dev utils
 // ****
 export function isDev() {
-  console.log(process.env.NODE_ENV);
   return process.env.NODE_ENV === "development";
 }
 // ****
