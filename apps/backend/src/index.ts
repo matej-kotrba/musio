@@ -23,7 +23,7 @@ import {
 import { isHost } from "./lib/game.js";
 import { createNewLobby, createNewPlayer, createNewSong } from "./lib/create.js";
 import { setTimeout } from "timers/promises";
-import { getPlayerByPrivateId } from "./lib/player.js";
+import { getPlayerByPrivateId, removePlayerFromLobby } from "./lib/player.js";
 
 const app = new Hono();
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
@@ -173,7 +173,6 @@ app.get(
                 signal: lobby.data.currentCounterTimeout.signal,
               })
                 .then(() => {
-                  console.log("Picking phase ended");
                   const guessingPhaseState = getInitialGuessingGameState(lobby.data.pickedSongs);
                   changeLobbyState(lobby, guessingPhaseState);
 
@@ -240,6 +239,22 @@ app.get(
             }
           }
         } catch {}
+      },
+      onClose: (event, ws) => {
+        const lobbyId = c.req.query("lobbyId");
+        const lobby = lobbies.get(lobbyId!);
+        if (!lobby) return;
+
+        const removedPlayer = removePlayerFromLobby(lobby, ws);
+        lobbies.broadcast(
+          lobbyId!,
+          toPayloadToClient(
+            "server",
+            createNewMessageToClient(lobbyId!, "PLAYER_REMOVED_FROM_LOBBY", {
+              publicId: removedPlayer!.publicId,
+            })
+          )
+        );
       },
       // onMessage(event, ws) {
       //   ws.

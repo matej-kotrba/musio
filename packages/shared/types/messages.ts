@@ -14,6 +14,9 @@ export type WS_MessageMapServer = {
     properties: GameState;
   };
   PLAYER_PICKED_SONG: {};
+  PLAYER_REMOVED_FROM_LOBBY: {
+    publicId: string;
+  };
 };
 
 export type WS_MessageMapClient = {

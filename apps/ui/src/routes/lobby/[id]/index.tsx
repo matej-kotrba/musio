@@ -222,6 +222,14 @@ export default function Lobby() {
         if (thisPlayerIds()?.public === data.userId) {
           setDidPick(true);
         }
+
+        break;
+      }
+
+      case "PLAYER_REMOVED_FROM_LOBBY": {
+        const payload = data.message.payload;
+
+        setPlayers((old) => old.filter((player) => player.publicId !== payload.publicId));
       }
     }
   };
