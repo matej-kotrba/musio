@@ -336,8 +336,8 @@ export default function Lobby() {
           <Match when={gameState().state === "picking"}>
             <div class="flex flex-col items-center">
               <Timer
-                maxTime={(gameState() as PickingGameState).initialTimeRemaining}
-                currentTime={(gameState() as PickingGameState).initialTimeRemaining}
+                maxTime={(gameState() as PickingGameState).initialTimeRemainingInSec}
+                currentTime={(gameState() as PickingGameState).initialTimeRemainingInSec}
               />
               <Show
                 when={!didPick()}

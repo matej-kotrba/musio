@@ -1,4 +1,7 @@
 // Id handling
+
+import type { Lobby } from "./lobby";
+
 // ****
 export function getRandomId() {
   return crypto.getRandomValues(new Uint32Array(1))[0].toString(16);
@@ -23,5 +26,12 @@ export function shuffleArray<T extends unknown[]>(arr: T) {
   }
 
   return newArr;
+}
+
+export function abortLobbyTimeoutSignalAndRemove(lobby: Lobby) {
+  if (lobby.data.currentCounterTimeout) {
+    lobby.data.currentCounterTimeout.abort();
+    delete lobby.data.currentCounterTimeout;
+  }
 }
 // ****

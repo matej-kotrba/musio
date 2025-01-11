@@ -4,28 +4,14 @@ import {
   type GameStateType,
   type GuessingGameState,
   type PickingGameState,
-  type Player,
   type Song,
   type WS_MessageInterface,
   type WS_MessageMapClient,
 } from "shared";
-import type { WSContext } from "hono/ws";
 import type { LobbyMap } from "./map.js";
 import { SONG_PICKING_DURATION } from "./constants.js";
 import { shuffleArray } from "./utils.js";
-
-export type PlayerServer = Omit<PlayerServerWithoutWS, "ws"> & {
-  ws: WSContext<unknown>;
-};
-
-export type PlayerServerWithoutWS = Omit<
-  Player,
-  "icon" | "ws" | "isHost" | "isMe" | "isChecked"
-> & {
-  privateId: string;
-  icon: string;
-  ws?: never;
-};
+import type { PlayerServer } from "./player.js";
 
 export type LobbiesMap = LobbyMap<string, Lobby>;
 
@@ -35,26 +21,10 @@ export type Lobby = {
   players: PlayerServer[];
   leaderPlayerId?: string;
   data: {
+    currentCounterTimeout?: AbortController;
     pickedSongs: Song[];
   };
 };
-
-export function initPlayerToLobby(lobbies: LobbiesMap, lobbyId: string, player: PlayerServer) {
-  console.log("Lobby: ", lobbyId);
-  const lobby = lobbies.get(lobbyId);
-  if (!lobby) {
-    return;
-  }
-
-  lobby.players.push(player);
-  console.log("Player joined", player);
-
-  return player;
-}
-
-export function getPlayerByPrivateId(lobby: Lobby, privateId: string) {
-  return lobby.players.find((player) => player.privateId === privateId);
-}
 
 export function changeLobbyState(lobby: Lobby, state: GameState) {
   lobby.stateProperties = state;
@@ -91,7 +61,7 @@ export function isMessageType<
 export const getInitialPickingGameState: () => PickingGameState = () => ({
   state: "picking",
   playersWhoPickedIds: [],
-  initialTimeRemaining: SONG_PICKING_DURATION,
+  initialTimeRemainingInSec: SONG_PICKING_DURATION,
 });
 
 export const getInitialGuessingGameState: (songs: Song[]) => GuessingGameState = (songs) => ({

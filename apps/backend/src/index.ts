@@ -5,13 +5,12 @@ import {
   changeLobbyState,
   getInitialGuessingGameState,
   getInitialPickingGameState,
-  getPlayerByPrivateId,
   isLobbyState,
   isMessageType,
   type LobbiesMap,
   type Lobby,
 } from "./lib/lobby.js";
-import { getRandomId, isDev } from "./lib/utils.js";
+import { abortLobbyTimeoutSignalAndRemove, getRandomId, isDev } from "./lib/utils.js";
 import { LobbyMap } from "./lib/map.js";
 import {
   playerNameValidator,
@@ -24,6 +23,7 @@ import {
 import { isHost } from "./lib/game.js";
 import { createNewLobby, createNewPlayer, createNewSong } from "./lib/create.js";
 import { setTimeout } from "timers/promises";
+import { getPlayerByPrivateId } from "./lib/player.js";
 
 const app = new Hono();
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
@@ -163,11 +163,31 @@ app.get(
             lobby.stateProperties.state;
             if (isMessageType(lobby.stateProperties.state, parsed.message, "START_GAME")) {
               if (!isHost(parsed.userId, lobby)) return;
-              changeLobbyState(lobby, getInitialPickingGameState());
+              const pickingPhaseState = getInitialPickingGameState();
+              changeLobbyState(lobby, pickingPhaseState);
 
-              setTimeout(5000).then(() => {
-                console.log("Timeout");
-              });
+              // After set time, cancel picking phase and swap to guessing phase
+              lobby.data.currentCounterTimeout = new AbortController();
+
+              setTimeout(pickingPhaseState.initialTimeRemainingInSec * 1000, null, {
+                signal: lobby.data.currentCounterTimeout.signal,
+              })
+                .then(() => {
+                  console.log("Picking phase ended");
+                  const guessingPhaseState = getInitialGuessingGameState(lobby.data.pickedSongs);
+                  changeLobbyState(lobby, guessingPhaseState);
+
+                  lobbies.broadcast(
+                    lobby.id,
+                    toPayloadToClient(
+                      "server",
+                      createNewMessageToClient(lobby.id, "CHANGE_GAME_STATE", {
+                        properties: lobby.stateProperties,
+                      })
+                    )
+                  );
+                })
+                .catch((e) => {});
 
               lobbies.broadcast(
                 lobby.id,
@@ -195,6 +215,8 @@ app.get(
               console.log("Picked songs: ", lobby.data.pickedSongs);
 
               if (lobby.data.pickedSongs.length === lobby.players.length) {
+                abortLobbyTimeoutSignalAndRemove(lobby);
+
                 changeLobbyState(lobby, getInitialGuessingGameState(lobby.data.pickedSongs));
 
                 lobbies.broadcast(

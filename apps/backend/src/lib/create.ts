@@ -1,7 +1,8 @@
 import type { WSContext } from "hono/ws";
-import type { LobbiesMap, Lobby, PlayerServer } from "./lobby";
+import type { LobbiesMap, Lobby } from "./lobby";
 import { getRandomId } from "./utils";
 import type { Song } from "shared";
+import type { PlayerServer } from "./player";
 
 export function createNewLobby(lobbies: LobbiesMap) {
   const id = getRandomId();

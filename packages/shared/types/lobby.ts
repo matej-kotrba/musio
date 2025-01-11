@@ -12,7 +12,7 @@ export type LobbyGameState = {
 export type PickingGameState = {
   state: "picking";
   playersWhoPickedIds: string[];
-  initialTimeRemaining: number;
+  initialTimeRemainingInSec: number;
 };
 
 export type GuessingGameState = {
