@@ -27,6 +27,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip
 import Timer from "~/components/lobby/picking-phase/Timer";
 import SongPicker from "~/components/lobby/picking-phase/SongPicker";
 import TextBouncy from "~/components/ui/fancy/text-bouncy";
+import { Motion } from "solid-motionone";
 
 const dummy_players: Player[] = [
   {
@@ -432,8 +433,11 @@ function GuessingGamePhase(props: GuessingGamePhaseProps) {
         onTimeChange={handleTimeChange}
       />
       <section class="flex flex-col items-center">
-        <p class="text-xl mb-4 font-bold opacity-35">Guess the song:</p>
-        <div class="mb-4 relative" style={{ filter: `blur(calc(12px * ${blurRatio()}))` }}>
+        <p class="text-xl mb-6 font-bold opacity-35">Guess the song:</p>
+        <div
+          class={`animate-levitate mb-4 relative`}
+          style={{ filter: `blur(calc(12px * ${blurRatio()}))` }}
+        >
           <div class="absolute shadow-[inset_0_0_40px_rgba(0,0,0,0.8),0_0_20px_rgba(0,0,0,0.3)] inset-0 rounded-md"></div>
           <img
             src={dummySongImage}

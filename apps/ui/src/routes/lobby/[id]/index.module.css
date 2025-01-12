@@ -11,9 +11,7 @@
 }
 
 .aside__scrollbar::-webkit-scrollbar-thumb {
-  background-color: hsl(
-    var(--primary-accent)
-  ); /* Color of the scrollbar thumb */
+  background-color: hsl(var(--primary-accent)); /* Color of the scrollbar thumb */
   border-radius: 6px; /* Round edges */
 }
 
