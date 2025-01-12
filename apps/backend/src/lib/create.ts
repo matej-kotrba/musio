@@ -14,6 +14,7 @@ export function createNewLobby(lobbies: LobbiesMap) {
     players: [],
     data: {
       pickedSongs: [],
+      songQueue: [],
     },
   } satisfies Lobby;
 

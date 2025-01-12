@@ -117,16 +117,7 @@ export default function Lobby() {
     state: "guessing",
     initialTimeRemaining: 30,
     currentInitialTimeRemaining: 30,
-    currentSongIndex: 0,
-    songsToGuessQueue: [
-      {
-        name: "Monody",
-        artist: "The FatRat & Laura Brehm",
-        trackUrl:
-          "https://music.apple.com/us/album/monody-feat-laura-brehm-radio-edit/1444888726?i=1444888936&uo=4",
-        fromPlayerById: "idk",
-      },
-    ],
+    playersWhoGuessed: [],
   });
 
   // Temporary game state specific states
@@ -239,6 +230,17 @@ export default function Lobby() {
         const payload = data.message.payload;
 
         setPlayers((old) => old.filter((player) => player.publicId !== payload.publicId));
+        break;
+      }
+
+      case "NEW_SONG_TO_GUESS": {
+        console.log("NEW SONG TO GUESS");
+        break;
+      }
+
+      case "IN_BETWEEN_SONGS_DELAY": {
+        console.log("SONG DELAY");
+        break;
       }
     }
   };

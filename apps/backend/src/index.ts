@@ -3,10 +3,12 @@ import { Hono } from "hono";
 import { createNodeWebSocket } from "@hono/node-ws";
 import {
   changeLobbyState,
+  changeToGuessingGameLobbyState,
   getInitialGuessingGameState,
   getInitialPickingGameState,
   isLobbyState,
   isMessageType,
+  startGuessingSongQueue,
   type LobbiesMap,
   type Lobby,
 } from "./lib/lobby.js";
@@ -163,29 +165,16 @@ app.get(
             lobby.stateProperties.state;
             if (isMessageType(lobby.stateProperties.state, parsed.message, "START_GAME")) {
               if (!isHost(parsed.userId, lobby)) return;
-              const pickingPhaseState = getInitialPickingGameState();
-              changeLobbyState(lobby, pickingPhaseState);
+              const initialData = getInitialPickingGameState();
+              changeLobbyState(lobby, initialData);
 
               // After set time, cancel picking phase and swap to guessing phase
-              lobby.data.currentCounterTimeout = new AbortController();
+              lobby.data.currentTimeoutAbortController = new AbortController();
 
-              setTimeout(pickingPhaseState.initialTimeRemainingInSec * 1000, null, {
-                signal: lobby.data.currentCounterTimeout.signal,
+              setTimeout(initialData.gameState.initialTimeRemainingInSec * 1000, null, {
+                signal: lobby.data.currentTimeoutAbortController.signal,
               })
-                .then(() => {
-                  const guessingPhaseState = getInitialGuessingGameState(lobby.data.pickedSongs);
-                  changeLobbyState(lobby, guessingPhaseState);
-
-                  lobbies.broadcast(
-                    lobby.id,
-                    toPayloadToClient(
-                      "server",
-                      createNewMessageToClient(lobby.id, "CHANGE_GAME_STATE", {
-                        properties: lobby.stateProperties,
-                      })
-                    )
-                  );
-                })
+                .then(() => changeToGuessingGameLobbyState(lobbies, lobby))
                 .catch((e) => {});
 
               lobbies.broadcast(
@@ -199,7 +188,6 @@ app.get(
               );
             }
           } else if (isLobbyState(lobby.stateProperties, "picking")) {
-            console.log("Picking state", parsed.message);
             if (isMessageType(lobby.stateProperties.state, parsed.message, "PICK_SONG")) {
               const player = getPlayerByPrivateId(lobby, parsed.userId);
 
@@ -211,22 +199,8 @@ app.get(
               const newSong = createNewSong(name, artist, trackUrl, parsed.userId);
               lobby.data.pickedSongs.push(newSong);
 
-              console.log("Picked songs: ", lobby.data.pickedSongs);
-
               if (lobby.data.pickedSongs.length === lobby.players.length) {
-                abortLobbyTimeoutSignalAndRemove(lobby);
-
-                changeLobbyState(lobby, getInitialGuessingGameState(lobby.data.pickedSongs));
-
-                lobbies.broadcast(
-                  lobby.id,
-                  toPayloadToClient(
-                    "server",
-                    createNewMessageToClient(lobby.id, "CHANGE_GAME_STATE", {
-                      properties: lobby.stateProperties,
-                    })
-                  )
-                );
+                changeToGuessingGameLobbyState(lobbies, lobby);
               } else {
                 lobbies.broadcast(
                   lobby.id,
@@ -236,6 +210,9 @@ app.get(
                   )
                 );
               }
+            }
+          } else if (isLobbyState(lobby.stateProperties, "guessing")) {
+            if (isMessageType(lobby.stateProperties.state, parsed.message, "GUESS_SONG")) {
             }
           }
         } catch {}

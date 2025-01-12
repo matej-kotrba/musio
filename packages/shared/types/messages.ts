@@ -17,6 +17,18 @@ export type WS_MessageMapServer = {
   PLAYER_REMOVED_FROM_LOBBY: {
     publicId: string;
   };
+  NEW_SONG_TO_GUESS: {
+    song: {
+      name: string;
+      artist: string;
+      trackUrl: string;
+    };
+    initialTimeRemaining: number;
+  };
+  IN_BETWEEN_SONGS_DELAY: {
+    delay: number;
+    correctSongName: string;
+  };
 };
 
 export type WS_MessageMapClient = {

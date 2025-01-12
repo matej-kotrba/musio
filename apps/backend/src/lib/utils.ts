@@ -29,9 +29,13 @@ export function shuffleArray<T extends unknown[]>(arr: T) {
 }
 
 export function abortLobbyTimeoutSignalAndRemove(lobby: Lobby) {
-  if (lobby.data.currentCounterTimeout) {
-    lobby.data.currentCounterTimeout.abort();
-    delete lobby.data.currentCounterTimeout;
+  if (lobby.data.currentTimeoutAbortController) {
+    lobby.data.currentTimeoutAbortController.abort();
+    delete lobby.data.currentTimeoutAbortController;
   }
+}
+
+export function waitFor(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 // ****
