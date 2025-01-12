@@ -273,6 +273,7 @@ export default function Lobby() {
           name: selectedSong.trackName,
           artist: selectedSong.artistName,
           trackUrl: selectedSong.trackViewUrl,
+          imageUrl100x100: selectedSong.artworkUrl100,
         })
       )
     );

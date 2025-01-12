@@ -3,6 +3,7 @@ export type Song = {
   name: string;
   artist: string;
   trackUrl: string;
+  imageUrl100x100: string;
 };
 
 export type LobbyGameState = {

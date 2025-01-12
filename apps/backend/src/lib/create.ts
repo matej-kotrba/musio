@@ -44,12 +44,14 @@ export function createNewSong(
   songName: string,
   artist: string,
   trackUrl: string,
+  imageUrl: string,
   fromPlayerById: string
 ): Song {
   return {
     name: songName,
     artist,
     trackUrl,
+    imageUrl100x100: imageUrl,
     fromPlayerById,
   };
 }

@@ -194,9 +194,15 @@ app.get(
               if (!player) return;
               if (lobby.stateProperties.playersWhoPickedIds.includes(parsed.privateId)) return;
 
-              const { name, artist, trackUrl } = parsed.message.payload;
+              const { name, artist, trackUrl, imageUrl100x100 } = parsed.message.payload;
 
-              const newSong = createNewSong(name, artist, trackUrl, player.publicId);
+              const newSong = createNewSong(
+                name,
+                artist,
+                trackUrl,
+                imageUrl100x100,
+                player.publicId
+              );
               lobby.data.pickedSongs.push(newSong);
 
               if (lobby.data.pickedSongs.length === lobby.players.length) {
