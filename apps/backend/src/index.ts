@@ -164,7 +164,7 @@ app.get(
           if (isLobbyState(lobby.stateProperties, "lobby")) {
             lobby.stateProperties.state;
             if (isMessageType(lobby.stateProperties.state, parsed.message, "START_GAME")) {
-              if (!isHost(parsed.userId, lobby)) return;
+              if (!isHost(parsed.privateId, lobby)) return;
               const initialData = getInitialPickingGameState();
               changeLobbyState(lobby, initialData);
 
@@ -189,14 +189,14 @@ app.get(
             }
           } else if (isLobbyState(lobby.stateProperties, "picking")) {
             if (isMessageType(lobby.stateProperties.state, parsed.message, "PICK_SONG")) {
-              const player = getPlayerByPrivateId(lobby, parsed.userId);
+              const player = getPlayerByPrivateId(lobby, parsed.privateId);
 
               if (!player) return;
-              if (lobby.stateProperties.playersWhoPickedIds.includes(parsed.userId)) return;
+              if (lobby.stateProperties.playersWhoPickedIds.includes(parsed.privateId)) return;
 
               const { name, artist, trackUrl } = parsed.message.payload;
 
-              const newSong = createNewSong(name, artist, trackUrl, parsed.userId);
+              const newSong = createNewSong(name, artist, trackUrl, player.publicId);
               lobby.data.pickedSongs.push(newSong);
 
               if (lobby.data.pickedSongs.length === lobby.players.length) {

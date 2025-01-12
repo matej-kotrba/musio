@@ -1,5 +1,5 @@
 import type { messageConfig } from "../messages";
-import type { GameState } from "./lobby";
+import type { GameState, Song } from "./lobby";
 import type { PlayerFromServer } from "./player";
 
 // Player ids are never specified as they are passed with the ws messageToClient already
@@ -18,11 +18,7 @@ export type WS_MessageMapServer = {
     publicId: string;
   };
   NEW_SONG_TO_GUESS: {
-    song: {
-      name: string;
-      artist: string;
-      trackUrl: string;
-    };
+    song: Song;
     initialTimeRemaining: number;
   };
   IN_BETWEEN_SONGS_DELAY: {

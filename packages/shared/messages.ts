@@ -29,15 +29,10 @@ export const messageToClientGameState = Object.fromEntries(
   [K in keyof typeof messageConfig]: (keyof (typeof messageConfig)[K])[];
 };
 
-type PayloadData<T> = { userId: string; message: T };
+type PayloadData<T> = { privateId: string; message: T };
 
-const toPayload = <T extends () => unknown>(
-  from: string,
-  message: ReturnType<T>
-) =>
-  JSON.stringify({ userId: from, message: message } satisfies PayloadData<
-    ReturnType<T>
-  >);
+const toPayload = <T extends () => unknown>(from: string, message: ReturnType<T>) =>
+  JSON.stringify({ privateId: from, message: message } satisfies PayloadData<ReturnType<T>>);
 
 export const toPayloadToClient = (
   from: string,
@@ -78,7 +73,5 @@ export function createNewMessageToServer<T extends WS_MESSAGE_TO_CLIENT_TYPE>(
 }
 
 export function fromMessage<T extends WS_MESSAGE>(seriliazedMessage: string) {
-  return JSON.parse(seriliazedMessage) as PayloadData<
-    WS_MessageInterface<T>[keyof T]
-  >;
+  return JSON.parse(seriliazedMessage) as PayloadData<WS_MessageInterface<T>[keyof T]>;
 }

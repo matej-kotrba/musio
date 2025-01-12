@@ -17,6 +17,7 @@ export type PickingGameState = {
 
 export type GuessingGameState = {
   state: "guessing";
+  initialDelay: number;
   initialTimeRemaining: number;
   currentInitialTimeRemaining: number;
   playersWhoGuessed: { id: string; points: number }[];

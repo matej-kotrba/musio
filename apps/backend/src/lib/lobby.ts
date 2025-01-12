@@ -11,7 +11,11 @@ import {
   type WS_MessageMapClient,
 } from "shared";
 import type { LobbyMap } from "./map.js";
-import { SONG_PICKING_DURATION } from "./constants.js";
+import {
+  DELAY_BETWEEN_SONGS_IN_MS,
+  INITIAL_GUESSING_DELAY_IN_MS,
+  SONG_PICKING_DURATION,
+} from "./constants.js";
 import { abortLobbyTimeoutSignalAndRemove, shuffleArray, waitFor } from "./utils.js";
 import type { PlayerServer } from "./player.js";
 import { setTimeout } from "timers/promises";
@@ -90,6 +94,7 @@ export const getInitialGuessingGameState: (
     state: "guessing",
     initialTimeRemaining: SONG_PICKING_DURATION,
     currentInitialTimeRemaining: SONG_PICKING_DURATION,
+    initialDelay: INITIAL_GUESSING_DELAY_IN_MS / 1000,
     playersWhoGuessed: [],
   },
   lobbyData: {
@@ -111,7 +116,6 @@ export function changeToGuessingGameLobbyState(lobbies: LobbiesMap, lobby: Lobby
     )
   );
 
-  const INITIAL_GUESSING_DELAY_IN_MS = 5000;
   startGuessingSongQueue(lobbies, lobby.id, {
     initialDelay: INITIAL_GUESSING_DELAY_IN_MS,
   });
@@ -125,8 +129,6 @@ export async function startGuessingSongQueue(
   const lobby = lobbies.get(lobbyId);
   if (!lobby || lobby.stateProperties.state !== "guessing") return;
 
-  const DELAY_BETWEEN_SONGS_IN_MS = 3000;
-
   await waitFor(initialDelay);
 
   lobby.data.songQueueGenerator = handleSongInQueue(lobbies, lobby, { delay: 3000 });
@@ -139,18 +141,20 @@ export async function startGuessingSongQueue(
 
   setTimeout(SONG_PICKING_DURATION * 1000, null, {
     signal: lobby.data.currentTimeoutAbortController.signal,
-  }).then(() => {
-    lobbies.broadcast(
-      lobby.id,
-      toPayloadToClient(
-        "server",
-        createNewMessageToClient(lobby.id, "IN_BETWEEN_SONGS_DELAY", {
-          delay: DELAY_BETWEEN_SONGS_IN_MS,
-          correctSongName: lobby.data.songQueue[currentIndex].name,
-        })
-      )
-    );
-  });
+  })
+    .then(() => {
+      lobbies.broadcast(
+        lobby.id,
+        toPayloadToClient(
+          "server",
+          createNewMessageToClient(lobby.id, "IN_BETWEEN_SONGS_DELAY", {
+            delay: DELAY_BETWEEN_SONGS_IN_MS,
+            correctSongName: lobby.data.songQueue[currentIndex].name,
+          })
+        )
+      );
+    })
+    .catch((e) => {});
 }
 
 function* handleSongInQueue(lobbies: LobbiesMap, lobby: Lobby, { delay }: { delay: number }) {
@@ -165,11 +169,7 @@ function* handleSongInQueue(lobbies: LobbiesMap, lobby: Lobby, { delay }: { dela
       toPayloadToClient(
         "server",
         createNewMessageToClient(lobby.id, "NEW_SONG_TO_GUESS", {
-          song: {
-            name: song.name,
-            artist: song.artist,
-            trackUrl: song.trackUrl,
-          },
+          song,
           initialTimeRemaining: SONG_PICKING_DURATION,
         })
       )

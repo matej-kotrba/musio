@@ -16,6 +16,7 @@ import {
   LobbyGameState,
   PickingGameState,
   Player,
+  Song,
   WS_MessageMapServer,
 } from "shared/index.types";
 import { playerServerToPlayer } from "~/utils/game/common";
@@ -113,15 +114,17 @@ export default function Lobby() {
     public: string;
     private: string;
   }>();
-  const [gameState, setGameState] = createSignal<GameState>({
-    state: "guessing",
-    initialTimeRemaining: 30,
-    currentInitialTimeRemaining: 30,
-    playersWhoGuessed: [],
-  });
+  const [gameState, setGameState] = createSignal<GameState>({ state: "lobby" });
+  // {
+  //   state: "guessing",
+  //   initialTimeRemaining: 30,
+  //   currentInitialTimeRemaining: 30,
+  //   playersWhoGuessed: [],
+  // }
 
   // Temporary game state specific states
   const [didPick, setDidPick] = createSignal<boolean>(false);
+  const [currentSongToGuess, setCurrentSongToGuess] = createSignal<Song>();
 
   const lobbyId = () => params.id;
 
@@ -211,15 +214,16 @@ export default function Lobby() {
       case "CHANGE_GAME_STATE": {
         const payload = data.message.payload;
         setGameState(payload.properties);
+
         break;
       }
 
       case "PLAYER_PICKED_SONG": {
         setPlayers((old) =>
-          old.map((player) => ({ ...player, isChecked: player.publicId === data.userId }))
+          old.map((player) => ({ ...player, isChecked: player.publicId === data.privateId }))
         );
 
-        if (thisPlayerIds()?.public === data.userId) {
+        if (thisPlayerIds()?.public === data.privateId) {
           setDidPick(true);
         }
 
@@ -234,7 +238,10 @@ export default function Lobby() {
       }
 
       case "NEW_SONG_TO_GUESS": {
-        console.log("NEW SONG TO GUESS");
+        const payload = data.message.payload;
+
+        console.log("NEW SONG TO GUESS", payload.song);
+        setCurrentSongToGuess(payload.song);
         break;
       }
 
@@ -273,7 +280,7 @@ export default function Lobby() {
 
   return (
     <>
-      {/* <ProfileSelection onProfileSelected={handleProfileSelected} /> */}
+      <ProfileSelection onProfileSelected={handleProfileSelected} />
       <div
         class="relative grid grid-cols-[auto,1fr,auto] gap-4 h-full max-h-full overflow-hidden"
         style={{
@@ -362,7 +369,10 @@ export default function Lobby() {
           </Match>
           <Match when={gameState().state === "guessing"}>
             {/* <Show when={!!profileData()} fallback={<p>Selecting...</p>}> */}
-            <GuessingGamePhase gameState={gameState() as GuessingGameState} />
+            <GuessingGamePhase
+              gameState={gameState() as GuessingGameState}
+              currentSongToGuess={currentSongToGuess()}
+            />
             {/* </Show> */}
           </Match>
         </Switch>
@@ -414,6 +424,7 @@ function PickingGamePhase(props: PickingGamePhaseProps) {
 
 type GuessingGamePhaseProps = {
   gameState: GuessingGameState;
+  currentSongToGuess?: Song;
 };
 
 function GuessingGamePhase(props: GuessingGamePhaseProps) {
@@ -430,27 +441,37 @@ function GuessingGamePhase(props: GuessingGamePhaseProps) {
   return (
     <div class="flex flex-col items-center gap-2">
       <Timer
-        maxTime={props.gameState.initialTimeRemaining}
-        currentTime={props.gameState.currentInitialTimeRemaining}
+        maxTime={
+          props.currentSongToGuess
+            ? props.gameState.initialTimeRemaining
+            : props.gameState.initialDelay
+        }
+        currentTime={
+          props.currentSongToGuess
+            ? props.gameState.currentInitialTimeRemaining
+            : props.gameState.initialDelay
+        }
         onTimeChange={handleTimeChange}
       />
-      <section class="flex flex-col items-center">
-        <p class="text-xl mb-6 font-bold opacity-35">Guess the song:</p>
-        <div
-          class={`animate-levitate mb-4 relative`}
-          style={{ filter: `blur(calc(12px * ${blurRatio()}))` }}
-        >
-          <div class="absolute shadow-[inset_0_0_40px_rgba(0,0,0,0.8),0_0_20px_rgba(0,0,0,0.3)] inset-0 rounded-md"></div>
-          <img
-            src={dummySongImage}
-            width={256}
-            height={256}
-            alt="Song to guess"
-            class="w-64 aspect-square rounded-md"
-          />
-        </div>
-        <WordToGuess wordChars={dummySongName} />
-      </section>
+      <Show when={props.currentSongToGuess}>
+        <section class="flex flex-col items-center">
+          <p class="text-xl mb-6 font-bold opacity-35">Guess the song:</p>
+          <div
+            class={`animate-levitate mb-4 relative`}
+            style={{ filter: `blur(calc(12px * ${blurRatio()}))` }}
+          >
+            <div class="absolute shadow-[inset_0_0_40px_rgba(0,0,0,0.8),0_0_20px_rgba(0,0,0,0.3)] inset-0 rounded-md"></div>
+            <img
+              src={dummySongImage}
+              width={256}
+              height={256}
+              alt="Song to guess"
+              class="w-64 aspect-square rounded-md"
+            />
+          </div>
+          <WordToGuess wordChars={dummySongName} />
+        </section>
+      </Show>
     </div>
   );
 }
