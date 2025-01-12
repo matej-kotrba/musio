@@ -1,3 +1,5 @@
+import { Motion } from "solid-motionone";
+
 type Props = {
   wordChars: (string | null)[];
 };
@@ -12,7 +14,14 @@ export default function WordToGuess(props: Props) {
           return <span>{char}</span>;
         } else {
           return (
-            <span class="border-b-2 border-white w-[1ch] inline-block"> </span>
+            <Motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, easing: "ease", delay: Math.random() }}
+              class="border-b-2 border-white w-[1ch] inline-block"
+            >
+              {" "}
+            </Motion.span>
           );
         }
       })}

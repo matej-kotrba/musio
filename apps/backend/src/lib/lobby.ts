@@ -169,7 +169,10 @@ function* handleSongInQueue(lobbies: LobbiesMap, lobby: Lobby, { delay }: { dela
       toPayloadToClient(
         "server",
         createNewMessageToClient(lobby.id, "NEW_SONG_TO_GUESS", {
-          song,
+          song: {
+            ...song,
+            name: Array.from({ length: song.name.length }, () => null),
+          },
           initialTimeRemaining: SONG_PICKING_DURATION,
         })
       )

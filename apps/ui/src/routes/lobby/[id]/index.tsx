@@ -17,6 +17,7 @@ import {
   PickingGameState,
   Player,
   Song,
+  SongWithNameHidden,
   WS_MessageMapServer,
 } from "shared/index.types";
 import { playerServerToPlayer } from "~/utils/game/common";
@@ -114,17 +115,25 @@ export default function Lobby() {
     public: string;
     private: string;
   }>();
-  const [gameState, setGameState] = createSignal<GameState>({ state: "lobby" });
-  // {
-  //   state: "guessing",
-  //   initialTimeRemaining: 30,
-  //   currentInitialTimeRemaining: 30,
-  //   playersWhoGuessed: [],
-  // }
+  const [gameState, setGameState] = createSignal<GameState>({
+    state: "guessing",
+    initialTimeRemaining: 30,
+    currentInitialTimeRemaining: 30,
+    playersWhoGuessed: [],
+    initialDelay: 5,
+  });
 
   // Temporary game state specific states
   const [didPick, setDidPick] = createSignal<boolean>(false);
-  const [currentSongToGuess, setCurrentSongToGuess] = createSignal<Song>();
+  const [currentSongToGuess, setCurrentSongToGuess] = createSignal<SongWithNameHidden>({
+    artist: "TheFatRat",
+    name: ["R", null, null, null, " ", null, null, "t", null, null, "m"],
+    fromPlayerById: "asd",
+    trackUrl:
+      "https://music.apple.com/us/album/monody-feat-laura-brehm-radio-edit/1444888726?i=1444888936&uo=4",
+    imageUrl100x100:
+      "https://is1-ssl.mzstatic.com/image/thumb/Music128/v4/f3/69/33/f3693389-7610-f6e0-9767-4b3ba8f61acc/00602557309201.rgb.jpg/100x100bb.jpg",
+  });
 
   const lobbyId = () => params.id;
 
@@ -281,7 +290,7 @@ export default function Lobby() {
 
   return (
     <>
-      <ProfileSelection onProfileSelected={handleProfileSelected} />
+      {/* <ProfileSelection onProfileSelected={handleProfileSelected} /> */}
       <div
         class="relative grid grid-cols-[auto,1fr,auto] gap-4 h-full max-h-full overflow-hidden"
         style={{
@@ -425,7 +434,7 @@ function PickingGamePhase(props: PickingGamePhaseProps) {
 
 type GuessingGamePhaseProps = {
   gameState: GuessingGameState;
-  currentSongToGuess?: Song;
+  currentSongToGuess?: SongWithNameHidden;
 };
 
 function GuessingGamePhase(props: GuessingGamePhaseProps) {
@@ -454,7 +463,10 @@ function GuessingGamePhase(props: GuessingGamePhaseProps) {
         }
         onTimeChange={handleTimeChange}
       />
-      <Show when={props.currentSongToGuess}>
+      <Show
+        when={props.currentSongToGuess}
+        fallback={<div class="font-bold text-lg text-foreground">Get ready, starting soon...</div>}
+      >
         <section class="flex flex-col items-center">
           <p class="text-xl mb-6 font-bold opacity-35">Guess the song:</p>
           <div
@@ -463,14 +475,14 @@ function GuessingGamePhase(props: GuessingGamePhaseProps) {
           >
             <div class="absolute shadow-[inset_0_0_40px_rgba(0,0,0,0.8),0_0_20px_rgba(0,0,0,0.3)] inset-0 rounded-md"></div>
             <img
-              src={dummySongImage}
+              src={props.currentSongToGuess!.imageUrl100x100}
               width={256}
               height={256}
-              alt="Song to guess"
+              alt="Song to guess cover"
               class="w-64 aspect-square rounded-md"
             />
           </div>
-          <WordToGuess wordChars={dummySongName} />
+          <WordToGuess wordChars={props.currentSongToGuess!.name} />
         </section>
       </Show>
     </div>
