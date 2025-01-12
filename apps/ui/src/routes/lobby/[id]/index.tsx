@@ -11,6 +11,7 @@ import { createNewMessageToServer, fromMessage, toPayloadToServer } from "shared
 import { getLobbyURL as getLobbyId } from "~/utils/rscs";
 import {
   GameState,
+  GuessingGameState,
   ItunesSong,
   LobbyGameState,
   PickingGameState,
@@ -112,13 +113,20 @@ export default function Lobby() {
     private: string;
   }>();
   const [gameState, setGameState] = createSignal<GameState>({
-    state: "lobby",
+    state: "guessing",
+    initialTimeRemaining: 30,
+    currentInitialTimeRemaining: 30,
+    currentSongIndex: 0,
+    songsToGuessQueue: [
+      {
+        name: "Monody",
+        artist: "The FatRat & Laura Brehm",
+        trackUrl:
+          "https://music.apple.com/us/album/monody-feat-laura-brehm-radio-edit/1444888726?i=1444888936&uo=4",
+        fromPlayerById: "idk",
+      },
+    ],
   });
-  // {
-  //   state: "picking",
-  //   initialTimeRemaining: 30,
-  //   playersWhoPickedIds: [],
-  // }
 
   // Temporary game state specific states
   const [didPick, setDidPick] = createSignal<boolean>(false);
@@ -262,7 +270,7 @@ export default function Lobby() {
 
   return (
     <>
-      <ProfileSelection onProfileSelected={handleProfileSelected} />
+      {/* <ProfileSelection onProfileSelected={handleProfileSelected} /> */}
       <div
         class="relative grid grid-cols-[auto,1fr,auto] gap-4 h-full max-h-full overflow-hidden"
         style={{
@@ -342,38 +350,17 @@ export default function Lobby() {
             </section>
           </Match>
           <Match when={gameState().state === "picking"}>
-            <div class="flex flex-col items-center">
-              <Timer
-                maxTime={(gameState() as PickingGameState).initialTimeRemainingInSec}
-                currentTime={(gameState() as PickingGameState).initialTimeRemainingInSec}
-              />
-              <Show
-                when={!didPick()}
-                fallback={
-                  <div class="mt-2">
-                    <div class="text-center font-bold text-4xl mb-2">
-                      {players().filter((player) => player.isChecked).length}/{players().length}
-                    </div>
-                    <TextBouncy text="Waiting for others to pick!" class="font-bold text-2xl" />
-                  </div>
-                }
-              >
-                <SongPicker onSongSelect={handleSongSelection} />
-              </Show>
-            </div>
+            <PickingGamePhase
+              gameState={gameState() as PickingGameState}
+              didPick={didPick()}
+              players={players()}
+              handleSongSelection={handleSongSelection}
+            />
           </Match>
           <Match when={gameState().state === "guessing"}>
-            <Show when={!!profileData()} fallback={<p>Selecting...</p>}>
-              <section class="flex flex-col items-center">
-                <p class="text-xl mb-4 font-bold opacity-35">Guess the song:</p>
-                <div class="mb-4">
-                  <div class="w-64 aspect-square overflow-hidden rounded-md">
-                    <img src={dummySongImage} alt="Song to guess" class="blur-md" />
-                  </div>
-                </div>
-                <WordToGuess wordChars={dummySongName} />
-              </section>
-            </Show>
+            {/* <Show when={!!profileData()} fallback={<p>Selecting...</p>}> */}
+            <GuessingGamePhase gameState={gameState() as GuessingGameState} />
+            {/* </Show> */}
           </Match>
         </Switch>
         <aside
@@ -388,5 +375,76 @@ export default function Lobby() {
         </aside>
       </div>
     </>
+  );
+}
+
+type PickingGamePhaseProps = {
+  gameState: PickingGameState;
+  players: Player[];
+  didPick: boolean;
+  handleSongSelection: (selectedSong: ItunesSong) => void;
+};
+
+function PickingGamePhase(props: PickingGamePhaseProps) {
+  return (
+    <div class="flex flex-col items-center">
+      <Timer
+        maxTime={props.gameState.initialTimeRemainingInSec}
+        currentTime={props.gameState.initialTimeRemainingInSec}
+      />
+      <Show
+        when={!props.didPick}
+        fallback={
+          <div class="mt-2">
+            <div class="text-center font-bold text-4xl mb-2">
+              {props.players.filter((player) => player.isChecked).length}/{props.players.length}
+            </div>
+            <TextBouncy text="Waiting for others to pick!" class="font-bold text-2xl" />
+          </div>
+        }
+      >
+        <SongPicker onSongSelect={props.handleSongSelection} />
+      </Show>
+    </div>
+  );
+}
+
+type GuessingGamePhaseProps = {
+  gameState: GuessingGameState;
+};
+
+function GuessingGamePhase(props: GuessingGamePhaseProps) {
+  const [blurRatio, setBlurRatio] = createSignal<number>(
+    props.gameState.currentInitialTimeRemaining / props.gameState.initialTimeRemaining
+  );
+
+  function handleTimeChange(current: number) {
+    const base = current / props.gameState.initialTimeRemaining;
+    const pow = base ** 2;
+    setBlurRatio(base + (base - pow));
+  }
+
+  return (
+    <div class="flex flex-col items-center gap-2">
+      <Timer
+        maxTime={props.gameState.initialTimeRemaining}
+        currentTime={props.gameState.currentInitialTimeRemaining}
+        onTimeChange={handleTimeChange}
+      />
+      <section class="flex flex-col items-center">
+        <p class="text-xl mb-4 font-bold opacity-35">Guess the song:</p>
+        <div class="mb-4 relative" style={{ filter: `blur(calc(12px * ${blurRatio()}))` }}>
+          <div class="absolute shadow-[inset_0_0_40px_rgba(0,0,0,0.8),0_0_20px_rgba(0,0,0,0.3)] inset-0 rounded-md"></div>
+          <img
+            src={dummySongImage}
+            width={256}
+            height={256}
+            alt="Song to guess"
+            class="w-64 aspect-square rounded-md"
+          />
+        </div>
+        <WordToGuess wordChars={dummySongName} />
+      </section>
+    </div>
   );
 }

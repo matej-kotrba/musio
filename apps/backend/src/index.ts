@@ -256,66 +256,6 @@ app.get(
           )
         );
       },
-      // onMessage(event, ws) {
-      //   ws.
-      //   const playerId = userIdFromId(peer.id);
-
-      //   let parsedMessage: WS_MessageInterface<WS_MessageMapServer>[WS_MESSAGE_TO_SERVER_TYPE];
-      //   try {
-      //     parsedMessage = JSON.parse(message.text());
-      //   } catch {
-      //     console.log("Invalid message format");
-      //     return;
-      //   }
-
-      //   console.log("[ws] message", playerId, parsedMessage);
-      //   switch (parsedMessage.type) {
-      //     case "PLAYER_INIT": {
-      //       const { name, icon } = parsedMessage.payload;
-      //       const newPlayer = initPlayerToLobby(
-      //         lobbies,
-      //         parsedMessage.lobbyId,
-      //         createNewPlayer(playerId, name, icon)
-      //       );
-      //       if (!newPlayer) return;
-
-      //       // peer.broadcast()
-      //       peer.send(
-      //         toPayload(
-      //           SERVER_ID,
-      //           createNewMessageToClient(parsedMessage.lobbyId, "PLAYER_INIT", {
-      //             name,
-      //             icon,
-      //             points: newPlayer.points,
-      //           })
-      //         )
-      //       );
-      //       peer.publish(
-      //         parsedMessage.lobbyId,
-      //         toPayload(
-      //           SERVER_ID,
-      //           createNewMessageToClient(parsedMessage.lobbyId, "PLAYER_INIT", {
-      //             name,
-      //             icon,
-      //             points: newPlayer.points,
-      //           })
-      //         )
-      //       );
-
-      //       break;
-      //     }
-      //   }
-      // },
-      // onClose: () => {
-      //   const user = userIdFromId(peer.id);
-      //   console.log("[ws] close", user, details);
-
-      //   peer.unsubscribe(CHANNEL_NAME);
-      //   // peer.publish(
-      //   //   CHANNEL_NAME
-      //   //   toPayload(SERVER_ID, `${user} has left the chat!`)
-      //   // );
-      // },
     };
   })
 );

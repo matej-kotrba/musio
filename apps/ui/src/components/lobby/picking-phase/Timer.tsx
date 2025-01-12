@@ -4,6 +4,7 @@ import { createEffect, createSignal, onCleanup } from "solid-js";
 type Props = {
   maxTime: number;
   currentTime: number;
+  onTimeChange?: (current: number) => void;
 };
 
 export default function Timer(props: Props) {
@@ -14,6 +15,7 @@ export default function Timer(props: Props) {
   const setTimeForFrame = (timeFromStart: number) => {
     if (counterStartTime === null) counterStartTime = timeFromStart;
     setTime(props.maxTime - (timeFromStart - counterStartTime) / 1000);
+    props.onTimeChange?.(time());
 
     if (time() > 0) {
       af = requestAnimationFrame(setTimeForFrame);
