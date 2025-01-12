@@ -12,7 +12,12 @@ import {
   type LobbiesMap,
   type Lobby,
 } from "./lib/lobby.js";
-import { abortLobbyTimeoutSignalAndRemove, getRandomId, isDev } from "./lib/utils.js";
+import {
+  abortLobbyTimeoutSignalAndRemove,
+  getRandomId,
+  isDev,
+  normalizeString,
+} from "./lib/utils.js";
 import { LobbyMap } from "./lib/map.js";
 import {
   playerNameValidator,
@@ -26,6 +31,7 @@ import { isHost } from "./lib/game.js";
 import { createNewLobby, createNewPlayer, createNewSong } from "./lib/create.js";
 import { setTimeout } from "timers/promises";
 import { getPlayerByPrivateId, removePlayerFromLobby } from "./lib/player.js";
+import { stringSimilarity } from "string-similarity-js";
 
 const app = new Hono();
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
@@ -197,7 +203,7 @@ app.get(
               const { name, artist, trackUrl, imageUrl100x100 } = parsed.message.payload;
 
               const newSong = createNewSong(
-                name,
+                normalizeString(name),
                 artist,
                 trackUrl,
                 imageUrl100x100,
@@ -219,6 +225,46 @@ app.get(
             }
           } else if (isLobbyState(lobby.stateProperties, "guessing")) {
             if (isMessageType(lobby.stateProperties.state, parsed.message, "GUESS_SONG")) {
+              const STRING_SIMILARITY_THRESHOLD = 0.7;
+              // TODO: Add validators to the string
+              const { songName } = parsed.message.payload;
+              const player = getPlayerByPrivateId(lobby, parsed.privateId);
+              if (!player) return;
+
+              // TODO: Change 0 to actual song index
+              const currentSong = lobby.data.songQueue[0];
+
+              if (normalizeString(songName) === currentSong.name) {
+                player.ws.send(
+                  toPayloadToClient(
+                    "server",
+                    createNewMessageToClient(lobby.id, "GUESS_CHAT_MESSAGE_RESULT", {
+                      type: "guessed",
+                    })
+                  )
+                );
+              } else if (
+                stringSimilarity(songName, currentSong.name) >= STRING_SIMILARITY_THRESHOLD
+              ) {
+                player.ws.send(
+                  toPayloadToClient(
+                    "server",
+                    createNewMessageToClient(lobby.id, "GUESS_CHAT_MESSAGE_RESULT", {
+                      type: "near",
+                    })
+                  )
+                );
+              } else {
+                lobbies.broadcast(
+                  lobby.id,
+                  toPayloadToClient(
+                    "server",
+                    createNewMessageToClient(lobby.id, "GUESS_CHAT_MESSAGE_RESULT", {
+                      type: false,
+                    })
+                  )
+                );
+              }
             }
           }
         } catch {}

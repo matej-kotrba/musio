@@ -1,5 +1,6 @@
 import {
   createNewMessageToClient,
+  fromMessage,
   messageToClientGameState,
   toPayloadToClient,
   type GameState,
@@ -17,7 +18,7 @@ import {
   SONG_PICKING_DURATION,
 } from "./constants.js";
 import { abortLobbyTimeoutSignalAndRemove, shuffleArray, waitFor } from "./utils.js";
-import type { PlayerServer } from "./player.js";
+import { getPlayerByPrivateId, type PlayerServer } from "./player.js";
 import { setTimeout } from "timers/promises";
 
 export type LobbiesMap = LobbyMap<string, Lobby>;
@@ -34,6 +35,21 @@ export type Lobby = {
     songQueueGenerator?: Generator;
   };
 };
+
+// export function getBasicEventData(
+//   lobbies: LobbiesMap,
+//   parsed: ReturnType<typeof fromMessage<WS_MessageMapClient>>
+// ): { success: false } | { success: true; lobby: Lobby; player: PlayerServer } {
+//   const lobby = lobbies.get(parsed.message.lobbyId);
+//   if (!lobby) return { success: false };
+//   const player = getPlayerByPrivateId(lobby, parsed.privateId);
+//   if (!player) return { success: false };
+//   return {
+//     success: true,
+//     lobby,
+//     player,
+//   };
+// }
 
 export function isLobbyState<T extends GameStateType>(
   props: GameState,

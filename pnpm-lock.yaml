@@ -26,6 +26,9 @@ importers:
       shared:
         specifier: workspace:*
         version: link:../../packages/shared
+      string-similarity-js:
+        specifier: ^2.1.4
+        version: 2.1.4
     devDependencies:
       '@types/node':
         specifier: ^20.11.17
@@ -2723,6 +2726,9 @@ packages:
 
   streamx@2.21.1:
     resolution: {integrity: sha512-PhP9wUnFLa+91CPy3N6tiQsK+gnYyUNuk15S3YG/zjYE7RuPeCjJngqnzpC31ow0lzBHQ+QGO4cNJnd0djYUsw==}
+
+  string-similarity-js@2.1.4:
+    resolution: {integrity: sha512-uApODZNjCHGYROzDSAdCmAHf60L/pMDHnP/yk6TAbvGg7JSPZlSto/ceCI7hZEqzc53/juU2aOJFkM2yUVTMTA==}
 
   string-width@4.2.3:
     resolution: {integrity: sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==}
@@ -5656,6 +5662,8 @@ snapshots:
       text-decoder: 1.2.3
     optionalDependencies:
       bare-events: 2.5.0
+
+  string-similarity-js@2.1.4: {}
 
   string-width@4.2.3:
     dependencies:

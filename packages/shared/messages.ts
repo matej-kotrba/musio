@@ -12,11 +12,11 @@ export const messageConfig = {
   lobby: {
     START_GAME: {} as {},
   },
-  guessing: {
-    GUESS_SONG: {} as {},
-  },
   picking: {
     PICK_SONG: {} as Omit<Song, "fromPlayerById">,
+  },
+  guessing: {
+    GUESS_SONG: {} as {} as { songName: string },
   },
   leaderboard: {
     UPDATE_LEADERBOARD: {} as {},

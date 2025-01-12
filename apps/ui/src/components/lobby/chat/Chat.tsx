@@ -1,11 +1,12 @@
 import styles from "./Chat.module.css";
 import { createEffect, createSignal } from "solid-js";
 import ChatInput from "./ChatInput";
+import type { GuessChatMessageType } from "shared";
 
 type Message = {
   senderName: string;
   content: string;
-  isGuessRelated: "near" | "guessed" | false;
+  isGuessRelated: GuessChatMessageType;
 };
 
 const dummy_messages: Message[] = [

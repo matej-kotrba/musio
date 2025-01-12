@@ -38,4 +38,21 @@ export function abortLobbyTimeoutSignalAndRemove(lobby: Lobby) {
 export function waitFor(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+export function normalizeString(str: string) {
+  let output = "";
+
+  let normalized = str.normalize("NFD");
+  let i = 0;
+  let j = 0;
+
+  while (i < str.length) {
+    output += normalized[j];
+
+    j += str[i] == normalized[j] ? 1 : 2;
+    i++;
+  }
+
+  return output;
+}
 // ****

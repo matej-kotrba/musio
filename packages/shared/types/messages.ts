@@ -25,7 +25,12 @@ export type WS_MessageMapServer = {
     delay: number;
     correctSongName: string;
   };
+  GUESS_CHAT_MESSAGE_RESULT: {
+    type: GuessChatMessageType;
+  };
 };
+
+export type GuessChatMessageType = "near" | "guessed" | false;
 
 export type WS_MessageMapClient = {
   [State in keyof typeof messageConfig as keyof (typeof messageConfig)[State]]: (typeof messageConfig)[State][keyof (typeof messageConfig)[State]];
