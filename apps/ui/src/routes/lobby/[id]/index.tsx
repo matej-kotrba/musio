@@ -115,31 +115,33 @@ export default function Lobby() {
     public: string;
     private: string;
   }>();
-  const [gameState, setGameState] = createSignal<GameState>({
-    state: "guessing",
-    initialTimeRemaining: 30,
-    currentInitialTimeRemaining: 30,
-    playersWhoGuessed: [],
-    initialDelay: 5,
-  });
+  const [gameState, setGameState] = createSignal<GameState>({ state: "lobby" });
+  // {
+  //   state: "guessing",
+  //   initialTimeRemaining: 30,
+  //   currentInitialTimeRemaining: 30,
+  //   playersWhoGuessed: [],
+  //   initialDelay: 5,
+  // }
 
   // Temporary game state specific states
   const [didPick, setDidPick] = createSignal<boolean>(false);
-  const [currentSongToGuess, setCurrentSongToGuess] = createSignal<SongWithNameHidden>({
-    artist: "TheFatRat",
-    name: [
-      ["N", "o", "b", null, null, null, null],
-      ["C", null, null, null, null, null, null],
-      [null, null],
-      [null, null, null],
-      [null, null, null, null, null],
-    ],
-    fromPlayerById: "asd",
-    trackUrl:
-      "https://music.apple.com/us/album/monody-feat-laura-brehm-radio-edit/1444888726?i=1444888936&uo=4",
-    imageUrl100x100:
-      "https://is1-ssl.mzstatic.com/image/thumb/Music128/v4/f3/69/33/f3693389-7610-f6e0-9767-4b3ba8f61acc/00602557309201.rgb.jpg/100x100bb.jpg",
-  });
+  const [currentSongToGuess, setCurrentSongToGuess] = createSignal<SongWithNameHidden>();
+  // {
+  //   artist: "TheFatRat",
+  //   name: [
+  //     ["N", "o", "b", null, null, null, null],
+  //     ["C", null, null, null, null, null, null],
+  //     [null, null],
+  //     [null, null, null],
+  //     [null, null, null, null, null],
+  //   ],
+  //   fromPlayerById: "asd",
+  //   trackUrl:
+  //     "https://music.apple.com/us/album/monody-feat-laura-brehm-radio-edit/1444888726?i=1444888936&uo=4",
+  //   imageUrl100x100:
+  //     "https://is1-ssl.mzstatic.com/image/thumb/Music128/v4/f3/69/33/f3693389-7610-f6e0-9767-4b3ba8f61acc/00602557309201.rgb.jpg/100x100bb.jpg",
+  // }
 
   const lobbyId = () => params.id;
 
@@ -296,7 +298,7 @@ export default function Lobby() {
 
   return (
     <>
-      {/* <ProfileSelection onProfileSelected={handleProfileSelected} /> */}
+      <ProfileSelection onProfileSelected={handleProfileSelected} />
       <div
         class="relative grid grid-cols-[auto,1fr,auto] gap-4 h-full max-h-full overflow-hidden"
         style={{

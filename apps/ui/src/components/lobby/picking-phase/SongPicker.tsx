@@ -3,11 +3,7 @@ import styles from "./SongPicker.module.css";
 import { clientOnly } from "@solidjs/start";
 import { ItunesSearchResponse, ItunesSong } from "shared";
 import { createEffect, createSignal, Index, Show, useContext } from "solid-js";
-import {
-  TextField,
-  TextFieldLabel,
-  TextFieldRoot,
-} from "~/components/ui/textfield";
+import { TextField, TextFieldLabel, TextFieldRoot } from "~/components/ui/textfield";
 import { GlobalsContext } from "~/contexts/globals";
 import { useDebounce } from "~/hooks";
 import {
@@ -18,11 +14,7 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { Button } from "~/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "~/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
 
 const ClientOnlyAudioController = clientOnly(
   () => import("~/components/common/audio-controller/AudioControl")
@@ -40,11 +32,9 @@ const dummy_data = {
       artistName: "TheFatRat",
       collectionName: "Monody (feat. Laura Brehm) [Radio Edit] - Single",
       trackName: "Monody (feat. Laura Brehm) [Radio Edit]",
-      collectionCensoredName:
-        "Monody (feat. Laura Brehm) [Radio Edit] - Single",
+      collectionCensoredName: "Monody (feat. Laura Brehm) [Radio Edit] - Single",
       trackCensoredName: "Monody (feat. Laura Brehm) [Radio Edit]",
-      artistViewUrl:
-        "https://music.apple.com/us/artist/thefatrat/395664545?uo=4",
+      artistViewUrl: "https://music.apple.com/us/artist/thefatrat/395664545?uo=4",
       collectionViewUrl:
         "https://music.apple.com/us/album/monody-feat-laura-brehm-radio-edit/1444888726?i=1444888936&uo=4",
       trackViewUrl:
@@ -83,8 +73,7 @@ const dummy_data = {
       trackName: "Monody (feat. Laura Brehm) [Bimonte Remix]",
       collectionCensoredName: "Classics Remixed - EP",
       trackCensoredName: "Monody (feat. Laura Brehm) [Bimonte Remix]",
-      artistViewUrl:
-        "https://music.apple.com/us/artist/thefatrat/395664545?uo=4",
+      artistViewUrl: "https://music.apple.com/us/artist/thefatrat/395664545?uo=4",
       collectionViewUrl:
         "https://music.apple.com/us/album/monody-feat-laura-brehm-bimonte-remix/1515508181?i=1515508187&uo=4",
       trackViewUrl:
@@ -203,8 +192,7 @@ const dummy_data = {
       trackName: "Monody (feat. Laura Brehm) [Ephixa Remix]",
       collectionCensoredName: "Classics Remixed - EP",
       trackCensoredName: "Monody (feat. Laura Brehm) [Ephixa Remix]",
-      artistViewUrl:
-        "https://music.apple.com/us/artist/thefatrat/395664545?uo=4",
+      artistViewUrl: "https://music.apple.com/us/artist/thefatrat/395664545?uo=4",
       collectionViewUrl:
         "https://music.apple.com/us/album/monody-feat-laura-brehm-ephixa-remix/1515508181?i=1515508189&uo=4",
       trackViewUrl:
@@ -244,10 +232,8 @@ const dummy_data = {
       collectionCensoredName: "Of Iron and Clay",
       trackCensoredName: "Absent",
       artistViewUrl: "https://music.apple.com/us/artist/monody/431879109?uo=4",
-      collectionViewUrl:
-        "https://music.apple.com/us/album/absent/431879091?i=431879390&uo=4",
-      trackViewUrl:
-        "https://music.apple.com/us/album/absent/431879091?i=431879390&uo=4",
+      collectionViewUrl: "https://music.apple.com/us/album/absent/431879091?i=431879390&uo=4",
+      trackViewUrl: "https://music.apple.com/us/album/absent/431879091?i=431879390&uo=4",
       previewUrl:
         "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/be/52/38/be52388d-0ec9-a4e0-aadc-d6d2adda9378/mzaf_5675104315840671038.plus.aac.p.m4a",
       artworkUrl30:
@@ -276,10 +262,7 @@ const dummy_data = {
 
 async function sendItunesRequest(query: string) {
   const data = await fetch(
-    `https://itunes.apple.com/search?term=${query.replaceAll(
-      " ",
-      "+"
-    )}&limit=5&media=music`
+    `https://itunes.apple.com/search?term=${query.replaceAll(" ", "+")}&limit=5&media=music`
   );
 
   if (!data.ok) return;
@@ -296,16 +279,11 @@ export default function SongPicker(props: Props) {
   const globals = useContext(GlobalsContext);
 
   const [songName, setSongName] = useDebounce<string>("", 600);
-  const [searchedSongs, setSearchedSongs] = createSignal<ItunesSong[]>(
-    dummy_data.results
-  );
+  const [searchedSongs, setSearchedSongs] = createSignal<ItunesSong[]>(dummy_data.results);
   const [editedSongName, setEditedSongName] = createSignal<string>();
-  const [selectedSong, setSelectedSong] = createSignal<ItunesSong | null>(
-    dummy_data.results[0]
-  );
+  const [selectedSong, setSelectedSong] = createSignal<ItunesSong | null>(dummy_data.results[0]);
 
-  const [isConfirmDialogOpened, setIsConfirmDialogOpened] =
-    createSignal<boolean>(false);
+  const [isConfirmDialogOpened, setIsConfirmDialogOpened] = createSignal<boolean>(false);
   let audioElementRef: HTMLAudioElement;
 
   createEffect(() => {
@@ -354,21 +332,19 @@ export default function SongPicker(props: Props) {
   function handleSongConfirm() {
     if (!selectedSong()) return;
 
-    props.onSongSelect(selectedSong()!);
+    props.onSongSelect({
+      ...selectedSong()!,
+      ...(editedSongName() && { trackName: editedSongName() }),
+    });
     setIsConfirmDialogOpened(false);
   }
 
   return (
     <div>
-      <Dialog
-        open={isConfirmDialogOpened()}
-        onOpenChange={setIsConfirmDialogOpened}
-      >
+      <Dialog open={isConfirmDialogOpened()} onOpenChange={setIsConfirmDialogOpened}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>
-              Are you sure sure you want to pick this song?
-            </DialogTitle>
+            <DialogTitle>Are you sure sure you want to pick this song?</DialogTitle>
             <DialogDescription>
               <TextFieldRoot class="my-4">
                 <TextFieldLabel for="edited-name">
@@ -394,10 +370,7 @@ export default function SongPicker(props: Props) {
         </DialogContent>
       </Dialog>
       <div class="w-80 mx-auto pt-4 p-1 relative overflow-hidden">
-        <Show
-          when={selectedSong()}
-          fallback={<div class="size-[100px] rounded-none mx-auto" />}
-        >
+        <Show when={selectedSong()} fallback={<div class="size-[100px] rounded-none mx-auto" />}>
           <p
             title={selectedSong()!.trackName}
             class={`text-center text-ellipsis overflow-hidden font-semibold whitespace-nowrap mb-2`}
@@ -406,11 +379,7 @@ export default function SongPicker(props: Props) {
           </p>
           <div class="flex flex-col">
             <div class={`${styles.effect} relative overflow-hiddens`}>
-              <img
-                src={selectedSong()!.artworkUrl100}
-                alt="Picked song"
-                class={`mx-auto`}
-              />
+              <img src={selectedSong()!.artworkUrl100} alt="Picked song" class={`mx-auto`} />
             </div>
           </div>
         </Show>

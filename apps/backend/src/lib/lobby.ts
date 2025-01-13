@@ -187,7 +187,9 @@ function* handleSongInQueue(lobbies: LobbiesMap, lobby: Lobby, { delay }: { dela
         createNewMessageToClient(lobby.id, "NEW_SONG_TO_GUESS", {
           song: {
             ...song,
-            name: Array.from({ length: song.name.length }, () => null),
+            name: song.name
+              .split(" ")
+              .map((word) => Array.from({ length: word.length }, () => null)),
           },
           initialTimeRemaining: SONG_PICKING_DURATION,
         })
