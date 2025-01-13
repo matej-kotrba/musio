@@ -127,7 +127,13 @@ export default function Lobby() {
   const [didPick, setDidPick] = createSignal<boolean>(false);
   const [currentSongToGuess, setCurrentSongToGuess] = createSignal<SongWithNameHidden>({
     artist: "TheFatRat",
-    name: ["R", null, null, null, " ", null, null, "t", null, null, "m"],
+    name: [
+      ["N", "o", "b", null, null, null, null],
+      ["C", null, null, null, null, null, null],
+      [null, null],
+      [null, null, null],
+      [null, null, null, null, null],
+    ],
     fromPlayerById: "asd",
     trackUrl:
       "https://music.apple.com/us/album/monody-feat-laura-brehm-radio-edit/1444888726?i=1444888936&uo=4",
@@ -447,6 +453,10 @@ function GuessingGamePhase(props: GuessingGamePhaseProps) {
     const pow = base ** 2;
     setBlurRatio(base + (base - pow));
   }
+
+  createEffect(() => {
+    console.log(props.currentSongToGuess?.name);
+  });
 
   return (
     <div class="flex flex-col items-center gap-2">

@@ -1,29 +1,51 @@
 import { Motion } from "solid-motionone";
 
 type Props = {
-  wordChars: (string | null)[];
+  wordChars: (string | null)[][];
 };
 
 export default function WordToGuess(props: Props) {
   return (
-    <div class="text-4xl flex gap-1">
-      {props.wordChars.map((char) => {
-        if (char === " ") {
-          return <span class="inline-block w-[1ch]"></span>;
-        } else if (char !== null) {
-          return <span>{char}</span>;
-        } else {
-          return (
-            <Motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1, easing: "ease", delay: Math.random() }}
-              class="border-b-2 border-white w-[1ch] inline-block"
-            >
-              {" "}
-            </Motion.span>
-          );
-        }
+    <div class="text-4xl flex gap-4 flex-wrap justify-center">
+      {props.wordChars.map((arr) => {
+        if (arr.length === 0) return "";
+
+        return (
+          <div class="flex gap-[2px] h-[1em]">
+            {arr.map((letter) => {
+              if (letter !== null) {
+                return <span>{letter}</span>;
+              } else {
+                return (
+                  <Motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 1, easing: "ease", delay: 0.5 + Math.random() }}
+                    class="border-b-2 border-white w-[1ch] inline-block"
+                  >
+                    {" "}
+                  </Motion.span>
+                );
+              }
+            })}
+          </div>
+        );
+        // if (char === " ") {
+        //   return <span class="inline-block w-[1ch]"></span>;
+        // } else if (char !== null) {
+        //   return <span>{char}</span>;
+        // } else {
+        //   return (
+        //     <Motion.span
+        //       initial={{ opacity: 0 }}
+        //       animate={{ opacity: 1 }}
+        //       transition={{ duration: 1, easing: "ease", delay: Math.random() }}
+        //       class="border-b-2 border-white w-[1ch] inline-block"
+        //     >
+        //       {" "}
+        //     </Motion.span>
+        //   );
+        // }
       })}
     </div>
   );

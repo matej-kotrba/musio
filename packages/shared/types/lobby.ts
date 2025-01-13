@@ -6,7 +6,7 @@ export type Song = {
   imageUrl100x100: string;
 };
 
-export type SongWithNameHidden = Omit<Song, "name"> & { name: (string | null)[] };
+export type SongWithNameHidden = Omit<Song, "name"> & { name: (string | null)[][] };
 
 export type LobbyGameState = {
   state: "lobby";
