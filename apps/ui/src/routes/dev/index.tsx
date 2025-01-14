@@ -25,35 +25,84 @@ const dummy_players: Player[] = [
     points: 80,
     publicId: "",
   },
+  {
+    name: "Player 4",
+    icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
+    isHost: true,
+    points: 72,
+    publicId: "",
+  },
+  {
+    name: "Player 5",
+    icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
+    isHost: false,
+    points: 56,
+    publicId: "",
+  },
+  {
+    name: "Player 6",
+    icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
+    isHost: false,
+    points: 32,
+    publicId: "",
+  },
 ];
 
 export default function Dev() {
+  const highestScore = () => {
+    let highest = 0;
+    dummy_players.forEach((player) => {
+      if (player.points > highest) highest > highest;
+    });
+    return highest;
+  };
+
   return (
     <div class="container mx-auto mt-20">
-      <div class="w-[400px] grid grid-cols-[repeat(3,1fr)] grid-rows-3 gap-2">
-        <PlayerInScoreboard player={dummy_players[1]} class={"rpw-span"} />
-        <PlayerInScoreboard player={dummy_players[0]} />
-        <PlayerInScoreboard player={dummy_players[2]} />
-        {/* <Index each={dummy_players}>
+      <div class="flex h-[200px] gap-1">
+        <Index each={dummy_players}>
+          {(player, idx) => {
+            return <PlayerInScoreboard player={player()} height={highestScore()} />;
+          }}
+        </Index>
+      </div>
+      {/* <div class="w-fit h-[300px] grid grid-cols-3 grid-rows-4 gap-4">
+        <PlayerInScoreboard player={dummy_players[1]} class="row-span-3 row-start-2 col-start-1" />
+        <PlayerInScoreboard player={dummy_players[0]} class="row-span-4 col-start-2" />
+        <PlayerInScoreboard player={dummy_players[2]} class="row-span-2 row-start-3 col-start-3" />
+        <Index each={dummy_players}>
           {(player, idx) => {
             return <PlayerInScoreboard player={player()} index={idx} />;
           }}
-        </Index> */}
-      </div>
+        </Index>
+      </div> */}
     </div>
   );
 }
 
 type PlayerInScoreboardProps = {
   player: Player;
-  class?: CSSModuleClasses;
+  height: number;
+  class?: string;
 };
 
 function PlayerInScoreboard(props: PlayerInScoreboardProps) {
-  return (
-    <div class={clsx("bg-red-500", props.class)}>
-      <img src={props.player.icon.url} alt="" width={80} height={80} class="rounded-md" />
-      {/* <span>{props.player.name}</span> */}
-    </div>
-  );
+  return <div class={clsx("", props.class)}></div>;
 }
+
+// type PlayerInScoreboardProps = {
+//   player: Player;
+//   class?: string;
+// };
+
+// function PlayerInScoreboard(props: PlayerInScoreboardProps) {
+//   return (
+//     <div class={clsx("flex", props.class)}>
+//       <p class="text-ellipsis whitespace-nowrap overflow-hidden">{props.player.name}</p>
+//       <div class={"bg-red-500 h-full"}>
+//         <img src={props.player.icon.url} alt="" width={80} height={80} class="rounded-md" />
+//         {/* <span>{props.player.name}</span> */}
+//       </div>
+//     </div>
+//   );
+// }
