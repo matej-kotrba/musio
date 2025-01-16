@@ -170,7 +170,7 @@ app.get(
           if (isLobbyState(lobby.stateProperties, "lobby")) {
             lobby.stateProperties.state;
             if (isMessageType(lobby.stateProperties.state, parsed.message, "START_GAME")) {
-              if (!isHost(parsed.privateId, lobby)) return;
+              if (!isHost(parsed.publicId, lobby)) return;
               const initialData = getInitialPickingGameState();
               changeLobbyState(lobby, initialData);
 
@@ -195,10 +195,10 @@ app.get(
             }
           } else if (isLobbyState(lobby.stateProperties, "picking")) {
             if (isMessageType(lobby.stateProperties.state, parsed.message, "PICK_SONG")) {
-              const player = getPlayerByPrivateId(lobby, parsed.privateId);
+              const player = getPlayerByPrivateId(lobby, parsed.publicId);
 
               if (!player) return;
-              if (lobby.stateProperties.playersWhoPickedIds.includes(parsed.privateId)) return;
+              if (lobby.stateProperties.playersWhoPickedIds.includes(parsed.publicId)) return;
 
               const { name, artist, trackUrl, imageUrl100x100 } = parsed.message.payload;
 
@@ -228,7 +228,7 @@ app.get(
               const STRING_SIMILARITY_THRESHOLD = 0.7;
               // TODO: Add validators to the string
               const { content, messageId } = parsed.message.payload;
-              const player = getPlayerByPrivateId(lobby, parsed.privateId);
+              const player = getPlayerByPrivateId(lobby, parsed.publicId);
               if (!player) return;
 
               // TODO: Change 0 to actual song index
@@ -274,24 +274,25 @@ app.get(
             }
           }
 
+          // TODO: Now this check runs every time, but it should only run when no other event caught it
           if (isMessageType("all", parsed.message, "CHAT_MESSAGE")) {
-            const player = getPlayerByPrivateId(lobby, parsed.privateId);
+            const player = getPlayerByPrivateId(lobby, parsed.publicId);
             if (!player) return;
 
-            console.log("Message");
-
             const { content, messageId } = parsed.message.payload;
-            lobbies.broadcast(
-              lobby.id,
-              toPayloadToClient(
-                player.publicId,
-                createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
-                  messageId,
-                  content,
-                  type: false,
-                })
-              )
-            );
+            setTimeout(1000, null).then(() => {
+              lobbies.broadcast(
+                lobby.id,
+                toPayloadToClient(
+                  player.publicId,
+                  createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
+                    messageId,
+                    content,
+                    type: false,
+                  })
+                )
+              );
+            });
           }
         } catch {}
       },

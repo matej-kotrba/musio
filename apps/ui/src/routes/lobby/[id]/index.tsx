@@ -248,10 +248,10 @@ export default function Lobby() {
 
       case "PLAYER_PICKED_SONG": {
         setPlayers((old) =>
-          old.map((player) => ({ ...player, isChecked: player.publicId === data.privateId }))
+          old.map((player) => ({ ...player, isChecked: player.publicId === data.publicId }))
         );
 
-        if (thisPlayerIds()?.public === data.privateId) {
+        if (thisPlayerIds()?.public === data.publicId) {
           setDidPick(true);
         }
 
@@ -276,6 +276,20 @@ export default function Lobby() {
       case "IN_BETWEEN_SONGS_DELAY": {
         console.log("SONG DELAY");
         break;
+      }
+
+      case "CHAT_MESSAGE_CONFIRM": {
+        const payload = data.message.payload;
+        if (data.publicId === thisPlayerIds()?.public) {
+          setChatMessages((old) => {
+            const idx = old.findIndex((message) => message.id === payload.messageId);
+            if (idx !== -1) {
+              const newArr = old.with(idx, { ...old[idx], isOptimistic: false });
+              return newArr;
+            }
+            return old;
+          });
+        }
       }
     }
   };

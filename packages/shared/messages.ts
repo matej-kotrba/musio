@@ -30,10 +30,10 @@ export const messageToClientGameState = Object.fromEntries(
   [K in keyof typeof messageConfig]: (keyof (typeof messageConfig)[K])[];
 };
 
-type PayloadData<T> = { privateId: string; message: T };
+type PayloadData<T> = { publicId: string; message: T };
 
 const toPayload = <T extends () => unknown>(from: string, message: ReturnType<T>) =>
-  JSON.stringify({ privateId: from, message: message } satisfies PayloadData<ReturnType<T>>);
+  JSON.stringify({ publicId: from, message: message } satisfies PayloadData<ReturnType<T>>);
 
 export const toPayloadToClient = (
   from: string,

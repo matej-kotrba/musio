@@ -151,7 +151,7 @@ export default function Chat(props: ChatProps) {
 function MessageComponent(props: { message: ChatMessage }) {
   return (
     <div
-      class={`${styles.message}`}
+      class={`${styles.message} data-[optimistic=true]:opacity-50`}
       classList={{
         "bg-yellow-400 text-foreground-dark border-yellow-600 border-opacity-100":
           props.message.guessRelation === "near",
@@ -162,6 +162,7 @@ function MessageComponent(props: { message: ChatMessage }) {
       }}
       data-near={props.message.guessRelation === "near"}
       data-guessed={props.message.guessRelation === "guessed"}
+      data-optimistic={props.message.isOptimistic}
     >
       <span class="font-semibold opacity-75 text-ellipsis overflow-x-hidden whitespace-nowrap block">
         {props.message.senderName}
