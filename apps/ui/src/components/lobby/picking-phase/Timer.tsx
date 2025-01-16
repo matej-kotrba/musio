@@ -25,12 +25,18 @@ export default function Timer(props: Props) {
   };
 
   createEffect(() => {
+    props.currentTime;
+
     af = requestAnimationFrame(setTimeForFrame);
 
     onCleanup(() => {
       cancelAnimationFrame(af);
       counterStartTime = null;
     });
+  });
+
+  createEffect(() => {
+    setTime(props.currentTime);
   });
 
   return (

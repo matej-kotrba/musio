@@ -456,10 +456,6 @@ function GuessingGamePhase(props: GuessingGamePhaseProps) {
     setBlurRatio(base + (base - pow));
   }
 
-  createEffect(() => {
-    console.log(props.currentSongToGuess?.name);
-  });
-
   return (
     <div class="flex flex-col items-center gap-2">
       <Timer
@@ -470,7 +466,7 @@ function GuessingGamePhase(props: GuessingGamePhaseProps) {
         }
         currentTime={
           props.currentSongToGuess
-            ? props.gameState.currentInitialTimeRemaining
+            ? props.gameState.initialTimeRemaining
             : props.gameState.initialDelay
         }
         onTimeChange={handleTimeChange}
