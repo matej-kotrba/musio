@@ -1,9 +1,11 @@
 import { createEffect, createSignal } from "solid-js";
 import styles from "./ChatInput.module.css";
 import { Icon } from "@iconify-icon/solid";
+import clsx from "clsx";
 
 type Props = {
   onSubmit: (value: string) => void;
+  class?: string;
 };
 
 export default function ChatInput(props: Props) {
@@ -21,7 +23,7 @@ export default function ChatInput(props: Props) {
   return (
     <form
       on:submit={handleSubmit}
-      class={`${styles.input__wrapper} grid grid-flow-col rounded-full h-fit`}
+      class={clsx(`${styles.input__wrapper} grid grid-flow-col rounded-full h-fit`, props.class)}
     >
       <input
         type="text"

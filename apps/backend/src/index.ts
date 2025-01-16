@@ -224,33 +224,37 @@ app.get(
               }
             }
           } else if (isLobbyState(lobby.stateProperties, "guessing")) {
-            if (isMessageType(lobby.stateProperties.state, parsed.message, "GUESS_SONG")) {
+            if (isMessageType("all", parsed.message, "CHAT_MESSAGE")) {
               const STRING_SIMILARITY_THRESHOLD = 0.7;
               // TODO: Add validators to the string
-              const { songName } = parsed.message.payload;
+              const { content, messageId } = parsed.message.payload;
               const player = getPlayerByPrivateId(lobby, parsed.privateId);
               if (!player) return;
 
               // TODO: Change 0 to actual song index
               const currentSong = lobby.data.songQueue[0];
 
-              if (normalizeString(songName) === currentSong.name) {
+              if (normalizeString(content) === currentSong.name) {
                 player.ws.send(
                   toPayloadToClient(
                     "server",
-                    createNewMessageToClient(lobby.id, "GUESS_CHAT_MESSAGE_RESULT", {
+                    createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
                       type: "guessed",
+                      content,
+                      messageId,
                     })
                   )
                 );
               } else if (
-                stringSimilarity(songName, currentSong.name) >= STRING_SIMILARITY_THRESHOLD
+                stringSimilarity(content, currentSong.name) >= STRING_SIMILARITY_THRESHOLD
               ) {
                 player.ws.send(
                   toPayloadToClient(
                     "server",
-                    createNewMessageToClient(lobby.id, "GUESS_CHAT_MESSAGE_RESULT", {
+                    createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
                       type: "near",
+                      content,
+                      messageId,
                     })
                   )
                 );
@@ -259,13 +263,35 @@ app.get(
                   lobby.id,
                   toPayloadToClient(
                     "server",
-                    createNewMessageToClient(lobby.id, "GUESS_CHAT_MESSAGE_RESULT", {
+                    createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
                       type: false,
+                      content,
+                      messageId,
                     })
                   )
                 );
               }
             }
+          }
+
+          if (isMessageType("all", parsed.message, "CHAT_MESSAGE")) {
+            const player = getPlayerByPrivateId(lobby, parsed.privateId);
+            if (!player) return;
+
+            console.log("Message");
+
+            const { content, messageId } = parsed.message.payload;
+            lobbies.broadcast(
+              lobby.id,
+              toPayloadToClient(
+                player.publicId,
+                createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
+                  messageId,
+                  content,
+                  type: false,
+                })
+              )
+            );
           }
         } catch {}
       },

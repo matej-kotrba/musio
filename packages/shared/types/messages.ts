@@ -25,8 +25,10 @@ export type WS_MessageMapServer = {
     delay: number;
     correctSongName: string;
   };
-  GUESS_CHAT_MESSAGE_RESULT: {
+  CHAT_MESSAGE_CONFIRM: {
     type: GuessChatMessageType;
+    messageId: string;
+    content: string;
   };
 };
 
@@ -47,4 +49,12 @@ export type WS_MessageInterface<T extends WS_MESSAGE> = {
     payload: T[Key];
     lobbyId: string;
   };
+};
+
+export type ChatMessage = {
+  id: string;
+  senderName: string;
+  content: string;
+  guessRelation: GuessChatMessageType;
+  isOptimistic?: boolean;
 };

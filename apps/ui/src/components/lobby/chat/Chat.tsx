@@ -1,152 +1,145 @@
 import styles from "./Chat.module.css";
-import { createEffect, createSignal } from "solid-js";
+import { createEffect } from "solid-js";
 import ChatInput from "./ChatInput";
-import type { GuessChatMessageType } from "shared";
+import type { ChatMessage } from "shared";
 
-type Message = {
-  senderName: string;
-  content: string;
-  isGuessRelated: GuessChatMessageType;
+// const dummy_messages: Message[] = [
+//   {
+//     senderName: "Erik",
+//     content: "Hymn for the Weekend",
+//     guessRelation: false,
+//   },
+//   {
+//     senderName: "Dr. House",
+//     content: "Monody",
+//     guessRelation: false,
+//   },
+//   {
+//     senderName: "Dr. House",
+//     content: "Rocks Bottom",
+//     guessRelation: "near",
+//   },
+//   {
+//     senderName: "Hrna",
+//     content: "Clarity",
+//     guessRelation: false,
+//   },
+//   {
+//     senderName: "Dr. House",
+//     content: "Rock Bottom",
+//     guessRelation: "guessed",
+//   },
+//   {
+//     senderName: "Dustix",
+//     content: "Love to Lose",
+//     guessRelation: false,
+//   },
+//   {
+//     senderName: "Dustix",
+//     content:
+//       "Love to Lose asuoidh auwuid aiuwd iuawhuidgi awdia gdygayida uidhauihsdljashdhasjkdhjakdhuauwdhaiwduawd",
+//     guessRelation: false,
+//   },
+//   {
+//     senderName: "Erik",
+//     content: "Hymn for the Weekend",
+//     guessRelation: false,
+//   },
+//   {
+//     senderName: "Dr. House",
+//     content: "Monody",
+//     guessRelation: false,
+//   },
+//   {
+//     senderName: "Dr. House",
+//     content: "Rocks Bottom",
+//     guessRelation: "near",
+//   },
+//   {
+//     senderName: "Hrna",
+//     content: "Clarity",
+//     guessRelation: false,
+//   },
+//   {
+//     senderName: "Dr. House",
+//     content: "Rock Bottom",
+//     guessRelation: "guessed",
+//   },
+//   {
+//     senderName: "Dustix",
+//     content: "Love to Lose",
+//     guessRelation: false,
+//   },
+//   {
+//     senderName: "Dustix",
+//     content:
+//       "Love to Lose asuoidh auwuid aiuwd iuawhuidgi awdia gdygayida uidhauihsdljashdhasjkdhjakdhuauwdhaiwduawd",
+//     guessRelation: false,
+//   },
+//   {
+//     senderName: "Erik",
+//     content: "Hymn for the Weekend",
+//     guessRelation: false,
+//   },
+//   {
+//     senderName: "Dr. House",
+//     content: "Monody",
+//     guessRelation: false,
+//   },
+//   {
+//     senderName: "Dr. House",
+//     content: "Rocks Bottom",
+//     guessRelation: "near",
+//   },
+//   {
+//     senderName: "Hrna",
+//     content: "Clarity",
+//     guessRelation: false,
+//   },
+//   {
+//     senderName: "Dr. House",
+//     content: "Rock Bottom",
+//     guessRelation: "guessed",
+//   },
+//   {
+//     senderName: "Dustix",
+//     content: "Love to Lose",
+//     guessRelation: false,
+//   },
+//   {
+//     senderName: "Dustix",
+//     content:
+//       "Love to Lose asuoidh auwuid aiuwd iuawhuidgi awdia gdygayida uidhauihsdljashdhasjkdhjakdhuauwdhaiwduawd",
+//     guessRelation: false,
+//   },
+// ];
+
+type ChatProps = {
+  messages: ChatMessage[];
+  onChatMessage: (content: string) => void;
 };
 
-const dummy_messages: Message[] = [
-  {
-    senderName: "Erik",
-    content: "Hymn for the Weekend",
-    isGuessRelated: false,
-  },
-  {
-    senderName: "Dr. House",
-    content: "Monody",
-    isGuessRelated: false,
-  },
-  {
-    senderName: "Dr. House",
-    content: "Rocks Bottom",
-    isGuessRelated: "near",
-  },
-  {
-    senderName: "Hrna",
-    content: "Clarity",
-    isGuessRelated: false,
-  },
-  {
-    senderName: "Dr. House",
-    content: "Rock Bottom",
-    isGuessRelated: "guessed",
-  },
-  {
-    senderName: "Dustix",
-    content: "Love to Lose",
-    isGuessRelated: false,
-  },
-  {
-    senderName: "Dustix",
-    content:
-      "Love to Lose asuoidh auwuid aiuwd iuawhuidgi awdia gdygayida uidhauihsdljashdhasjkdhjakdhuauwdhaiwduawd",
-    isGuessRelated: false,
-  },
-  {
-    senderName: "Erik",
-    content: "Hymn for the Weekend",
-    isGuessRelated: false,
-  },
-  {
-    senderName: "Dr. House",
-    content: "Monody",
-    isGuessRelated: false,
-  },
-  {
-    senderName: "Dr. House",
-    content: "Rocks Bottom",
-    isGuessRelated: "near",
-  },
-  {
-    senderName: "Hrna",
-    content: "Clarity",
-    isGuessRelated: false,
-  },
-  {
-    senderName: "Dr. House",
-    content: "Rock Bottom",
-    isGuessRelated: "guessed",
-  },
-  {
-    senderName: "Dustix",
-    content: "Love to Lose",
-    isGuessRelated: false,
-  },
-  {
-    senderName: "Dustix",
-    content:
-      "Love to Lose asuoidh auwuid aiuwd iuawhuidgi awdia gdygayida uidhauihsdljashdhasjkdhjakdhuauwdhaiwduawd",
-    isGuessRelated: false,
-  },
-  {
-    senderName: "Erik",
-    content: "Hymn for the Weekend",
-    isGuessRelated: false,
-  },
-  {
-    senderName: "Dr. House",
-    content: "Monody",
-    isGuessRelated: false,
-  },
-  {
-    senderName: "Dr. House",
-    content: "Rocks Bottom",
-    isGuessRelated: "near",
-  },
-  {
-    senderName: "Hrna",
-    content: "Clarity",
-    isGuessRelated: false,
-  },
-  {
-    senderName: "Dr. House",
-    content: "Rock Bottom",
-    isGuessRelated: "guessed",
-  },
-  {
-    senderName: "Dustix",
-    content: "Love to Lose",
-    isGuessRelated: false,
-  },
-  {
-    senderName: "Dustix",
-    content:
-      "Love to Lose asuoidh auwuid aiuwd iuawhuidgi awdia gdygayida uidhauihsdljashdhasjkdhjakdhuauwdhaiwduawd",
-    isGuessRelated: false,
-  },
-];
-
-export default function Chat() {
-  const [messages, setMessages] = createSignal<Message[]>(dummy_messages);
+export default function Chat(props: ChatProps) {
   let chatRef!: HTMLDivElement;
 
   createEffect(() => {
-    messages();
+    props.messages;
 
     chatRef.scrollTo({ top: chatRef.scrollHeight });
   });
 
   function createNewMessage(value: string) {
-    const newMessage: Message = {
-      content: value,
-      isGuessRelated: false,
-      senderName: "Dr. House",
-    };
-
-    setMessages((old) => [...old, newMessage]);
+    props.onChatMessage(value);
   }
 
   return (
-    <div ref={chatRef} class="h-full grid grid-rows-[1fr,auto] gap-2">
+    <div class="h-full grid grid-rows-[1fr,auto] gap-2">
       <div
         ref={chatRef}
         class={`${styles.messages__mask} flex flex-col gap-2 overflow-y-auto pr-2`}
       >
-        {messages().map((message) => {
+        <div class="flex-1"></div>
+        {props.messages.map((message) => {
           return <MessageComponent message={message} />;
         })}
       </div>
@@ -155,20 +148,20 @@ export default function Chat() {
   );
 }
 
-function MessageComponent(props: { message: Message }) {
+function MessageComponent(props: { message: ChatMessage }) {
   return (
     <div
       class={`${styles.message}`}
       classList={{
         "bg-yellow-400 text-foreground-dark border-yellow-600 border-opacity-100":
-          props.message.isGuessRelated === "near",
+          props.message.guessRelation === "near",
         "bg-green-600 border-green-800 border-opacity-100":
-          props.message.isGuessRelated === "guessed",
+          props.message.guessRelation === "guessed",
         "relative bg-background-DEAFULT rounded-xl p-2 border-2 border-white border-opacity-20":
           true,
       }}
-      data-near={props.message.isGuessRelated === "near"}
-      data-guessed={props.message.isGuessRelated === "guessed"}
+      data-near={props.message.guessRelation === "near"}
+      data-guessed={props.message.guessRelation === "guessed"}
     >
       <span class="font-semibold opacity-75 text-ellipsis overflow-x-hidden whitespace-nowrap block">
         {props.message.senderName}

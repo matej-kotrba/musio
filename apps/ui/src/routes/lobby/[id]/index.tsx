@@ -1,5 +1,13 @@
 import styles from "./index.module.css";
-import { createSignal, Show, useContext, Switch, Match, createEffect } from "solid-js";
+import {
+  createSignal,
+  Show,
+  useContext,
+  Switch,
+  Match,
+  createEffect,
+  createUniqueId,
+} from "solid-js";
 import PlayerDisplay, { getAllIcons } from "~/components/lobby/Player";
 import WordToGuess from "~/components/lobby/WordToGuess";
 import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
@@ -10,7 +18,9 @@ import ProfileSelection, { ProfileData } from "~/components/lobby/profile/Profil
 import { createNewMessageToServer, fromMessage, toPayloadToServer } from "shared";
 import { getLobbyURL as getLobbyId } from "~/utils/rscs";
 import {
+  ChatMessage,
   GameState,
+  GuessChatMessageType,
   GuessingGameState,
   ItunesSong,
   LobbyGameState,
@@ -111,6 +121,7 @@ export default function Lobby() {
 
   const [profileData, setProfileData] = createSignal<ProfileData | null>(null);
   const [players, setPlayers] = createSignal<Player[]>(dummy_players);
+  const [chatMessages, setChatMessages] = createSignal<ChatMessage[]>([]);
   const [thisPlayerIds, setThisPlayerIds] = createSignal<{
     public: string;
     private: string;
@@ -280,6 +291,31 @@ export default function Lobby() {
     );
   };
 
+  const handleChatMessage = (content: string) => {
+    if (!thisPlayerIds()?.public) return;
+
+    const newMessage: ChatMessage = {
+      id: createUniqueId(),
+      content: content,
+      guessRelation: false,
+      senderName: thisPlayerIds()!.public,
+      isOptimistic: true,
+    };
+
+    // Optimisticly update messages
+    setChatMessages((old) => [...old, newMessage]);
+
+    ctx?.connection.ws?.send(
+      toPayloadToServer(
+        thisPlayerIds()!.private,
+        createNewMessageToServer(lobbyId(), "CHAT_MESSAGE", {
+          messageId: newMessage.id,
+          content,
+        })
+      )
+    );
+  };
+
   const handleSongSelection = (selectedSong: ItunesSong) => {
     if (!thisPlayerIds()?.private) return;
 
@@ -401,7 +437,7 @@ export default function Lobby() {
           }}
         >
           <Show when={!!profileData() || true} fallback={<p>Selecting...</p>}>
-            <Chat />
+            <Chat messages={chatMessages()} onChatMessage={handleChatMessage} />
           </Show>
         </aside>
       </div>

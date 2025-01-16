@@ -15,11 +15,12 @@ export const messageConfig = {
   picking: {
     PICK_SONG: {} as Omit<Song, "fromPlayerById">,
   },
-  guessing: {
-    GUESS_SONG: {} as {} as { songName: string },
-  },
+  guessing: {},
   leaderboard: {
     UPDATE_LEADERBOARD: {} as {},
+  },
+  all: {
+    CHAT_MESSAGE: {} as { content: string; messageId: string },
   },
 } as const;
 
