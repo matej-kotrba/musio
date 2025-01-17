@@ -26,6 +26,7 @@ export type WS_MessageMapServer = {
     correctSongName: string;
   };
   CHAT_MESSAGE_CONFIRM: {
+    isOk: boolean;
     type: GuessChatMessageType;
     messageId: string;
     content: string;

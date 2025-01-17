@@ -239,6 +239,7 @@ app.get(
                   toPayloadToClient(
                     "server",
                     createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
+                      isOk: true,
                       type: "guessed",
                       content,
                       messageId,
@@ -252,6 +253,7 @@ app.get(
                   toPayloadToClient(
                     "server",
                     createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
+                      isOk: true,
                       type: "near",
                       content,
                       messageId,
@@ -264,6 +266,7 @@ app.get(
                   toPayloadToClient(
                     "server",
                     createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
+                      isOk: true,
                       type: false,
                       content,
                       messageId,
@@ -286,6 +289,7 @@ app.get(
                 toPayloadToClient(
                   player.publicId,
                   createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
+                    isOk: true,
                     messageId,
                     content,
                     type: false,

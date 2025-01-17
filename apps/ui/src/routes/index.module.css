@@ -2,10 +2,24 @@
   width: fit-content;
   margin-inline: auto;
 
+  background-image: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--primary-accent)));
+  background-clip: text;
+  animation: fade-out 2s forwards;
+  animation-delay: 2.5s;
+}
+
+@keyframes fade-out {
+  to {
+    color: transparent;
+  }
+}
+
+.main__description {
   background-image: linear-gradient(
     90deg,
-    hsl(var(--primary)),
-    hsl(var(--primary-accent))
+    hsl(var(--foreground) / 0.5),
+    hsl(var(--foreground)),
+    hsl(var(--foreground) / 0.5)
   );
   background-clip: text;
   color: transparent;
@@ -18,11 +32,13 @@
   background-color: transparent;
   opacity: 0.6;
   background-image: radial-gradient(
-    hsl(var(--primary)) 0.8px,
-    hsl(var(--background)) 0.8px
-  );
-  background-size: 10px 10px;
-  mask-image: radial-gradient(ellipse at center, black -40%, transparent);
+      ellipse at center,
+      hsl(var(--background) / 0.5),
+      hsl(var(--background)) 80%
+    ),
+    radial-gradient(hsl(var(--primary)) 0.8px, hsl(var(--background)) 0.8px);
+  background-size: 100% 100%, 10px 10px;
+  /* mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.5), transparent 80%); */
   z-index: -99;
 }
 
@@ -31,8 +47,7 @@
 }
 
 .host__join__separator {
-  box-shadow: 0 0 48px 1rem hsl(var(--primary) / 0.2),
-    0 0 24px 0.5rem hsl(var(--primary) / 0.1),
+  box-shadow: 0 0 48px 1rem hsl(var(--primary) / 0.2), 0 0 24px 0.5rem hsl(var(--primary) / 0.1),
     0 0 8px 0.3rem hsl(var(--primary) / 0.2);
 }
 

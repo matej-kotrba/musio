@@ -7,9 +7,31 @@ export default function Home() {
     <main class="text-center text-gray-700 p-4 container mx-auto">
       <div class={index.landing}>
         <div class="py-16">
-          <h1 class={`${index.main__title} text-6xl font-bold uppercase mb-1`}>Musio</h1>
-          <p class="font-bold text-foreground text-2xl">
-            <Index each={"Ultimate song party guessing game".split("")}>
+          <h1 class={`${index.main__title} text-6xl font-bold mb-1 text-foreground`}>
+            <Motion.div
+              class={`${index.main__title} inline-block`}
+              initial={{ opacity: 0, scale: 0, x: 200 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.5, easing: "ease" }}
+            >
+              M
+            </Motion.div>
+            <Index each={"usio".split("")}>
+              {(letter, idx) => (
+                <Motion.div
+                  class={`${index.main__title} inline-block`}
+                  initial={{ opacity: 0, scale: 0, x: -200 }}
+                  animate={{ opacity: 1, scale: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.7 + idx * 0.1, easing: "ease" }}
+                >
+                  {letter()}
+                </Motion.div>
+              )}
+            </Index>
+          </h1>
+          <p class={`${index.main__description} font-bold text-3xl w-fit mx-auto`}>
+            Ultimate song party guessing game
+            {/* <Index each={"Ultimate song party guessing game".split("")}>
               {(letter, index) => {
                 return (
                   <Motion.span
@@ -26,7 +48,7 @@ export default function Home() {
                   </Motion.span>
                 );
               }}
-            </Index>
+            </Index> */}
           </p>
         </div>
         <div
