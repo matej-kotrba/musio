@@ -4,20 +4,11 @@ import { createNodeWebSocket } from "@hono/node-ws";
 import {
   changeLobbyState,
   changeToGuessingGameLobbyState,
-  getInitialGuessingGameState,
   getInitialPickingGameState,
-  isLobbyState,
-  isMessageType,
-  startGuessingSongQueue,
   type LobbiesMap,
   type Lobby,
 } from "./lib/lobby.js";
-import {
-  abortLobbyTimeoutSignalAndRemove,
-  getRandomId,
-  isDev,
-  normalizeString,
-} from "./lib/utils.js";
+import { getRandomId, isDev, normalizeString } from "./lib/utils.js";
 import { LobbyMap } from "./lib/map.js";
 import {
   playerNameValidator,
@@ -32,6 +23,7 @@ import { createNewLobby, createNewPlayer, createNewSong } from "./lib/create.js"
 import { setTimeout } from "timers/promises";
 import { getPlayerByPrivateId, removePlayerFromLobby } from "./lib/player.js";
 import { stringSimilarity } from "string-similarity-js";
+import { EventHandleService } from "./lib/events.js";
 
 const app = new Hono();
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
@@ -79,6 +71,8 @@ app.get("/getLobbyId", (c) => {
 app.get(
   "/ws",
   upgradeWebSocket((c) => {
+    const eventsHandleService = new EventHandleService();
+
     return {
       onOpen: (event, ws) => {
         const lobbyId = c.req.query("lobbyId");
@@ -148,6 +142,7 @@ app.get(
       },
       onMessage: (event, ws) => {
         console.log("[ws] message");
+        eventsHandleService.reset();
 
         let parsed: ReturnType<typeof fromMessage<WS_MessageMapClient>>;
 
@@ -167,9 +162,15 @@ app.get(
           //   throw new Error("Invalid message type for current game state");
           // }
 
-          if (isLobbyState(lobby.stateProperties, "lobby")) {
+          if (eventsHandleService.isLobbyState(lobby.stateProperties, "lobby")) {
             lobby.stateProperties.state;
-            if (isMessageType(lobby.stateProperties.state, parsed.message, "START_GAME")) {
+            if (
+              eventsHandleService.isMessageType(
+                lobby.stateProperties.state,
+                parsed.message,
+                "START_GAME"
+              )
+            ) {
               if (!isHost(parsed.publicId, lobby)) return;
               const initialData = getInitialPickingGameState();
               changeLobbyState(lobby, initialData);
@@ -193,8 +194,14 @@ app.get(
                 )
               );
             }
-          } else if (isLobbyState(lobby.stateProperties, "picking")) {
-            if (isMessageType(lobby.stateProperties.state, parsed.message, "PICK_SONG")) {
+          } else if (eventsHandleService.isLobbyState(lobby.stateProperties, "picking")) {
+            if (
+              eventsHandleService.isMessageType(
+                lobby.stateProperties.state,
+                parsed.message,
+                "PICK_SONG"
+              )
+            ) {
               const player = getPlayerByPrivateId(lobby, parsed.publicId);
 
               if (!player) return;
@@ -223,8 +230,9 @@ app.get(
                 );
               }
             }
-          } else if (isLobbyState(lobby.stateProperties, "guessing")) {
-            if (isMessageType("all", parsed.message, "CHAT_MESSAGE")) {
+          } else if (eventsHandleService.isLobbyState(lobby.stateProperties, "guessing")) {
+            if (eventsHandleService.isMessageType("all", parsed.message, "CHAT_MESSAGE")) {
+              console.log("GUESSS");
               const STRING_SIMILARITY_THRESHOLD = 0.7;
               // TODO: Add validators to the string
               const { content, messageId } = parsed.message.payload;
@@ -272,8 +280,10 @@ app.get(
             }
           }
 
-          // TODO: Now this check runs every time, but it should only run when no other event caught it
-          if (isMessageType("all", parsed.message, "CHAT_MESSAGE")) {
+          if (
+            !eventsHandleService.getMessageEventType() &&
+            eventsHandleService.isMessageType("all", parsed.message, "CHAT_MESSAGE")
+          ) {
             const player = getPlayerByPrivateId(lobby, parsed.publicId);
             if (!player) return;
 

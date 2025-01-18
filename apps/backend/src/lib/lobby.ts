@@ -51,34 +51,6 @@ export type Lobby = {
 //   };
 // }
 
-export function isLobbyState<T extends GameStateType>(
-  props: GameState,
-  condition: T
-): props is Extract<typeof props, { state: T }> {
-  return props.state === condition;
-}
-
-// export function getEventInLobby<T extends keyof MessageToClientGameState>(
-//   lobbyState: T,
-//   event: MessageToClientGameState[T][number]
-// ) {
-//   return event;
-// }
-
-type MessageToClientGameState = typeof messageToClientGameState;
-type Messages = WS_MessageInterface<WS_MessageMapClient>[keyof WS_MessageMapClient];
-
-export function isMessageType<
-  T extends keyof MessageToClientGameState,
-  K extends MessageToClientGameState[T][number]
->(
-  lobbyState: T,
-  message: Messages,
-  targetMessageType: K
-): message is Extract<Messages, { type: K }> {
-  return message.type === targetMessageType;
-}
-
 type InitialGamePhaseData<T extends GameState> = {
   gameState: T;
   lobbyData: { [Key in keyof Lobby["data"]]?: Lobby["data"][Key] };

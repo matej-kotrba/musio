@@ -95,7 +95,7 @@ const dummy_players: Player[] = [
   {
     name: "Player 2",
     icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
-    points: 5,
+    points: 6,
     isHost: false,
     publicId: "8",
   },
@@ -285,7 +285,11 @@ export default function Lobby() {
           if (idx !== -1) {
             let newArr = old;
             if (payload.isOk) {
-              newArr = old.with(idx, { ...old[idx], isOptimistic: false });
+              newArr = old.with(idx, {
+                ...old[idx],
+                isOptimistic: false,
+                guessRelation: payload.type,
+              });
             } else {
               newArr = old.filter((_, i) => i !== idx);
             }
@@ -369,7 +373,7 @@ export default function Lobby() {
 
   return (
     <>
-      {/* <ProfileSelection onProfileSelected={handleProfileSelected} /> */}
+      <ProfileSelection onProfileSelected={handleProfileSelected} />
       <div
         class="relative grid grid-cols-[auto,1fr,auto] gap-4 h-full max-h-full overflow-hidden"
         style={{
