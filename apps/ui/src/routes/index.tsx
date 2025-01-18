@@ -151,11 +151,19 @@ function HowToPlayStep(props: HowToPlayStepProps) {
   return (
     <div
       class={clsx(
-        `${index["how-to-play__container"]} relative rounded-sm w-full p-4 text-foreground aspect-[3/2] bg-background-DEAFULT`,
+        `${index["how-to-play__container"]} relative rounded-sm w-full p-4 text-foreground aspect-[3/2] bg-background-DEAFULT shadow-md`,
         props.class
       )}
     >
-      {props.children}
+      <div>
+        <div
+          class={`relative font-bold text-xl mb-2 before:content-[''] before:w-3/4 before:absolute before:top-full before:left-1/2 before:-translate-x-1/2
+          before:h-[2px] before:bg-gradient-to-r before:from-transparent before:via-primary before:to-transparent`}
+        >
+          {props.stepIndex}. {props.title}
+        </div>
+        <div class="text-balance">{props.children}</div>
+      </div>
     </div>
   );
 }
