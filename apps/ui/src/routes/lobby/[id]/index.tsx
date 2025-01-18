@@ -280,16 +280,37 @@ export default function Lobby() {
 
       case "CHAT_MESSAGE_CONFIRM": {
         const payload = data.message.payload;
-        if (data.publicId === thisPlayerIds()?.public) {
-          setChatMessages((old) => {
-            const idx = old.findIndex((message) => message.id === payload.messageId);
-            if (idx !== -1) {
-              const newArr = old.with(idx, { ...old[idx], isOptimistic: false });
-              return newArr;
+        setChatMessages((old) => {
+          const idx = old.findIndex((message) => message.id === payload.messageId);
+          if (idx !== -1) {
+            let newArr = old;
+            if (payload.isOk) {
+              newArr = old.with(idx, { ...old[idx], isOptimistic: false });
+            } else {
+              newArr = old.filter((_, i) => i !== idx);
             }
-            return old;
-          });
-        }
+            return newArr;
+          }
+          return old;
+        });
+
+        break;
+      }
+
+      case "CHAT_MESSAGE": {
+        const payload = data.message.payload;
+
+        const sender = players().find((player) => player.publicId === data.publicId);
+        if (!sender) break;
+
+        setChatMessages((old) => [
+          ...old,
+          {
+            content: payload.content,
+            guessRelation: false,
+            senderName: sender.name,
+          },
+        ]);
       }
     }
   };
@@ -306,24 +327,24 @@ export default function Lobby() {
   };
 
   const handleChatMessage = (content: string) => {
-    if (!thisPlayerIds()?.public) return;
+    if (!thisPlayerIds()?.public || !getThisPlayer()) return;
 
     const newMessage: ChatMessage = {
       id: createUniqueId(),
       content: content,
       guessRelation: false,
-      senderName: thisPlayerIds()!.public,
+      senderName: getThisPlayer()!.name,
       isOptimistic: true,
     };
 
-    // Optimisticly update messages
+    // Optimistically update messages
     setChatMessages((old) => [...old, newMessage]);
 
     ctx?.connection.ws?.send(
       toPayloadToServer(
         thisPlayerIds()!.private,
         createNewMessageToServer(lobbyId(), "CHAT_MESSAGE", {
-          messageId: newMessage.id,
+          messageId: newMessage.id!,
           content,
         })
       )

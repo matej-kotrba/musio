@@ -241,7 +241,6 @@ app.get(
                     createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
                       isOk: true,
                       type: "guessed",
-                      content,
                       messageId,
                     })
                   )
@@ -255,7 +254,6 @@ app.get(
                     createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
                       isOk: true,
                       type: "near",
-                      content,
                       messageId,
                     })
                   )
@@ -264,12 +262,9 @@ app.get(
                 lobbies.broadcast(
                   lobby.id,
                   toPayloadToClient(
-                    "server",
-                    createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
-                      isOk: true,
-                      type: false,
+                    player.publicId,
+                    createNewMessageToClient(lobby.id, "CHAT_MESSAGE", {
                       content,
-                      messageId,
                     })
                   )
                 );
@@ -284,15 +279,24 @@ app.get(
 
             const { content, messageId } = parsed.message.payload;
             setTimeout(1000, null).then(() => {
-              lobbies.broadcast(
-                lobby.id,
+              player.ws.send(
                 toPayloadToClient(
-                  player.publicId,
+                  lobby.id,
                   createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
                     isOk: true,
                     messageId,
-                    content,
                     type: false,
+                  })
+                )
+              );
+
+              lobbies.publish(
+                lobby.id,
+                player.privateId,
+                toPayloadToClient(
+                  player.publicId,
+                  createNewMessageToClient(lobby.id, "CHAT_MESSAGE", {
+                    content: content,
                   })
                 )
               );

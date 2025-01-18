@@ -29,6 +29,8 @@ export type WS_MessageMapServer = {
     isOk: boolean;
     type: GuessChatMessageType;
     messageId: string;
+  };
+  CHAT_MESSAGE: {
     content: string;
   };
 };
@@ -53,7 +55,7 @@ export type WS_MessageInterface<T extends WS_MESSAGE> = {
 };
 
 export type ChatMessage = {
-  id: string;
+  id?: string;
   senderName: string;
   content: string;
   guessRelation: GuessChatMessageType;
