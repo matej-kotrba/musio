@@ -84,6 +84,7 @@ export const getInitialGuessingGameState: (
     currentInitialTimeRemaining: SONG_PICKING_DURATION,
     initialDelay: INITIAL_GUESSING_DELAY_IN_MS / 1000,
     playersWhoGuessed: [],
+    isGuessingPaused: true,
   },
   lobbyData: {
     songQueue: shuffleArray(songs),
@@ -117,32 +118,40 @@ export async function startGuessingSongQueue(
   const lobby = lobbies.get(lobbyId);
   if (!lobby || lobby.stateProperties.state !== "guessing") return;
 
+  lobby.stateProperties.isGuessingPaused = true;
   await waitFor(initialDelay);
+  lobby.stateProperties.isGuessingPaused = false;
 
   lobby.data.songQueueGenerator = handleSongInQueue(lobbies, lobby, { delay: 3000 });
 
-  abortLobbyTimeoutSignalAndRemove(lobby);
-  resetGuessingState(lobby.stateProperties as GuessingGameState);
-  lobby.data.currentTimeoutAbortController = new AbortController();
+  while (true) {
+    const { value: currentIndex } = lobby.data.songQueueGenerator.next();
+    if (currentIndex === undefined) break;
 
-  const { value: currentIndex } = lobby.data.songQueueGenerator.next();
+    abortLobbyTimeoutSignalAndRemove(lobby);
+    resetGuessingState(lobby.stateProperties as GuessingGameState);
+    lobby.data.currentTimeoutAbortController = new AbortController();
 
-  setTimeout(SONG_PICKING_DURATION * 1000, null, {
-    signal: lobby.data.currentTimeoutAbortController.signal,
-  })
-    .then(() => {
-      lobbies.broadcast(
-        lobby.id,
-        toPayloadToClient(
-          "server",
-          createNewMessageToClient(lobby.id, "IN_BETWEEN_SONGS_DELAY", {
-            delay: DELAY_BETWEEN_SONGS_IN_MS,
-            correctSongName: lobby.data.songQueue[currentIndex].name,
-          })
-        )
-      );
-    })
-    .catch((e) => {});
+    await new Promise((res, rej) => {
+      setTimeout(SONG_PICKING_DURATION * 1000, null, {
+        signal: lobby.data.currentTimeoutAbortController!.signal,
+      }).finally(async () => {
+        lobbies.broadcast(
+          lobby.id,
+          toPayloadToClient(
+            "server",
+            createNewMessageToClient(lobby.id, "IN_BETWEEN_SONGS_DELAY", {
+              delay: DELAY_BETWEEN_SONGS_IN_MS,
+              correctSongName: lobby.data.songQueue[currentIndex].name,
+            })
+          )
+        );
+        await waitFor(DELAY_BETWEEN_SONGS_IN_MS);
+
+        res("Done");
+      });
+    });
+  }
 }
 
 function* handleSongInQueue(lobbies: LobbiesMap, lobby: Lobby, { delay }: { delay: number }) {

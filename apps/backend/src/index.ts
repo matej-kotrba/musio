@@ -231,7 +231,10 @@ app.get(
               }
             }
           } else if (eventsHandleService.isLobbyState(lobby.stateProperties, "guessing")) {
-            if (eventsHandleService.isMessageType("all", parsed.message, "CHAT_MESSAGE")) {
+            if (
+              !lobby.stateProperties.isGuessingPaused &&
+              eventsHandleService.isMessageType("all", parsed.message, "CHAT_MESSAGE")
+            ) {
               console.log("GUESSS");
               const STRING_SIMILARITY_THRESHOLD = 0.7;
               // TODO: Add validators to the string

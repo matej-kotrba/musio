@@ -24,6 +24,8 @@ export type GuessingGameState = {
   initialTimeRemaining: number;
   currentInitialTimeRemaining: number;
   playersWhoGuessed: { id: string; points: number }[];
+  // Detects whether guessing is paused, for example during delay, in between songs...
+  isGuessingPaused?: boolean;
 };
 
 export type LeaderboardGameState = {

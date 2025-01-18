@@ -268,13 +268,13 @@ export default function Lobby() {
       case "NEW_SONG_TO_GUESS": {
         const payload = data.message.payload;
 
-        console.log("NEW SONG TO GUESS", payload.song);
         setCurrentSongToGuess(payload.song);
         break;
       }
 
       case "IN_BETWEEN_SONGS_DELAY": {
-        console.log("SONG DELAY");
+        const payload = data.message.payload;
+        setCurrentSongToGuess(undefined);
         break;
       }
 
