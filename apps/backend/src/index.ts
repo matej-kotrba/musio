@@ -5,6 +5,7 @@ import {
   changeLobbyState,
   changeToGuessingGameLobbyState,
   getInitialPickingGameState,
+  isLobbyState,
   type LobbiesMap,
   type Lobby,
 } from "./lib/lobby.js";
@@ -162,7 +163,7 @@ app.get(
           //   throw new Error("Invalid message type for current game state");
           // }
 
-          if (eventsHandleService.isLobbyState(lobby.stateProperties, "lobby")) {
+          if (isLobbyState(lobby.stateProperties, "lobby")) {
             lobby.stateProperties.state;
             if (
               eventsHandleService.isMessageType(
@@ -194,7 +195,7 @@ app.get(
                 )
               );
             }
-          } else if (eventsHandleService.isLobbyState(lobby.stateProperties, "picking")) {
+          } else if (isLobbyState(lobby.stateProperties, "picking")) {
             if (
               eventsHandleService.isMessageType(
                 lobby.stateProperties.state,
@@ -230,7 +231,7 @@ app.get(
                 );
               }
             }
-          } else if (eventsHandleService.isLobbyState(lobby.stateProperties, "guessing")) {
+          } else if (isLobbyState(lobby.stateProperties, "guessing")) {
             if (
               !lobby.stateProperties.isGuessingPaused &&
               eventsHandleService.isMessageType("all", parsed.message, "CHAT_MESSAGE")

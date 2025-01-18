@@ -275,6 +275,13 @@ export default function Lobby() {
       case "IN_BETWEEN_SONGS_DELAY": {
         const payload = data.message.payload;
         setCurrentSongToGuess(undefined);
+        setGameState((old) => {
+          return {
+            ...old,
+            initialDelay: payload.delay / 1000,
+          };
+        });
+
         break;
       }
 

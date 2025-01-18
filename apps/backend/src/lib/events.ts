@@ -1,6 +1,4 @@
 import type {
-  GameState,
-  GameStateType,
   messageToClientGameState,
   WS_MESSAGE_TO_CLIENT_TYPE,
   WS_MessageInterface,
@@ -12,13 +10,6 @@ type Messages = WS_MessageInterface<WS_MessageMapClient>[keyof WS_MessageMapClie
 
 export class EventHandleService {
   #messageEventType?: WS_MESSAGE_TO_CLIENT_TYPE;
-
-  public isLobbyState<T extends GameStateType>(
-    props: GameState,
-    condition: T
-  ): props is Extract<typeof props, { state: T }> {
-    return props.state === condition;
-  }
 
   public isMessageType<
     T extends keyof MessageToClientGameState,

@@ -1,15 +1,11 @@
 import {
   createNewMessageToClient,
-  fromMessage,
-  messageToClientGameState,
   toPayloadToClient,
   type GameState,
   type GameStateType,
   type GuessingGameState,
   type PickingGameState,
   type Song,
-  type WS_MessageInterface,
-  type WS_MessageMapClient,
 } from "shared";
 import type { LobbyMap } from "./map.js";
 import {
@@ -18,7 +14,7 @@ import {
   SONG_PICKING_DURATION,
 } from "./constants.js";
 import { abortLobbyTimeoutSignalAndRemove, shuffleArray, waitFor } from "./utils.js";
-import { getPlayerByPrivateId, type PlayerServer } from "./player.js";
+import { type PlayerServer } from "./player.js";
 import { setTimeout } from "timers/promises";
 
 export type LobbiesMap = LobbyMap<string, Lobby>;
@@ -110,6 +106,13 @@ export function changeToGuessingGameLobbyState(lobbies: LobbiesMap, lobby: Lobby
   });
 }
 
+export function isLobbyState<T extends GameStateType>(
+  props: GameState,
+  condition: T
+): props is Extract<typeof props, { state: T }> {
+  return props.state === condition;
+}
+
 export async function startGuessingSongQueue(
   lobbies: LobbiesMap,
   lobbyId: string,
@@ -146,7 +149,12 @@ export async function startGuessingSongQueue(
             })
           )
         );
-        await waitFor(DELAY_BETWEEN_SONGS_IN_MS);
+
+        if (isLobbyState(lobby.stateProperties, "guessing")) {
+          lobby.stateProperties.isGuessingPaused = true;
+          await waitFor(DELAY_BETWEEN_SONGS_IN_MS);
+          lobby.stateProperties.isGuessingPaused = false;
+        }
 
         res("Done");
       });
