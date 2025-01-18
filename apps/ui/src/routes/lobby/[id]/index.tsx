@@ -95,14 +95,14 @@ const dummy_players: Player[] = [
   {
     name: "Player 2",
     icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
-    points: 28,
+    points: 5,
     isHost: false,
     publicId: "8",
   },
   {
     name: "Player 3",
     icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
-    points: 13,
+    points: 0,
     isHost: false,
     publicId: "9",
   },
@@ -369,7 +369,7 @@ export default function Lobby() {
 
   return (
     <>
-      <ProfileSelection onProfileSelected={handleProfileSelected} />
+      {/* <ProfileSelection onProfileSelected={handleProfileSelected} /> */}
       <div
         class="relative grid grid-cols-[auto,1fr,auto] gap-4 h-full max-h-full overflow-hidden"
         style={{

@@ -61,7 +61,7 @@ export default function PlayerDisplay(props: Props) {
           {props.player.name}
         </div>
         <div class="grid grid-cols-[auto,1fr] items-center">
-          <div class="px-1 rounded-full bg-background-DEAFULT border-2 border-primary">
+          <div class="px-1 box-border rounded-full bg-background-DEAFULT border-2 border-primary z-[2] min-w-[calc(4ch+2*0.25rem)] font-mono text-center">
             {props.player.points}
           </div>
           <div class="relative h-2 text-sm text-foreground-dark my-2 -translate-x-[1px]">
