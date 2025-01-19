@@ -4,6 +4,8 @@ import { Index } from "solid-js";
 
 type LeaderboardsProps = {
   players: Player[];
+  maxHeightCSS?: string;
+  ref?: HTMLDivElement;
 };
 
 export function LeaderboardsEmphasized(props: LeaderboardsProps) {
@@ -27,10 +29,17 @@ export function LeaderboardsEmphasized(props: LeaderboardsProps) {
 
 export function Leaderboards(props: LeaderboardsProps) {
   return (
-    <div class="w-full flex flex-col gap-1">
+    <div
+      ref={props.ref}
+      class="w-full bg-secondary p-2 rounded-sm overflow-y-auto snap-y snap-mandatory space-y-1"
+      style={{
+        height: props.maxHeightCSS ?? "100%",
+        "box-shadow": "0 0 20px hsl(var(--primary)/0.15)",
+      }}
+    >
       <Index each={props.players}>
         {(player) => {
-          return <PlayerBelowTopThree player={player()} />;
+          return <PlayerBelowTopThree player={player()} class="snap-start" />;
         }}
       </Index>
     </div>
@@ -71,7 +80,13 @@ function PlayerOnTopThree(props: PlayerComponentProps) {
 
 function PlayerBelowTopThree(props: PlayerComponentProps) {
   return (
-    <div class="w-full relative flex justify-between p-4 border-foreground/25 border rounded-lg isolate overflow-hidden">
+    <div
+      class={clsx(
+        `w-full bg-background-DEAFULT relative flex justify-between p-4 border-foreground/25 border rounded-lg isolate overflow-hidden`,
+        props.class
+      )}
+      style={{ "scroll-margin": "10px" }}
+    >
       <img
         src={props.player.icon.url}
         alt=""

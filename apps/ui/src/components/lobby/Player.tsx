@@ -29,7 +29,7 @@ export default function PlayerDisplay(props: Props) {
   }
 
   return (
-    <div class="relative flex gap-2">
+    <div class="relative flex gap-2 snap-start">
       <div class="relative w-28">
         <img src={props.player.icon.url} alt="" class="rounded-lg" />
         <Show when={props.isLeading}>

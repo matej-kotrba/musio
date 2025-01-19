@@ -7,6 +7,7 @@ import {
   Match,
   createEffect,
   createUniqueId,
+  createRenderEffect,
 } from "solid-js";
 import PlayerDisplay, { getAllIcons } from "~/components/lobby/Player";
 import WordToGuess from "~/components/lobby/WordToGuess";
@@ -385,112 +386,115 @@ export default function Lobby() {
     <>
       {/* <ProfileSelection onProfileSelected={handleProfileSelected} /> */}
       <div
-        class="relative grid grid-cols-[auto,1fr,auto] gap-4 h-full max-h-full overflow-hidden"
+        class="relative"
         style={{
           "--custom-height": `calc(100vh - ${NAV_HEIGHT} - ${LOBBY_LAYOUT_HEIGHT} * 2 - 2rem)`,
-          height: "var(--custom-height)",
+          height: `calc(var(--custom-height) + ${LOBBY_LAYOUT_HEIGHT} * 2)`,
         }}
       >
-        <aside
-          class={`${styles.aside__scrollbar} relative flex flex-col gap-4 w-80 pr-2 overflow-x-clip h-full overflow-y-auto`}
-          style={{
-            height: "var(--custom-height)",
-          }}
-        >
-          <Show when={!!profileData() || true} fallback={<p>Selecting...</p>}>
-            {players()
-              .toSorted((a, b) => b.points - a.points)
-              .map((item, index) => (
-                <PlayerDisplay maxPoints={100} player={item} isLeading={!index} />
-              ))}
-          </Show>
-        </aside>
-        <Switch>
-          <Match when={gameState().state === "lobby"}>
-            <section class="grid place-content-center">
-              <p class="text-foreground/70">
-                Currently <span class="font-bold text-foreground">{players().length}</span> players
-                in lobby
-              </p>
-              <Show
-                fallback={
-                  <span class="text-lg font-semibold">
-                    Waiting for the host to start next round
-                  </span>
-                }
-                when={getLobbyHost()?.publicId === thisPlayerIds()?.public}
-              >
-                <Button
-                  variant={"default"}
-                  class="mb-2"
-                  disabled={players().length === 0}
-                  on:click={onNextRoundStartButtonClick}
+        <div class="grid grid-cols-[auto,1fr,auto] gap-4 py-4 overflow-hidden">
+          <aside
+            class={`${styles.aside__scrollbar} relative flex flex-col gap-4 w-80 pr-2 overflow-x-clip h-full overflow-y-auto`}
+            style={{
+              height: "var(--custom-height)",
+              "scroll-snap-type": "y mandatory",
+            }}
+          >
+            <Show when={!!profileData() || true} fallback={<p>Selecting...</p>}>
+              {players()
+                .toSorted((a, b) => b.points - a.points)
+                .map((item, index) => (
+                  <PlayerDisplay maxPoints={100} player={item} isLeading={!index} />
+                ))}
+            </Show>
+          </aside>
+          <Switch>
+            <Match when={gameState().state === "lobby"}>
+              <section class="grid place-content-center">
+                <p class="text-foreground/70">
+                  Currently <span class="font-bold text-foreground">{players().length}</span>{" "}
+                  players in lobby
+                </p>
+                <Show
+                  fallback={
+                    <span class="text-lg font-semibold">
+                      Waiting for the host to start next round
+                    </span>
+                  }
+                  when={getLobbyHost()?.publicId === thisPlayerIds()?.public}
                 >
-                  Start next round
-                </Button>
-                <div class="flex gap-1 mb-4">
-                  <TextFieldRoot class="w-full">
-                    <TextField
-                      type="text"
-                      name="lobbyId"
-                      autocomplete="off"
-                      readOnly
-                      value={lobbyId()}
-                      class="text-center uppercase font-bold tracking-wider"
-                    />
-                  </TextFieldRoot>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Button
-                        type="button"
-                        variant={"outline"}
-                        on:click={() => copyToClipboard(window.location.href)}
-                      >
-                        <Icon
-                          icon="solar:copy-bold-duotone"
-                          class="text-2xl py-1 text-foreground"
-                        />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Copy URL</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-              </Show>
+                  <Button
+                    variant={"default"}
+                    class="mb-2"
+                    disabled={players().length === 0}
+                    on:click={onNextRoundStartButtonClick}
+                  >
+                    Start next round
+                  </Button>
+                  <div class="flex gap-1 mb-4">
+                    <TextFieldRoot class="w-full">
+                      <TextFieldRoot
+                        // type="text"
+                        name="lobbyId"
+                        // autocomplete="off"
+                        readOnly
+                        value={lobbyId()}
+                        class="text-center uppercase font-bold tracking-wider"
+                      />
+                    </TextFieldRoot>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Button
+                          type="button"
+                          variant={"outline"}
+                          on:click={() => copyToClipboard(window.location.href)}
+                        >
+                          <Icon
+                            icon="solar:copy-bold-duotone"
+                            class="text-2xl py-1 text-foreground"
+                          />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Copy URL</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                </Show>
 
-              <img src="/svgs/waiting.svg" alt="" class="w-80 aspect-[2/3]" />
-            </section>
-          </Match>
-          <Match when={gameState().state === "picking"}>
-            <PickingGamePhase
-              gameState={gameState() as PickingGameState}
-              didPick={didPick()}
-              players={players()}
-              handleSongSelection={handleSongSelection}
-            />
-          </Match>
-          <Match when={gameState().state === "guessing"}>
-            {/* <Show when={!!profileData()} fallback={<p>Selecting...</p>}> */}
-            <GuessingGamePhase
-              gameState={gameState() as GuessingGameState}
-              players={players()}
-              currentSongToGuess={currentSongToGuess()}
-              previousSongName={previousCorrectSongName()}
-            />
-            {/* </Show> */}
-          </Match>
-        </Switch>
-        <aside
-          class="h-full max-h-full w-80"
-          style={{
-            height: "var(--custom-height)",
-          }}
-        >
-          <Show when={!!profileData() || true} fallback={<p>Selecting...</p>}>
-            <Chat messages={chatMessages()} onChatMessage={handleChatMessage} />
-          </Show>
-        </aside>
+                <img src="/svgs/waiting.svg" alt="" class="w-80 aspect-[2/3]" />
+              </section>
+            </Match>
+            <Match when={gameState().state === "picking"}>
+              <PickingGamePhase
+                gameState={gameState() as PickingGameState}
+                didPick={didPick()}
+                players={players()}
+                handleSongSelection={handleSongSelection}
+              />
+            </Match>
+            <Match when={gameState().state === "guessing"}>
+              {/* <Show when={!!profileData()} fallback={<p>Selecting...</p>}> */}
+              <GuessingGamePhase
+                gameState={gameState() as GuessingGameState}
+                players={players()}
+                currentSongToGuess={currentSongToGuess()}
+                previousSongName={previousCorrectSongName()}
+              />
+              {/* </Show> */}
+            </Match>
+          </Switch>
+          <aside
+            class="h-full max-h-full w-80"
+            style={{
+              height: "var(--custom-height)",
+            }}
+          >
+            <Show when={!!profileData() || true} fallback={<p>Selecting...</p>}>
+              <Chat messages={chatMessages()} onChatMessage={handleChatMessage} />
+            </Show>
+          </aside>
+        </div>
       </div>
     </>
   );
@@ -612,11 +616,27 @@ type GuessingGameLeaderboardsProps = {
 };
 
 function GuessingGameLeaderboardsFallback(props: GuessingGameLeaderboardsProps) {
+  let ref!: HTMLDivElement;
+  const [heightTopOffsetCSS, setHeightTopOffsetCSS] = createSignal<string>("");
+
+  createEffect(() => {
+    if (!ref) return;
+    const rect = ref.getBoundingClientRect();
+    setHeightTopOffsetCSS(`${rect.top}px + ${NAV_HEIGHT}`);
+    console.log(`${rect.top}px + ${NAV_HEIGHT}`);
+  });
+
   return (
     <div class="max-w-96">
-      <div class="font-bold text-lg text-foreground text-center">Get ready, starting soon...</div>
+      <div class="font-bold text-lg text-foreground text-center mb-2">
+        Get ready, starting soon...
+      </div>
       <Show when={props.prevSong}>
-        <Leaderboards players={props.players} />
+        <Leaderboards
+          ref={ref}
+          players={[...props.players, ...props.players]}
+          maxHeightCSS={`calc(var(--custom-height) - ${heightTopOffsetCSS()})`}
+        />
       </Show>
     </div>
   );
