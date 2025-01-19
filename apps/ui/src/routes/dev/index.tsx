@@ -1,6 +1,7 @@
 import { Player } from "shared";
 import { createEffect, createSignal } from "solid-js";
 import { Leaderboards, LeaderboardsEmphasized } from "~/components/lobby/leaderboards/leaderboards";
+import SongPicker from "~/components/lobby/picking-phase/SongPicker";
 import { getAllIcons } from "~/components/lobby/Player";
 
 const dummy_players: Player[] = [
@@ -51,6 +52,7 @@ const dummy_players: Player[] = [
 export default function Dev() {
   return (
     <div class="w-96 mx-auto">
+      <SongPicker onSongSelect={() => {}} />
       <LeaderboardsEmphasized players={dummy_players} />
     </div>
   );

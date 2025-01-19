@@ -4,6 +4,7 @@ import {
   type GameState,
   type GameStateType,
   type GuessingGameState,
+  type LeaderboardGameState,
   type PickingGameState,
   type Song,
 } from "shared";
@@ -87,6 +88,13 @@ export const getInitialGuessingGameState: (
   },
 });
 
+export const getInitialLeaderboardsGameState: (
+  songs: Song[]
+) => InitialGamePhaseData<LeaderboardGameState> = (songs) => ({
+  gameState: { state: "leaderboard", pickedSongs: songs },
+  lobbyData: {},
+});
+
 export function changeToGuessingGameLobbyState(lobbies: LobbiesMap, lobby: Lobby) {
   abortLobbyTimeoutSignalAndRemove(lobby);
   changeLobbyState(lobby, getInitialGuessingGameState(lobby.data.pickedSongs));
@@ -101,7 +109,7 @@ export function changeToGuessingGameLobbyState(lobbies: LobbiesMap, lobby: Lobby
     )
   );
 
-  startGuessingSongQueue(lobbies, lobby.id, {
+  runGuessingSongQueue(lobbies, lobby.id, {
     initialDelay: INITIAL_GUESSING_DELAY_IN_MS,
   });
 }
@@ -113,7 +121,7 @@ export function isLobbyState<T extends GameStateType>(
   return props.state === condition;
 }
 
-export async function startGuessingSongQueue(
+export async function runGuessingSongQueue(
   lobbies: LobbiesMap,
   lobbyId: string,
   { initialDelay = 5000 }: { initialDelay?: number }
@@ -160,6 +168,17 @@ export async function startGuessingSongQueue(
       });
     });
   }
+
+  changeLobbyState(lobby, getInitialLeaderboardsGameState(lobby.data.pickedSongs));
+  lobbies.broadcast(
+    lobby.id,
+    toPayloadToClient(
+      "server",
+      createNewMessageToClient(lobby.id, "CHANGE_GAME_STATE", {
+        properties: lobby.stateProperties,
+      })
+    )
+  );
 }
 
 function* handleSongInQueue(lobbies: LobbiesMap, lobby: Lobby, { delay }: { delay: number }) {

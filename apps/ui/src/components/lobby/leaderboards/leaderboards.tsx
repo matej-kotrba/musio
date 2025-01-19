@@ -34,7 +34,6 @@ export function Leaderboards(props: LeaderboardsProps) {
       class="w-full bg-secondary p-2 rounded-sm overflow-y-auto snap-y snap-mandatory space-y-1"
       style={{
         height: props.maxHeightCSS ?? "100%",
-        "box-shadow": "0 0 20px hsl(var(--primary)/0.15)",
       }}
     >
       <Index each={props.players}>

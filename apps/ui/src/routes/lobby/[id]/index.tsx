@@ -128,14 +128,15 @@ export default function Lobby() {
     public: string;
     private: string;
   }>();
-  const [gameState, setGameState] = createSignal<GameState>({
-    state: "guessing",
-    initialTimeRemaining: 30,
-    currentInitialTimeRemaining: 30,
-    playersWhoGuessed: [],
-    initialDelay: 5,
-    isGuessingPaused: true,
-  });
+  const [gameState, setGameState] = createSignal<GameState>({ state: "lobby" });
+  // {
+  //   state: "guessing",
+  //   initialTimeRemaining: 30,
+  //   currentInitialTimeRemaining: 30,
+  //   playersWhoGuessed: [],
+  //   initialDelay: 5,
+  //   isGuessingPaused: true,
+  // }
 
   // Temporary game state specific states
   const [didPick, setDidPick] = createSignal<boolean>(false);
@@ -384,7 +385,7 @@ export default function Lobby() {
 
   return (
     <>
-      {/* <ProfileSelection onProfileSelected={handleProfileSelected} /> */}
+      <ProfileSelection onProfileSelected={handleProfileSelected} />
       <div
         class="relative"
         style={{
@@ -433,10 +434,10 @@ export default function Lobby() {
                   </Button>
                   <div class="flex gap-1 mb-4">
                     <TextFieldRoot class="w-full">
-                      <TextFieldRoot
-                        // type="text"
+                      <TextField
+                        type="text"
                         name="lobbyId"
-                        // autocomplete="off"
+                        autocomplete="off"
                         readOnly
                         value={lobbyId()}
                         class="text-center uppercase font-bold tracking-wider"
@@ -482,6 +483,9 @@ export default function Lobby() {
                 previousSongName={previousCorrectSongName()}
               />
               {/* </Show> */}
+            </Match>
+            <Match when={gameState().state === "leaderboard"}>
+              <LeaderboardsGamePhase />
             </Match>
           </Switch>
           <aside
@@ -581,11 +585,7 @@ function GuessingGamePhase(props: GuessingGamePhaseProps) {
       <Show
         when={props.currentSongToGuess}
         fallback={
-          // getPreviousSong()
-          <GuessingGameLeaderboardsFallback
-            players={props.players}
-            prevSong={{ name: "Monody", artist: "The FatRat" }}
-          />
+          <GuessingGameLeaderboardsFallback players={props.players} prevSong={getPreviousSong()} />
         }
       >
         <section class="flex flex-col items-center">
@@ -616,28 +616,38 @@ type GuessingGameLeaderboardsProps = {
 };
 
 function GuessingGameLeaderboardsFallback(props: GuessingGameLeaderboardsProps) {
-  let ref!: HTMLDivElement;
-  const [heightTopOffsetCSS, setHeightTopOffsetCSS] = createSignal<string>("");
+  // let ref!: HTMLDivElement;
+  // const [heightTopOffsetCSS, setHeightTopOffsetCSS] = createSignal<string>("");
 
-  createEffect(() => {
-    if (!ref) return;
-    const rect = ref.getBoundingClientRect();
-    setHeightTopOffsetCSS(`${rect.top}px + ${NAV_HEIGHT}`);
-    console.log(`${rect.top}px + ${NAV_HEIGHT}`);
-  });
+  // createEffect(() => {
+  //   if (!ref) return;
+  //   const rect = ref.getBoundingClientRect();
+  //   setHeightTopOffsetCSS(`${rect.top}px + ${NAV_HEIGHT}`);
+  //   console.log(`${rect.top}px + ${NAV_HEIGHT}`);
+  // });
 
   return (
     <div class="max-w-96">
       <div class="font-bold text-lg text-foreground text-center mb-2">
-        Get ready, starting soon...
+        {props.prevSong ? "Next round starting soon..." : "Get ready, starting soon..."}
       </div>
       <Show when={props.prevSong}>
-        <Leaderboards
+        <div class="text-foreground/80 text-center">
+          <span>Last song: </span>
+          <span class="font-bold text-foreground">{props.prevSong?.name}</span>
+          <span> by </span>
+          <span class="font-bold text-foreground">{props.prevSong?.artist}</span>
+        </div>
+        {/* <Leaderboards
           ref={ref}
           players={[...props.players, ...props.players]}
           maxHeightCSS={`calc(var(--custom-height) - ${heightTopOffsetCSS()})`}
-        />
+        /> */}
       </Show>
     </div>
   );
+}
+
+function LeaderboardsGamePhase() {
+  return <div>Leaderboards</div>;
 }

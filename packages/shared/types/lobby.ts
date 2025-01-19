@@ -30,6 +30,7 @@ export type GuessingGameState = {
 
 export type LeaderboardGameState = {
   state: "leaderboard";
+  pickedSongs: Song[];
 };
 
 export type GameState =

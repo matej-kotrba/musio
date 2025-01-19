@@ -423,7 +423,7 @@ export default function SongPicker(props: Props) {
         <Show when={searchedSongs().length > 0}>
           <div class="w-full overflow-hidden border border-foreground rounded-md mt-2">
             <div
-              class="flex flex-col divide-y-[1px] divide-white/40 overflow-y-scroll max-h-[calc(var(--item-overflow-count)*var(--item-height))]"
+              class="flex flex-col divide-y-[1px] divide-white/40 overflow-y-auto max-h-[calc(var(--item-overflow-count)*var(--item-height))]"
               style={"--item-height: 4rem; --item-overflow-count: 3;"}
             >
               <Index each={searchedSongs()}>
@@ -441,11 +441,15 @@ export default function SongPicker(props: Props) {
                         width={56}
                         height={56}
                         alt=""
-                        class="size-14"
+                        class="absolute size-16 left-0"
+                        style={{ mask: "linear-gradient(to right, black, transparent 100%)" }}
                       />
-                      <span class="text-base font-semibold overflow-hidden whitespace-nowrap text-ellipsis">
-                        {song().trackName}
-                      </span>
+                      <div class="pl-14 flex flex-col items-start overflow-hidden">
+                        <div class="w-full text-base font-semibold overflow-hidden whitespace-nowrap text-ellipsis">
+                          {song().trackName}
+                        </div>
+                        <span class="text-foreground/80">{song().artistName}</span>
+                      </div>
                     </button>
                   );
                 }}
