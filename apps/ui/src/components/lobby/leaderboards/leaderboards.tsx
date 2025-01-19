@@ -27,7 +27,7 @@ export function LeaderboardsEmphasized(props: LeaderboardsProps) {
 
 export function Leaderboards(props: LeaderboardsProps) {
   return (
-    <div class="flex flex-col gap-1">
+    <div class="w-full flex flex-col gap-1">
       <Index each={props.players}>
         {(player) => {
           return <PlayerBelowTopThree player={player()} />;
@@ -53,6 +53,7 @@ function PlayerOnTopThree(props: PlayerComponentProps) {
           height={96}
           class="w-24 aspect-square rounded-md shadow-lg shadow-black/50 -translate-x-1 -translate-y-1"
         />
+        <div class="text-center font-bold text-xl">{props.player.points}</div>
       </div>
       <p
         class={`text-ellipsis whitespace-nowrap overflow-hidden text-lg font-bold`}
@@ -70,7 +71,7 @@ function PlayerOnTopThree(props: PlayerComponentProps) {
 
 function PlayerBelowTopThree(props: PlayerComponentProps) {
   return (
-    <div class="relative p-4 border-foreground/25 border rounded-lg isolate overflow-hidden">
+    <div class="w-full relative flex justify-between p-4 border-foreground/25 border rounded-lg isolate overflow-hidden">
       <img
         src={props.player.icon.url}
         alt=""
@@ -79,7 +80,10 @@ function PlayerBelowTopThree(props: PlayerComponentProps) {
         class="absolute w-16 aspect-square rounded-md left-0 top-1/2 -translate-y-1/2 -z-10"
         style={{ mask: "linear-gradient(to right, black, transparent)" }}
       />
-      <p class="pl-12 overflow-hidden text-ellipsis whitespace-nowrap">{props.player.name}</p>
+      <span class="pl-12 overflow-hidden text-ellipsis whitespace-nowrap max-w-[80%]">
+        {props.player.name}
+      </span>
+      <span class="font-bold">{props.player.points}</span>
     </div>
   );
 }

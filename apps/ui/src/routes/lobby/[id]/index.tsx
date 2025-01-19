@@ -613,11 +613,11 @@ type GuessingGameLeaderboardsProps = {
 
 function GuessingGameLeaderboardsFallback(props: GuessingGameLeaderboardsProps) {
   return (
-    <Show
-      when={props.prevSong}
-      fallback={<div class="font-bold text-lg text-foreground">Get ready, starting soon...</div>}
-    >
-      <Leaderboards players={props.players} />
-    </Show>
+    <div class="max-w-96">
+      <div class="font-bold text-lg text-foreground text-center">Get ready, starting soon...</div>
+      <Show when={props.prevSong}>
+        <Leaderboards players={props.players} />
+      </Show>
+    </div>
   );
 }

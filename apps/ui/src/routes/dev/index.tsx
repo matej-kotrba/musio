@@ -50,7 +50,7 @@ const dummy_players: Player[] = [
 
 export default function Dev() {
   return (
-    <div>
+    <div class="w-96 mx-auto">
       <LeaderboardsEmphasized players={dummy_players} />
     </div>
   );
