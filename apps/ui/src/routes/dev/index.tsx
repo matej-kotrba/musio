@@ -52,7 +52,6 @@ const dummy_players: Player[] = [
 export default function Dev() {
   return (
     <div class="w-96 mx-auto">
-      <SongPicker onSongSelect={() => {}} />
       <LeaderboardsEmphasized players={dummy_players} />
     </div>
   );

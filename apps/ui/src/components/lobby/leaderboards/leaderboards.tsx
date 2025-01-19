@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { Player } from "shared";
 import { Index } from "solid-js";
+import { Motion } from "solid-motionone";
 
 type LeaderboardsProps = {
   players: Player[];
@@ -53,26 +54,40 @@ type PlayerComponentProps = {
 function PlayerOnTopThree(props: PlayerComponentProps) {
   return (
     <div class={clsx("flex", props.class)}>
-      <div class={"from-transparent to-primary/80 bg-gradient-to-t h-full rounded-t-md"}>
-        <img
+      <Motion.div
+        class={"from-transparent to-primary/80 bg-gradient-to-t h-full rounded-t-md origin-bottom"}
+        initial={{ scaleY: 0 }}
+        animate={{ scaleY: 1 }}
+        transition={{ duration: 1.5, easing: "ease-out" }}
+      >
+        <Motion.img
           src={props.player.icon.url}
           alt=""
           width={96}
           height={96}
-          class="w-24 aspect-square rounded-md shadow-lg shadow-black/50 -translate-x-1 -translate-y-1"
+          class="w-24 aspect-square rounded-md shadow-lg shadow-black/50 -translate-x-1"
+          initial={{ opacity: 0, y: -40, x: -4 }}
+          animate={{ opacity: 1, y: -4, x: -4 }}
+          transition={{ duration: 0.5, delay: 1.5 }}
         />
         <div class="text-center font-bold text-xl">{props.player.points}</div>
-      </div>
-      <p
-        class={`text-ellipsis whitespace-nowrap overflow-hidden text-lg font-bold`}
-        style={{
-          "writing-mode": "vertical-lr",
-          mask: "linear-gradient(to bottom, black, transparent)",
-        }}
-        title={props.player.name}
+      </Motion.div>
+      <Motion.div
+        initial={{ opacity: 0, y: 80 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.5, delay: 0.5, easing: "ease" }}
       >
-        {props.player.name}
-      </p>
+        <p
+          class={`w-full text-ellipsis whitespace-nowrap overflow-hidden text-lg font-bold`}
+          style={{
+            "writing-mode": "vertical-lr",
+            mask: "linear-gradient(to bottom, black, transparent 140%)",
+          }}
+          title={props.player.name}
+        >
+          {props.player.name}
+        </p>
+      </Motion.div>
     </div>
   );
 }
