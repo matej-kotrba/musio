@@ -56,7 +56,7 @@ app.get("/getLobby", (c) => {
 app.get("/calculatePoints", (c) => {
   if (isDev()) return c.notFound();
 
-  return c.json(getReceivedPoints(0, Date.now() + 2500, Date.now(), 10000));
+  return c.json(getReceivedPoints(0, 1737400500295, 1737400499241, 10000));
 });
 // ****
 
@@ -239,7 +239,6 @@ app.get(
               !lobby.stateProperties.isGuessingPaused &&
               eventsHandleService.isMessageType("all", parsed.message, "CHAT_MESSAGE")
             ) {
-              console.log("GUESSS");
               const STRING_SIMILARITY_THRESHOLD = 0.7;
 
               const { content, messageId } = parsed.message.payload;
@@ -261,7 +260,7 @@ app.get(
                         lobby.stateProperties.playersWhoGuessed.length,
                         Date.now(),
                         lobby.stateProperties.startTime,
-                        lobby.stateProperties.initialTimeRemaining
+                        lobby.stateProperties.initialTimeRemaining * 1000
                       ),
                     })
                   )

@@ -12,9 +12,15 @@ export function LeaderboardsEmphasized(props: LeaderboardsProps) {
   return (
     <div>
       <div class="mx-auto w-fit h-[300px] grid grid-cols-3 grid-rows-8 gap-4">
-        <PlayerOnTopThree player={props.players[1]} class="row-span-6 row-start-3 col-start-1" />
-        <PlayerOnTopThree player={props.players[0]} class="row-span-8 col-start-2" isFirst />
-        <PlayerOnTopThree player={props.players[2]} class="row-span-5 row-start-4 col-start-3" />
+        {props.players[1] && (
+          <PlayerOnTopThree player={props.players[1]} class="row-span-6 row-start-3 col-start-1" />
+        )}
+        {props.players[0] && (
+          <PlayerOnTopThree player={props.players[0]} class="row-span-8 col-start-2" isFirst />
+        )}
+        {props.players[2] && (
+          <PlayerOnTopThree player={props.players[2]} class="row-span-5 row-start-4 col-start-3" />
+        )}
       </div>
       <div class="flex flex-col gap-1">
         <Index each={props.players.toSpliced(0, 3)}>

@@ -323,6 +323,20 @@ export default function Lobby() {
             senderName: sender.name,
           },
         ]);
+        break;
+      }
+
+      case "CHANGE_POINTS": {
+        const payload = data.message.payload;
+
+        setPlayers((old) =>
+          old.map((player) => {
+            if (player.publicId === data.publicId) {
+              return { ...player, points: payload.newPoints };
+            }
+            return player;
+          })
+        );
       }
     }
   };
@@ -397,7 +411,7 @@ export default function Lobby() {
               "scroll-snap-type": "y mandatory",
             }}
           >
-            <Show when={!!profileData() || true} fallback={<p>Selecting...</p>}>
+            <Show when={!!profileData()} fallback={<p>Selecting...</p>}>
               {players()
                 .toSorted((a, b) => b.points - a.points)
                 .map((item, index) => (
