@@ -79,6 +79,7 @@ export const getInitialGuessingGameState: (
     state: "guessing",
     initialTimeRemaining: SONG_PICKING_DURATION,
     currentInitialTimeRemaining: SONG_PICKING_DURATION,
+    startTime: 0,
     initialDelay: INITIAL_GUESSING_DELAY_IN_MS / 1000,
     playersWhoGuessed: [],
     isGuessingPaused: true,
@@ -138,6 +139,7 @@ export async function runGuessingSongQueue(
   while (true) {
     const { value: currentIndex } = lobby.data.songQueueGenerator.next();
     if (currentIndex === undefined) break;
+    lobby.stateProperties.startTime = Date.now();
 
     abortLobbyTimeoutSignalAndRemove(lobby);
     resetGuessingState(lobby.stateProperties as GuessingGameState);

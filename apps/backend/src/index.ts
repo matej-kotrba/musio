@@ -252,6 +252,21 @@ app.get(
               const currentSong = lobby.data.songQueue[0];
 
               if (normalizeString(content) === currentSong.name) {
+                lobbies.broadcast(
+                  lobby.id,
+                  toPayloadToClient(
+                    player.publicId,
+                    createNewMessageToClient(lobby.id, "CHANGE_POINTS", {
+                      newPoints: getReceivedPoints(
+                        lobby.stateProperties.playersWhoGuessed.length,
+                        Date.now(),
+                        lobby.stateProperties.startTime,
+                        lobby.stateProperties.initialTimeRemaining
+                      ),
+                    })
+                  )
+                );
+
                 player.ws.send(
                   toPayloadToClient(
                     "server",

@@ -208,15 +208,6 @@ export default function ProfileSelection(props: Props) {
                     maxLength={playerNameValidator.maxLength ?? 20}
                     minLength={playerNameValidator.minLength ?? 1}
                   />
-                  {/* <TextField
-                    type="text"
-                    name="name"
-                    placeholder="Name"
-                    value={localStorageName() ?? ""}
-                    autocomplete="off"
-                    maxLength={playerNameValidator.maxLength ?? 20}
-                    minLength={playerNameValidator.minLength ?? 1}
-                  /> */}
                   <TextFieldErrorMessage>{nameError()}</TextFieldErrorMessage>
                 </TextFieldRoot>
                 <button

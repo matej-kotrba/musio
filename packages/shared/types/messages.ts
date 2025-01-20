@@ -33,6 +33,9 @@ export type WS_MessageMapServer = {
   CHAT_MESSAGE: {
     content: string;
   };
+  CHANGE_POINTS: {
+    newPoints: number;
+  };
 };
 
 export type GuessChatMessageType = "near" | "guessed" | false;
