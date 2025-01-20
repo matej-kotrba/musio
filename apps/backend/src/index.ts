@@ -19,7 +19,7 @@ import {
   toPayloadToClient,
   fromMessage,
 } from "shared";
-import { isHost } from "./lib/game.js";
+import { getReceivedPoints, isHost } from "./lib/game.js";
 import { createNewLobby, createNewPlayer, createNewSong } from "./lib/create.js";
 import { setTimeout } from "timers/promises";
 import { getPlayerByPrivateId, removePlayerFromLobby } from "./lib/player.js";
@@ -30,10 +30,6 @@ const app = new Hono();
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
 
 const lobbies: LobbiesMap = new LobbyMap<string, Lobby>();
-
-app.get("/", (c) => {
-  return c.json("Hello Hono!");
-});
 
 // Dev only endpoints
 // ****
@@ -54,6 +50,12 @@ app.get("/getLobby", (c) => {
   if (isDev()) return c.notFound();
 
   return c.json(lobbies.get(c.req.query("lobbyId")!));
+});
+
+app.get("/calculatePoints", (c) => {
+  if (isDev()) return c.notFound();
+
+  return c.json(getReceivedPoints(0, Date.now() + 2500, Date.now(), 10000));
 });
 // ****
 
