@@ -6,14 +6,12 @@ import { Motion } from "solid-motionone";
 
 type LeaderboardsProps = {
   players: Player[];
-  maxHeightCSS?: string;
-  ref?: HTMLDivElement;
 };
 
 export function LeaderboardsEmphasized(props: LeaderboardsProps) {
   return (
     <div>
-      <div class="mx-auto w-fit h-[300px] grid grid-cols-3 grid-rows-8 gap-4 mt-8">
+      <div class="mx-auto w-fit h-[300px] grid grid-cols-3 grid-rows-8 gap-4">
         <PlayerOnTopThree player={props.players[1]} class="row-span-6 row-start-3 col-start-1" />
         <PlayerOnTopThree player={props.players[0]} class="row-span-8 col-start-2" isFirst />
         <PlayerOnTopThree player={props.players[2]} class="row-span-5 row-start-4 col-start-3" />
@@ -33,24 +31,6 @@ export function LeaderboardsEmphasized(props: LeaderboardsProps) {
           }}
         </Index>
       </div>
-    </div>
-  );
-}
-
-export function Leaderboards(props: LeaderboardsProps) {
-  return (
-    <div
-      ref={props.ref}
-      class="w-full bg-secondary p-2 rounded-sm overflow-y-auto snap-y snap-mandatory space-y-1"
-      style={{
-        height: props.maxHeightCSS ?? "100%",
-      }}
-    >
-      <Index each={props.players}>
-        {(player) => {
-          return <PlayerBelowTopThree player={player()} class="snap-start" />;
-        }}
-      </Index>
     </div>
   );
 }
@@ -105,10 +85,10 @@ function PlayerOnTopThree(props: PlayerComponentProps) {
         transition={{ duration: 1.5, delay: 0.5, easing: "ease" }}
       >
         <p
-          class={`w-full text-ellipsis whitespace-nowrap overflow-hidden text-lg font-bold`}
+          class={`h-full w-full text-ellipsis whitespace-nowrap overflow-hidden text-lg font-bold`}
           style={{
             "writing-mode": "vertical-lr",
-            mask: "linear-gradient(to bottom, black, transparent 140%)",
+            mask: "linear-gradient(to bottom, black, transparent 120%)",
           }}
           title={props.player.name}
         >

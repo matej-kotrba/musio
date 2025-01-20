@@ -7,7 +7,6 @@ import {
   Match,
   createEffect,
   createUniqueId,
-  createRenderEffect,
 } from "solid-js";
 import PlayerDisplay, { getAllIcons } from "~/components/lobby/Player";
 import WordToGuess from "~/components/lobby/WordToGuess";
@@ -15,16 +14,14 @@ import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
 import Chat from "~/components/lobby/chat/Chat";
 import { isWsConnectionContext, WsConnectionContext } from "~/contexts/connection";
 import { useParams, useNavigate } from "@solidjs/router";
-import ProfileSelection, { ProfileData } from "~/components/lobby/profile/ProfileSelection";
+import { ProfileData } from "~/components/lobby/profile/ProfileSelection";
 import { createNewMessageToServer, fromMessage, toPayloadToServer } from "shared";
 import { getLobbyURL as getLobbyId } from "~/utils/rscs";
 import {
   ChatMessage,
   GameState,
-  GuessChatMessageType,
   GuessingGameState,
   ItunesSong,
-  LobbyGameState,
   PickingGameState,
   Player,
   Song,
@@ -40,8 +37,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip
 import Timer from "~/components/lobby/picking-phase/Timer";
 import SongPicker from "~/components/lobby/picking-phase/SongPicker";
 import TextBouncy from "~/components/ui/fancy/text-bouncy";
-import { Motion } from "solid-motionone";
-import { Leaderboards } from "~/components/lobby/leaderboards/leaderboards";
+import { LeaderboardsEmphasized } from "~/components/lobby/leaderboards/leaderboards";
 
 const dummy_players: Player[] = [
   {
@@ -128,7 +124,10 @@ export default function Lobby() {
     public: string;
     private: string;
   }>();
-  const [gameState, setGameState] = createSignal<GameState>({ state: "lobby" });
+  const [gameState, setGameState] = createSignal<GameState>({
+    state: "leaderboard",
+    pickedSongs: [],
+  });
   // {
   //   state: "guessing",
   //   initialTimeRemaining: 30,
@@ -385,7 +384,7 @@ export default function Lobby() {
 
   return (
     <>
-      <ProfileSelection onProfileSelected={handleProfileSelected} />
+      {/* <ProfileSelection onProfileSelected={handleProfileSelected} /> */}
       <div
         class="relative"
         style={{
@@ -485,7 +484,10 @@ export default function Lobby() {
               {/* </Show> */}
             </Match>
             <Match when={gameState().state === "leaderboard"}>
-              <LeaderboardsGamePhase />
+              <LeaderboardsGamePhase
+                players={players()}
+                isThisPlayerHost={getThisPlayer()?.isHost}
+              />
             </Match>
           </Switch>
           <aside
@@ -648,6 +650,23 @@ function GuessingGameLeaderboardsFallback(props: GuessingGameLeaderboardsProps) 
   );
 }
 
-function LeaderboardsGamePhase() {
-  return <div>Leaderboards</div>;
+type LeaderboardsGamePhaseProps = {
+  players: Player[];
+  isThisPlayerHost?: boolean;
+};
+
+function LeaderboardsGamePhase(props: LeaderboardsGamePhaseProps) {
+  return (
+    <>
+      <div class="px-2 mt-8">
+        <Show when={props.isThisPlayerHost || true}>
+          <Button class="ml-auto flex items-center gap-1">
+            <span class="font-bold">Next round</span>{" "}
+            <Icon icon="mingcute:repeat-fill" class="text-xl" />
+          </Button>
+        </Show>
+        <LeaderboardsEmphasized players={props.players} />
+      </div>
+    </>
+  );
 }
