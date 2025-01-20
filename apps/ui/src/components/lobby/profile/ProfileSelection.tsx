@@ -13,19 +13,18 @@ import {
   TextFieldErrorMessage,
   TextFieldLabel,
   TextFieldRoot,
+  TextFieldWrapper,
 } from "~/components/ui/textfield";
 import { createSignal, onCleanup, onMount } from "solid-js";
 import { useLocalStorage } from "~/hooks";
 import { playerProfileSchema } from "~/utils/validation/player";
 import toast from "solid-toast";
 import { iconNameToDisplayName } from "~/utils/game/common";
+import { playerNameValidator } from "shared";
 
 type CarouselIconType = "selected" | "neighbour" | "none";
 
-const carouselIconTypes: Record<
-  CarouselIconType,
-  { styles: string; cssSize: string }
-> = {
+const carouselIconTypes: Record<CarouselIconType, { styles: string; cssSize: string }> = {
   selected: {
     styles: "",
     cssSize: "8rem",
@@ -58,8 +57,7 @@ export default function ProfileSelection(props: Props) {
 
   const [nameError, setNameError] = createSignal<string | null>(null);
 
-  const getIconByIndex = (index: number) =>
-    icons.find((_, idx) => idx === index);
+  const getIconByIndex = (index: number) => icons.find((_, idx) => idx === index);
 
   function moveCarousel(ratio: -1 | 1) {
     const newValue = selectedIconIndex() + 1 * ratio;
@@ -155,9 +153,7 @@ export default function ProfileSelection(props: Props) {
           <DialogTitle>Set your game profile</DialogTitle>
           <DialogDescription>
             <div>
-              <div
-                class={`${styles.profile} relative overflow-hidden rounded-lg p-2 mb-4`}
-              >
+              <div class={`${styles.profile} relative overflow-hidden rounded-lg p-2 mb-4`}>
                 <div
                   class={`${styles.icons} min-h-[8rem]`}
                   style={{
@@ -165,23 +161,14 @@ export default function ProfileSelection(props: Props) {
                       carouselIconTypes[getCarouselIconType(-1)].cssSize
                     } ${icons
                       .map((_, idx) => {
-                        return carouselIconTypes[getCarouselIconType(idx)]
-                          .cssSize;
+                        return carouselIconTypes[getCarouselIconType(idx)].cssSize;
                       })
-                      .join(" ")} ${
-                      carouselIconTypes[getCarouselIconType(icons.length)]
-                        .cssSize
-                    }`,
+                      .join(" ")} ${carouselIconTypes[getCarouselIconType(icons.length)].cssSize}`,
                   }}
                 >
                   <div></div>
                   {icons.map((icon, idx) => {
-                    return (
-                      <CarouselIcon
-                        url={icon.url}
-                        type={getCarouselIconType(idx)}
-                      />
-                    );
+                    return <CarouselIcon url={icon.url} type={getCarouselIconType(idx)} />;
                   })}
                   <div></div>
                 </div>
@@ -200,9 +187,7 @@ export default function ProfileSelection(props: Props) {
                   <Icon icon="raphael:arrowright" class="text-4xl px-1" />
                 </button>
                 <p class={`text-lg text-center text-foreground font-bold`}>
-                  {iconNameToDisplayName(
-                    getIconByIndex(selectedIconIndex())?.name ?? ""
-                  )}
+                  {iconNameToDisplayName(getIconByIndex(selectedIconIndex())?.name ?? "")}
                 </p>
               </div>
               <form on:submit={onSubmit}>
@@ -211,18 +196,27 @@ export default function ProfileSelection(props: Props) {
                   name="icon"
                   value={getIconByIndex(selectedIconIndex())?.name}
                 ></input>
-                <TextFieldRoot
-                  validationState={nameError() ? "invalid" : "valid"}
-                >
+                <TextFieldRoot validationState={nameError() ? "invalid" : "valid"}>
                   <TextFieldLabel for="name">Name</TextFieldLabel>
-                  <TextField
+                  <TextFieldWrapper
+                    shouldDisplayLimit
                     type="text"
                     name="name"
                     placeholder="Name"
                     value={localStorageName() ?? ""}
                     autocomplete="off"
-                    min={1}
+                    maxLength={playerNameValidator.maxLength ?? 20}
+                    minLength={playerNameValidator.minLength ?? 1}
                   />
+                  {/* <TextField
+                    type="text"
+                    name="name"
+                    placeholder="Name"
+                    value={localStorageName() ?? ""}
+                    autocomplete="off"
+                    maxLength={playerNameValidator.maxLength ?? 20}
+                    minLength={playerNameValidator.minLength ?? 1}
+                  /> */}
                   <TextFieldErrorMessage>{nameError()}</TextFieldErrorMessage>
                 </TextFieldRoot>
                 <button

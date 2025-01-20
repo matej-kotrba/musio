@@ -18,6 +18,7 @@ import {
   type WS_MessageMapClient,
   toPayloadToClient,
   fromMessage,
+  messageLengthSchema,
 } from "shared";
 import { getReceivedPoints, isHost } from "./lib/game.js";
 import { createNewLobby, createNewPlayer, createNewSong } from "./lib/create.js";
@@ -240,8 +241,10 @@ app.get(
             ) {
               console.log("GUESSS");
               const STRING_SIMILARITY_THRESHOLD = 0.7;
-              // TODO: Add validators to the string
+
               const { content, messageId } = parsed.message.payload;
+              if (messageLengthSchema.safeParse(content).success === false) return;
+
               const player = getPlayerByPrivateId(lobby, parsed.publicId);
               if (!player) return;
 

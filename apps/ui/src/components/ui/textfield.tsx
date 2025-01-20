@@ -10,7 +10,7 @@ import type {
 import { TextField as TextFieldPrimitive } from "@kobalte/core/text-field";
 import { cva } from "class-variance-authority";
 import type { ValidComponent, VoidProps } from "solid-js";
-import { splitProps } from "solid-js";
+import { createEffect, createSignal, Show, splitProps } from "solid-js";
 
 type textFieldProps<T extends ValidComponent = "div"> = TextFieldRootProps<T> & {
   class?: string;
@@ -110,5 +110,33 @@ export const TextField = <T extends ValidComponent = "input">(
       )}
       {...rest}
     />
+  );
+};
+
+type textFieldWrapperProps<T extends ValidComponent = "input"> = textFieldInputProps<T> & {
+  shouldDisplayLimit?: boolean;
+};
+
+export const TextFieldWrapper = <T extends ValidComponent = "input">(
+  props: PolymorphicProps<T, textFieldWrapperProps<T>>
+) => {
+  const [local, rest] = splitProps(props as textFieldWrapperProps, ["shouldDisplayLimit"]);
+  const [charsRemaining, setCharsRemaining] = createSignal(props.maxLength);
+  let inputRef!: HTMLInputElement;
+
+  function handleInput(event: InputEvent) {
+    setCharsRemaining(props.maxLength - (event.target as HTMLInputElement).value.length);
+    props["on:input"]?.(event);
+  }
+
+  return (
+    <div class="relative">
+      <TextField ref={inputRef} {...rest} on:input={handleInput} />
+      <Show when={local.shouldDisplayLimit}>
+        <div class="absolute right-2 top-1/2 -translate-y-1/2 text-foreground/70">
+          {charsRemaining()}
+        </div>
+      </Show>
+    </div>
   );
 };

@@ -14,7 +14,7 @@ import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
 import Chat from "~/components/lobby/chat/Chat";
 import { isWsConnectionContext, WsConnectionContext } from "~/contexts/connection";
 import { useParams, useNavigate } from "@solidjs/router";
-import { ProfileData } from "~/components/lobby/profile/ProfileSelection";
+import ProfileSelection, { ProfileData } from "~/components/lobby/profile/ProfileSelection";
 import { createNewMessageToServer, fromMessage, toPayloadToServer } from "shared";
 import { getLobbyURL as getLobbyId } from "~/utils/rscs";
 import {
@@ -124,10 +124,7 @@ export default function Lobby() {
     public: string;
     private: string;
   }>();
-  const [gameState, setGameState] = createSignal<GameState>({
-    state: "leaderboard",
-    pickedSongs: [],
-  });
+  const [gameState, setGameState] = createSignal<GameState>({ state: "lobby" });
   // {
   //   state: "guessing",
   //   initialTimeRemaining: 30,
@@ -384,7 +381,7 @@ export default function Lobby() {
 
   return (
     <>
-      {/* <ProfileSelection onProfileSelected={handleProfileSelected} /> */}
+      <ProfileSelection onProfileSelected={handleProfileSelected} />
       <div
         class="relative"
         style={{
