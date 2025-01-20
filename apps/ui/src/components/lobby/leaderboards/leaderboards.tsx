@@ -1,6 +1,7 @@
+import { Icon } from "@iconify-icon/solid";
 import clsx from "clsx";
 import { Player } from "shared";
-import { Index } from "solid-js";
+import { Index, Show } from "solid-js";
 import { Motion } from "solid-motionone";
 
 type LeaderboardsProps = {
@@ -12,15 +13,23 @@ type LeaderboardsProps = {
 export function LeaderboardsEmphasized(props: LeaderboardsProps) {
   return (
     <div>
-      <div class="mx-auto w-fit h-[300px] grid grid-cols-3 grid-rows-8 gap-4">
+      <div class="mx-auto w-fit h-[300px] grid grid-cols-3 grid-rows-8 gap-4 mt-8">
         <PlayerOnTopThree player={props.players[1]} class="row-span-6 row-start-3 col-start-1" />
-        <PlayerOnTopThree player={props.players[0]} class="row-span-8 col-start-2" />
+        <PlayerOnTopThree player={props.players[0]} class="row-span-8 col-start-2" isFirst />
         <PlayerOnTopThree player={props.players[2]} class="row-span-5 row-start-4 col-start-3" />
       </div>
       <div class="flex flex-col gap-1">
         <Index each={props.players.toSpliced(0, 3)}>
-          {(player) => {
-            return <PlayerBelowTopThree player={player()} />;
+          {(player, index) => {
+            return (
+              <Motion.div
+                initial={{ opacity: 0, y: -40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, easing: "ease", delay: 2.5 + index * 0.25 }}
+              >
+                <PlayerBelowTopThree player={player()} />
+              </Motion.div>
+            );
           }}
         </Index>
       </div>
@@ -48,6 +57,7 @@ export function Leaderboards(props: LeaderboardsProps) {
 
 type PlayerComponentProps = {
   player: Player;
+  isFirst?: boolean;
   class?: string;
 };
 
@@ -60,17 +70,34 @@ function PlayerOnTopThree(props: PlayerComponentProps) {
         animate={{ scaleY: 1 }}
         transition={{ duration: 1.5, easing: "ease-out" }}
       >
+        <Show when={props.isFirst}>
+          <Motion.div>
+            <Icon
+              icon={"solar:crown-bold"}
+              class="absolute bottom-[calc(100%+6px)] left-[calc(50%-4px)] -translate-x-1/2 text-xl text-yellow-400 bg-secondary p-1 rounded-full motion-preset-seesaw-lg"
+              style={{ filter: "drop-shadow(0 0 2px yellow)" }}
+            />
+          </Motion.div>
+        </Show>
         <Motion.img
           src={props.player.icon.url}
           alt=""
           width={96}
           height={96}
           class="w-24 aspect-square rounded-md shadow-lg shadow-black/50 -translate-x-1"
-          initial={{ opacity: 0, y: -40, x: -4 }}
+          initial={{ opacity: 0, y: -40, x: -40 }}
           animate={{ opacity: 1, y: -4, x: -4 }}
           transition={{ duration: 0.5, delay: 1.5 }}
         />
-        <div class="text-center font-bold text-xl">{props.player.points}</div>
+        <Motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.5, delay: 1, easing: "ease" }}
+          class="text-center font-bold text-xl motion-preset-seesaw-md"
+          style={{ "animation-delay": `${Math.random()}s` }}
+        >
+          {props.player.points}
+        </Motion.div>
       </Motion.div>
       <Motion.div
         initial={{ opacity: 0, y: 80 }}
