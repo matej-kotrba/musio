@@ -1,8 +1,7 @@
 import { Icon } from "@iconify-icon/solid";
 import { Icon as IconType, Player } from "shared/index.types";
-import { createEffect, createSignal, Show } from "solid-js";
+import { Show } from "solid-js";
 import { Motion } from "solid-motionone";
-import { usePrevious } from "~/hooks";
 
 const icons = import.meta.glob("/public/avatars/*", { query: "?url" });
 
@@ -21,37 +20,17 @@ export function getAllIcons(): IconType[] {
 type Props = {
   player: Player;
   maxPoints: number;
+  previousPoints?: number;
   isLeading?: boolean;
 };
 
 export default function PlayerDisplay(props: Props) {
-  // const [currentPoints, setCurrentPoints] = createSignal<number>(props.player.points);
-  // const previousPoints = usePrevious<number>(currentPoints);
-
-  // createEffect(() => {
-  //   setCurrentPoints(props.player.points);
-  // });
-
-  // createEffect(() => {
-  //   console.log("Previous value", previousPoints(), currentPoints());
-  // });
-  const [current, setCurrent] = createSignal<number>(0);
-  const previous = usePrevious<number>(current);
-
   function displayPointsInPercentage() {
     return (props.player.points / props.maxPoints) * 100;
   }
-
+  console.log("addasdasd");
   return (
     <>
-      <button
-        type="button"
-        on:click={() => {
-          setCurrent((old) => old + 1);
-        }}
-      >
-        Increment
-      </button>
       <div class="relative flex gap-2 snap-start">
         <div class="relative w-28">
           <img src={props.player.icon.url} alt="" class="rounded-lg" />
@@ -93,10 +72,19 @@ export default function PlayerDisplay(props: Props) {
                 style={{
                   width: `${displayPointsInPercentage()}%`,
                 }}
-                class="w-full h-full bg-primary rounded-r-full"
+                class="max-w-full h-full bg-primary rounded-r-full"
               ></div>
             </div>
           </div>
+          <Show when={props.previousPoints} keyed>
+            <Motion.div
+              initial={{ opacity: 1 }}
+              animate={{ opacity: 0, x: 50 }}
+              transition={{ duration: 3 }}
+            >
+              <span class="text-green-600">+{props.player.points - props.previousPoints!}</span>
+            </Motion.div>
+          </Show>
         </div>
       </div>
     </>

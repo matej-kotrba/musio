@@ -1,5 +1,6 @@
 import { Player } from "shared";
 import { createEffect, createSignal, For } from "solid-js";
+import { createStore } from "solid-js/store";
 import { LeaderboardsEmphasized } from "~/components/lobby/leaderboards/leaderboards";
 import SongPicker from "~/components/lobby/picking-phase/SongPicker";
 import PlayerDisplay, { getAllIcons } from "~/components/lobby/Player";
@@ -50,31 +51,48 @@ const dummy_players: Player[] = [
 ];
 
 export default function Dev() {
-  const [players, setPlayers] = createSignal(dummy_players);
+  // const [players, setPlayers] =
+  //   createSignal<(Player & { previousPoints?: number })[]>(dummy_players);
 
-  function add(id: string) {
-    setPlayers((prev) => {
-      return prev
-        .map((player) => {
-          if (player.publicId === id) {
-            return {
-              ...player,
-              points: player.points + 10,
-            };
-          }
-          return player;
-        })
-        .toSorted((a, b) => b.points - a.points);
-    });
+  // function add(id: string) {
+  //   setPlayers((prev) => {
+  //     return prev.map((player) => {
+  //       if (player.publicId === id) {
+  //         return {
+  //           ...player,
+  //           previousPoints: player.points,
+  //           points: player.points + 10,
+  //         };
+  //       }
+  //       return player;
+  //     });
+  //     // .toSorted((a, b) => b.points - a.points);
+  //   });
+  // }
+
+  const [players, setPlayers] =
+    createStore<(Player & { previousPoints?: number })[]>(dummy_players);
+
+  function add(publicId: string) {
+    const idx = players.findIndex((player) => player.publicId === publicId);
+    setPlayers(idx, { previousPoints: players[idx].points, points: players[idx].points + 10 });
   }
 
   return (
     <div class="w-72 mx-auto flex flex-col gap-2">
-      <For each={players()}>
+      <For each={players}>
         {(item, index) => (
-          <button on:click={() => add(item.publicId)} type="button">
-            <PlayerDisplay maxPoints={100} player={item} isLeading={!index()} />
-          </button>
+          <>
+            <button on:click={() => add(item.publicId)} type="button">
+              Increment
+            </button>
+            <PlayerDisplay
+              maxPoints={100}
+              player={item}
+              previousPoints={item.previousPoints}
+              isLeading={!index()}
+            />
+          </>
         )}
       </For>
     </div>
