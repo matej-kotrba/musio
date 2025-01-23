@@ -26,7 +26,7 @@ export class EventHandleService {
     return false;
   }
 
-  public getMessageEventType() {
+  public getTriggeredMessageEventType() {
     return this.#messageEventType;
   }
 

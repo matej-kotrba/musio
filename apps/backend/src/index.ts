@@ -23,7 +23,7 @@ import {
 import { getReceivedPoints, isHost } from "./lib/game.js";
 import { createNewLobby, createNewPlayer, createNewSong } from "./lib/create.js";
 import { setTimeout } from "timers/promises";
-import { getPlayerByPrivateId, removePlayerFromLobby } from "./lib/player.js";
+import { getPlayerByPrivateId, removePlayerFromLobby, type PlayerServer } from "./lib/player.js";
 import { stringSimilarity } from "string-similarity-js";
 import { EventHandleService } from "./lib/events.js";
 
@@ -71,6 +71,34 @@ app.get("/getLobbyId", (c) => {
 
   return c.json(lobbies.get(lobbyId)!.id);
 });
+
+function handleChatMessage(
+  player: PlayerServer,
+  lobby: Lobby,
+  { messageId, content }: { messageId: string; content: string }
+) {
+  player.ws.send(
+    toPayloadToClient(
+      lobby.id,
+      createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
+        isOk: true,
+        messageId,
+        type: false,
+      })
+    )
+  );
+
+  lobbies.publish(
+    lobby.id,
+    player.privateId,
+    toPayloadToClient(
+      player.publicId,
+      createNewMessageToClient(lobby.id, "CHAT_MESSAGE", {
+        content: content,
+      })
+    )
+  );
+}
 
 app.get(
   "/ws",
@@ -289,51 +317,19 @@ app.get(
                     })
                   )
                 );
-              } else {
-                lobbies.broadcast(
-                  lobby.id,
-                  toPayloadToClient(
-                    player.publicId,
-                    createNewMessageToClient(lobby.id, "CHAT_MESSAGE", {
-                      content,
-                    })
-                  )
-                );
-              }
+              } else handleChatMessage(player, lobby, { messageId, content });
             }
           }
 
           if (
-            !eventsHandleService.getMessageEventType() &&
+            !eventsHandleService.getTriggeredMessageEventType() &&
             eventsHandleService.isMessageType("all", parsed.message, "CHAT_MESSAGE")
           ) {
             const player = getPlayerByPrivateId(lobby, parsed.publicId);
             if (!player) return;
 
             const { content, messageId } = parsed.message.payload;
-            setTimeout(1000, null).then(() => {
-              player.ws.send(
-                toPayloadToClient(
-                  lobby.id,
-                  createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
-                    isOk: true,
-                    messageId,
-                    type: false,
-                  })
-                )
-              );
-
-              lobbies.publish(
-                lobby.id,
-                player.privateId,
-                toPayloadToClient(
-                  player.publicId,
-                  createNewMessageToClient(lobby.id, "CHAT_MESSAGE", {
-                    content: content,
-                  })
-                )
-              );
-            });
+            handleChatMessage(player, lobby, { messageId, content });
           }
         } catch {}
       },
