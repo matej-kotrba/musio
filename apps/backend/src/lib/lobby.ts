@@ -30,6 +30,7 @@ export type Lobby = {
     pickedSongs: Song[];
     songQueue: Song[];
     songQueueGenerator?: Generator;
+    currentSongIndex: number;
   };
 };
 
@@ -60,7 +61,7 @@ export function changeLobbyState(lobby: Lobby, state: InitialGamePhaseData<GameS
 
 export const getInitialLobbyState: () => InitialGamePhaseData<GameState> = () => ({
   gameState: { state: "lobby" },
-  lobbyData: { pickedSongs: [], songQueue: [] },
+  lobbyData: { pickedSongs: [], songQueue: [], currentSongIndex: 0 },
 });
 
 export const getInitialPickingGameState: () => InitialGamePhaseData<PickingGameState> = () => ({
@@ -139,6 +140,7 @@ export async function runGuessingSongQueue(
   while (true) {
     const { value: currentIndex } = lobby.data.songQueueGenerator.next();
     if (currentIndex === undefined) break;
+    lobby.data.currentSongIndex = currentIndex;
     lobby.stateProperties.startTime = Date.now();
 
     abortLobbyTimeoutSignalAndRemove(lobby);

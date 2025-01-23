@@ -275,8 +275,7 @@ app.get(
               const player = getPlayerByPrivateId(lobby, parsed.publicId);
               if (!player) return;
 
-              // TODO: Change 0 to actual song index
-              const currentSong = lobby.data.songQueue[0];
+              const currentSong = lobby.data.songQueue[lobby.data.currentSongIndex];
 
               if (normalizeString(content) === currentSong.name) {
                 lobbies.broadcast(
