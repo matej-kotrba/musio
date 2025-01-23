@@ -8,7 +8,7 @@ import {
   createEffect,
   createUniqueId,
 } from "solid-js";
-import PlayerDisplay, { getAllIcons } from "~/components/lobby/Player";
+import PlayerDisplay, { getAllIcons, PlayerToDisplay } from "~/components/lobby/Player";
 import WordToGuess from "~/components/lobby/WordToGuess";
 import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
 import Chat from "~/components/lobby/chat/Chat";
@@ -39,7 +39,7 @@ import SongPicker from "~/components/lobby/picking-phase/SongPicker";
 import TextBouncy from "~/components/ui/fancy/text-bouncy";
 import { LeaderboardsEmphasized } from "~/components/lobby/leaderboards/leaderboards";
 
-const dummy_players: Player[] = [
+const dummy_players: PlayerToDisplay[] = [
   {
     name: "Very Long cool name asd asd asd awsdasd",
     icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
@@ -118,7 +118,7 @@ export default function Lobby() {
   const ctx = useContext(WsConnectionContext);
 
   const [profileData, setProfileData] = createSignal<ProfileData | null>(null);
-  const [players, setPlayers] = createSignal<Player[]>(dummy_players);
+  const [players, setPlayers] = createSignal<PlayerToDisplay[]>(dummy_players);
   const [chatMessages, setChatMessages] = createSignal<ChatMessage[]>([]);
   const [thisPlayerIds, setThisPlayerIds] = createSignal<{
     public: string;
@@ -332,7 +332,7 @@ export default function Lobby() {
         setPlayers((old) =>
           old.map((player) => {
             if (player.publicId === data.publicId) {
-              return { ...player, points: payload.newPoints };
+              return { ...player, points: payload.newPoints, previousPoints: player.points };
             }
             return player;
           })
@@ -414,8 +414,13 @@ export default function Lobby() {
             <Show when={!!profileData()} fallback={<p>Selecting...</p>}>
               {players()
                 .toSorted((a, b) => b.points - a.points)
-                .map((item, index) => (
-                  <PlayerDisplay maxPoints={100} player={item} isLeading={!index} />
+                .map((player, index) => (
+                  <PlayerDisplay
+                    maxPoints={100}
+                    player={player}
+                    isLeading={!index}
+                    previousPoints={player.previousPoints}
+                  />
                 ))}
             </Show>
           </aside>

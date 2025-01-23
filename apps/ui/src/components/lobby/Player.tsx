@@ -1,6 +1,6 @@
 import { Icon } from "@iconify-icon/solid";
 import { Icon as IconType, Player } from "shared/index.types";
-import { Show } from "solid-js";
+import { createEffect, Show } from "solid-js";
 import { Motion } from "solid-motionone";
 
 const icons = import.meta.glob("/public/avatars/*", { query: "?url" });
@@ -17,6 +17,8 @@ export function getAllIcons(): IconType[] {
   });
 }
 
+export type PlayerToDisplay = Player & { previousPoints?: number };
+
 type Props = {
   player: Player;
   maxPoints: number;
@@ -28,7 +30,7 @@ export default function PlayerDisplay(props: Props) {
   function displayPointsInPercentage() {
     return (props.player.points / props.maxPoints) * 100;
   }
-  console.log("addasdasd");
+
   return (
     <>
       <div class="relative flex gap-2 snap-start">
@@ -72,15 +74,16 @@ export default function PlayerDisplay(props: Props) {
                 style={{
                   width: `${displayPointsInPercentage()}%`,
                 }}
-                class="max-w-full h-full bg-primary rounded-r-full"
+                class="max-w-full h-full bg-primary rounded-r-full duration-1000"
               ></div>
             </div>
           </div>
-          <Show when={props.previousPoints} keyed>
+          <Show when={props.previousPoints !== undefined} keyed>
             <Motion.div
               initial={{ opacity: 1 }}
               animate={{ opacity: 0, x: 50 }}
               transition={{ duration: 3 }}
+              class="absolute bottom-0 left-1/2 -translate-x-1/2"
             >
               <span class="text-green-600">+{props.player.points - props.previousPoints!}</span>
             </Motion.div>
