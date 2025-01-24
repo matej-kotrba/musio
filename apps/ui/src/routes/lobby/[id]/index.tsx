@@ -333,7 +333,11 @@ export default function Lobby() {
         setPlayers((old) =>
           old.map((player) => {
             if (player.publicId === data.publicId) {
-              return { ...player, points: payload.newPoints, previousPoints: player.points };
+              return {
+                ...player,
+                points: player.points + payload.newPoints,
+                previousPoints: player.points,
+              };
             }
             return player;
           })

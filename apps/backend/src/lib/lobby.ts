@@ -142,7 +142,7 @@ export async function runGuessingSongQueue(
     if (currentIndex === undefined) break;
     lobby.data.currentSongIndex = currentIndex;
     lobby.stateProperties.startTime = Date.now();
-
+    
     abortLobbyTimeoutSignalAndRemove(lobby);
     resetGuessingState(lobby.stateProperties as GuessingGameState);
     lobby.data.currentTimeoutAbortController = new AbortController();
