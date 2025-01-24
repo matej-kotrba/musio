@@ -7,6 +7,7 @@ import {
   Match,
   createEffect,
   createUniqueId,
+  For,
 } from "solid-js";
 import PlayerDisplay, { getAllIcons, PlayerToDisplay } from "~/components/lobby/Player";
 import WordToGuess from "~/components/lobby/WordToGuess";
@@ -412,16 +413,16 @@ export default function Lobby() {
             }}
           >
             <Show when={!!profileData()} fallback={<p>Selecting...</p>}>
-              {players()
-                .toSorted((a, b) => b.points - a.points)
-                .map((player, index) => (
+              <For each={players().toSorted((a, b) => b.points - a.points)}>
+                {(player, index) => (
                   <PlayerDisplay
                     maxPoints={100}
                     player={player}
                     isLeading={!index}
                     previousPoints={player.previousPoints}
                   />
-                ))}
+                )}
+              </For>
             </Show>
           </aside>
           <Switch>
