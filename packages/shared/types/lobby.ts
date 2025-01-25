@@ -1,5 +1,5 @@
 export type Song = {
-  fromPlayerById: string;
+  fromPlayerByPublicId: string;
   name: string;
   artist: string;
   trackUrl: string;

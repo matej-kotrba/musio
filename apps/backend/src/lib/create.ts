@@ -53,6 +53,6 @@ export function createNewSong(
     artist,
     trackUrl,
     imageUrl100x100: imageUrl,
-    fromPlayerById,
+    fromPlayerByPublicId: fromPlayerById,
   };
 }

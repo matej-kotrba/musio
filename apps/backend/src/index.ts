@@ -184,7 +184,6 @@ app.get(
           } else {
             throw new Error("Invalid message format");
           }
-
           const lobby = lobbies.get(parsed.message.lobbyId);
 
           if (!lobby) throw new Error("Invalid lobbyId");
@@ -203,7 +202,7 @@ app.get(
                 "START_GAME"
               )
             ) {
-              if (!isHost(parsed.publicId, lobby)) return;
+              if (!isHost(parsed.privateId, lobby)) return;
               const initialData = getInitialPickingGameState();
               changeLobbyState(lobby, initialData);
 
@@ -234,10 +233,10 @@ app.get(
                 "PICK_SONG"
               )
             ) {
-              const player = getPlayerByPrivateId(lobby, parsed.publicId);
+              const player = getPlayerByPrivateId(lobby, parsed.privateId);
 
               if (!player) return;
-              if (lobby.stateProperties.playersWhoPickedIds.includes(parsed.publicId)) return;
+              if (lobby.stateProperties.playersWhoPickedIds.includes(parsed.privateId)) return;
 
               const { name, artist, trackUrl, imageUrl100x100 } = parsed.message.payload;
 
@@ -272,62 +271,64 @@ app.get(
               const { content, messageId } = parsed.message.payload;
               if (messageLengthSchema.safeParse(content).success === false) return;
 
-              const player = getPlayerByPrivateId(lobby, parsed.publicId);
+              const player = getPlayerByPrivateId(lobby, parsed.privateId);
               if (!player) return;
 
               const currentSong = lobby.data.songQueue[lobby.data.currentSongIndex];
+              if (currentSong.fromPlayerByPublicId === player.publicId) return;
 
-              if (normalizeString(content) === currentSong.name) {
-                const receivedPoints = getReceivedPoints(
-                  lobby.stateProperties.playersWhoGuessed.length,
-                  Date.now(),
-                  lobby.stateProperties.startTime,
-                  lobby.stateProperties.initialTimeRemaining * 1000
-                );
+              if (currentSong.fromPlayerByPublicId)
+                if (normalizeString(content) === currentSong.name) {
+                  const receivedPoints = getReceivedPoints(
+                    lobby.stateProperties.playersWhoGuessed.length,
+                    Date.now(),
+                    lobby.stateProperties.startTime,
+                    lobby.stateProperties.initialTimeRemaining * 1000
+                  );
 
-                lobbies.broadcast(
-                  lobby.id,
-                  toPayloadToClient(
-                    player.publicId,
-                    createNewMessageToClient(lobby.id, "CHANGE_POINTS", {
-                      newPoints: receivedPoints,
-                    })
-                  )
-                );
+                  lobbies.broadcast(
+                    lobby.id,
+                    toPayloadToClient(
+                      player.publicId,
+                      createNewMessageToClient(lobby.id, "CHANGE_POINTS", {
+                        newPoints: receivedPoints,
+                      })
+                    )
+                  );
 
-                lobby.stateProperties.playersWhoGuessed.push({
-                  privateId: player.privateId,
-                  points: receivedPoints,
-                });
+                  lobby.stateProperties.playersWhoGuessed.push({
+                    privateId: player.privateId,
+                    points: receivedPoints,
+                  });
 
-                player.ws.send(
-                  toPayloadToClient(
-                    "server",
-                    createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
-                      isOk: true,
-                      type: "guessed",
-                      messageId,
-                    })
-                  )
-                );
+                  player.ws.send(
+                    toPayloadToClient(
+                      "server",
+                      createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
+                        isOk: true,
+                        type: "guessed",
+                        messageId,
+                      })
+                    )
+                  );
 
-                if (lobby.stateProperties.playersWhoGuessed.length === lobby.players.length) {
-                  lobby.data.currentTimeoutAbortController?.abort();
-                }
-              } else if (
-                stringSimilarity(content, currentSong.name) >= STRING_SIMILARITY_THRESHOLD
-              ) {
-                player.ws.send(
-                  toPayloadToClient(
-                    "server",
-                    createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
-                      isOk: true,
-                      type: "near",
-                      messageId,
-                    })
-                  )
-                );
-              } else handleChatMessage(player, lobby, { messageId, content });
+                  if (lobby.stateProperties.playersWhoGuessed.length === lobby.players.length) {
+                    lobby.data.currentTimeoutAbortController?.abort();
+                  }
+                } else if (
+                  stringSimilarity(content, currentSong.name) >= STRING_SIMILARITY_THRESHOLD
+                ) {
+                  player.ws.send(
+                    toPayloadToClient(
+                      "server",
+                      createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
+                        isOk: true,
+                        type: "near",
+                        messageId,
+                      })
+                    )
+                  );
+                } else handleChatMessage(player, lobby, { messageId, content });
             }
           }
 
@@ -335,7 +336,7 @@ app.get(
             !eventsHandleService.getTriggeredMessageEventType() &&
             eventsHandleService.isMessageType("all", parsed.message, "CHAT_MESSAGE")
           ) {
-            const player = getPlayerByPrivateId(lobby, parsed.publicId);
+            const player = getPlayerByPrivateId(lobby, parsed.privateId);
             if (!player) return;
 
             const { content, messageId } = parsed.message.payload;

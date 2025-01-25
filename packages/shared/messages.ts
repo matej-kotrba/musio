@@ -30,20 +30,26 @@ export const messageToClientGameState = Object.fromEntries(
   [K in keyof typeof messageConfig]: (keyof (typeof messageConfig)[K])[];
 };
 
+// TODO: I think that PayloadData is being used from server to client and vice versa
+// but server sends back publicId while client sends back privateId, so I need to possibly
+// create second type for client to server messages
 type PayloadData<T> = { publicId: string; message: T };
 
-const toPayload = <T extends () => unknown>(from: string, message: ReturnType<T>) =>
-  JSON.stringify({ publicId: from, message: message } satisfies PayloadData<ReturnType<T>>);
+const toPayload = <T extends () => unknown>(
+  from: string,
+  message: ReturnType<T>,
+  idType: "publicId" | "privateId"
+) => JSON.stringify({ [idType]: from, message: message } satisfies PayloadData<ReturnType<T>>);
 
 export const toPayloadToClient = (
   from: string,
   message: ReturnType<typeof createNewMessageToClient>
-) => toPayload(from, message);
+) => toPayload(from, message, "publicId");
 
 export const toPayloadToServer = (
   from: string,
   message: ReturnType<typeof createNewMessageToServer>
-) => toPayload(from, message);
+) => toPayload(from, message, "privateId");
 
 function createNewMessage<R extends WS_MESSAGE, T extends keyof R>(
   lobbyId: string,
@@ -73,6 +79,6 @@ export function createNewMessageToServer<T extends WS_MESSAGE_TO_CLIENT_TYPE>(
   return createNewMessage<WS_MessageMapClient, T>(lobbyId, type, payload);
 }
 
-export function fromMessage<T extends WS_MESSAGE>(seriliazedMessage: string) {
-  return JSON.parse(seriliazedMessage) as PayloadData<WS_MessageInterface<T>[keyof T]>;
+export function fromMessage<T extends WS_MESSAGE>(serializedMessage: string) {
+  return JSON.parse(serializedMessage) as PayloadData<WS_MessageInterface<T>[keyof T]>;
 }
