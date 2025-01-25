@@ -142,7 +142,7 @@ export async function runGuessingSongQueue(
     if (currentIndex === undefined) break;
     lobby.data.currentSongIndex = currentIndex;
     lobby.stateProperties.startTime = Date.now();
-    
+
     abortLobbyTimeoutSignalAndRemove(lobby);
     resetGuessingState(lobby.stateProperties as GuessingGameState);
     lobby.data.currentTimeoutAbortController = new AbortController();
@@ -150,26 +150,28 @@ export async function runGuessingSongQueue(
     await new Promise((res, rej) => {
       setTimeout(SONG_PICKING_DURATION * 1000, null, {
         signal: lobby.data.currentTimeoutAbortController!.signal,
-      }).finally(async () => {
-        lobbies.broadcast(
-          lobby.id,
-          toPayloadToClient(
-            "server",
-            createNewMessageToClient(lobby.id, "IN_BETWEEN_SONGS_DELAY", {
-              delay: DELAY_BETWEEN_SONGS_IN_MS,
-              correctSongName: lobby.data.songQueue[currentIndex].name,
-            })
-          )
-        );
+      })
+        .catch((e) => {})
+        .finally(async () => {
+          lobbies.broadcast(
+            lobby.id,
+            toPayloadToClient(
+              "server",
+              createNewMessageToClient(lobby.id, "IN_BETWEEN_SONGS_DELAY", {
+                delay: DELAY_BETWEEN_SONGS_IN_MS,
+                correctSongName: lobby.data.songQueue[currentIndex].name,
+              })
+            )
+          );
 
-        if (isLobbyState(lobby.stateProperties, "guessing")) {
-          lobby.stateProperties.isGuessingPaused = true;
-          await waitFor(DELAY_BETWEEN_SONGS_IN_MS);
-          lobby.stateProperties.isGuessingPaused = false;
-        }
+          if (isLobbyState(lobby.stateProperties, "guessing")) {
+            lobby.stateProperties.isGuessingPaused = true;
+            await waitFor(DELAY_BETWEEN_SONGS_IN_MS);
+            lobby.stateProperties.isGuessingPaused = false;
+          }
 
-        res("Done");
-      });
+          res("Done");
+        });
     });
   }
 

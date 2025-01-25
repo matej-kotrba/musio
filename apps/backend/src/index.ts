@@ -310,6 +310,10 @@ app.get(
                     })
                   )
                 );
+
+                if (lobby.stateProperties.playersWhoGuessed.length === lobby.players.length) {
+                  lobby.data.currentTimeoutAbortController?.abort();
+                }
               } else if (
                 stringSimilarity(content, currentSong.name) >= STRING_SIMILARITY_THRESHOLD
               ) {

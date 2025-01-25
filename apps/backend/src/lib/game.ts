@@ -29,14 +29,6 @@ export function getReceivedPoints(
   // Use square root to make the curve more gradual
   // This will make the point difference smaller between early and middle guesses
   const adjustedPercentage = Math.sqrt(timeRemainingPercentage);
-  console.log(
-    "🚀 ~ timeTaken:",
-    timeTaken,
-    guessingTimeLengthInMs,
-    timeRemainingPercentage,
-    adjustedPercentage,
-    positionBonus
-  );
 
   return Math.round(POINTS_CALCULATION_BASE * adjustedPercentage) + positionBonus;
 }
