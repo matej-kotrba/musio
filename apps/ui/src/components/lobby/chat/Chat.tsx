@@ -117,6 +117,7 @@ import type { ChatMessage } from "shared";
 type ChatProps = {
   messages: ChatMessage[];
   onChatMessage: (content: string) => void;
+  disabled?: boolean;
 };
 
 export default function Chat(props: ChatProps) {
@@ -143,7 +144,7 @@ export default function Chat(props: ChatProps) {
           return <MessageComponent message={message} />;
         })}
       </div>
-      <ChatInput onSubmit={createNewMessage} />
+      <ChatInput onSubmit={createNewMessage} disabled={props.disabled} />
     </div>
   );
 }

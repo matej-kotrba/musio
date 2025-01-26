@@ -275,7 +275,19 @@ app.get(
               if (!player) return;
 
               const currentSong = lobby.data.songQueue[lobby.data.currentSongIndex];
-              if (currentSong.fromPlayerByPublicId === player.publicId) return;
+              if (currentSong.fromPlayerByPublicId === player.publicId) {
+                player.ws.send(
+                  toPayloadToClient(
+                    "server",
+                    createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
+                      isOk: false,
+                      messageId,
+                      type: false,
+                    })
+                  )
+                );
+                return;
+              }
 
               if (currentSong.fromPlayerByPublicId)
                 if (normalizeString(content) === currentSong.name) {
@@ -312,7 +324,10 @@ app.get(
                     )
                   );
 
-                  if (lobby.stateProperties.playersWhoGuessed.length === lobby.players.length) {
+                  if (
+                    lobby.players.length > 1 &&
+                    lobby.stateProperties.playersWhoGuessed.length === lobby.players.length - 1
+                  ) {
                     lobby.data.currentTimeoutAbortController?.abort();
                   }
                 } else if (

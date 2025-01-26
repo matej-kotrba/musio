@@ -126,6 +126,7 @@ export default function Lobby() {
     private: string;
   }>();
   const [gameState, setGameState] = createSignal<GameState>({ state: "lobby" });
+
   // {
   //   state: "guessing",
   //   initialTimeRemaining: 30,
@@ -133,12 +134,14 @@ export default function Lobby() {
   //   playersWhoGuessed: [],
   //   initialDelay: 5,
   //   isGuessingPaused: true,
+  //   startTime: 0,
   // }
 
   // Temporary game state specific states
   const [didPick, setDidPick] = createSignal<boolean>(false);
   const [currentSongToGuess, setCurrentSongToGuess] = createSignal<SongWithNameHidden>();
   const [previousCorrectSongName, setPreviousCorrectSongName] = createSignal<Maybe<string>>();
+
   // {
   //   artist: "TheFatRat",
   //   name: [
@@ -148,7 +151,7 @@ export default function Lobby() {
   //     [null, null, null],
   //     [null, null, null, null, null],
   //   ],
-  //   fromPlayerById: "asd",
+  //   fromPlayerByPublicId: "asd",
   //   trackUrl:
   //     "https://music.apple.com/us/album/monody-feat-laura-brehm-radio-edit/1444888726?i=1444888936&uo=4",
   //   imageUrl100x100:
@@ -160,6 +163,11 @@ export default function Lobby() {
   const getLobbyHost = () => players().find((player) => player.isHost);
   const getThisPlayer = () =>
     players().find((player) => player.publicId === thisPlayerIds()?.public);
+  const getPlayerByPublicId = (publicId: string) =>
+    players().find((player) => player.publicId === publicId);
+
+  const resetPlayerChecks = () =>
+    setPlayers((old) => old.map((player) => ({ ...player, isChecked: false })));
 
   function wsConnect() {
     const context = ctx?.connection;
@@ -243,6 +251,7 @@ export default function Lobby() {
       case "CHANGE_GAME_STATE": {
         const payload = data.message.payload;
         setGameState(payload.properties);
+        resetPlayerChecks();
 
         break;
       }
@@ -498,8 +507,11 @@ export default function Lobby() {
               {/* <Show when={!!profileData()} fallback={<p>Selecting...</p>}> */}
               <GuessingGamePhase
                 gameState={gameState() as GuessingGameState}
-                players={players()}
                 currentSongToGuess={currentSongToGuess()}
+                currentSongByPlayer={
+                  currentSongToGuess() &&
+                  getPlayerByPublicId(currentSongToGuess()!.fromPlayerByPublicId)
+                }
                 previousSongName={previousCorrectSongName()}
               />
               {/* </Show> */}
@@ -517,8 +529,12 @@ export default function Lobby() {
               height: "var(--custom-height)",
             }}
           >
-            <Show when={!!profileData() || true} fallback={<p>Selecting...</p>}>
-              <Chat messages={chatMessages()} onChatMessage={handleChatMessage} />
+            <Show when={!!profileData()} fallback={<p>Selecting...</p>}>
+              <Chat
+                messages={chatMessages()}
+                onChatMessage={handleChatMessage}
+                disabled={currentSongToGuess()?.fromPlayerByPublicId === thisPlayerIds()?.public}
+              />
             </Show>
           </aside>
         </div>
@@ -560,7 +576,7 @@ function PickingGamePhase(props: PickingGamePhaseProps) {
 
 type GuessingGamePhaseProps = {
   gameState: GuessingGameState;
-  players: Player[];
+  currentSongByPlayer?: Player;
   currentSongToGuess?: SongWithNameHidden;
   previousSongName?: string;
 };
@@ -591,53 +607,55 @@ function GuessingGamePhase(props: GuessingGamePhaseProps) {
   });
 
   return (
-    <div class="flex flex-col items-center gap-2">
-      <Timer
-        maxTime={
-          props.currentSongToGuess
-            ? props.gameState.initialTimeRemaining
-            : props.gameState.initialDelay
-        }
-        currentTime={
-          props.currentSongToGuess
-            ? props.gameState.initialTimeRemaining
-            : props.gameState.initialDelay
-        }
-        onTimeChange={handleTimeChange}
-      />
-      <Show
-        when={props.currentSongToGuess}
-        fallback={
-          <GuessingGameLeaderboardsFallback players={props.players} prevSong={getPreviousSong()} />
-        }
-      >
-        <section class="flex flex-col items-center">
-          <p class="text-xl mb-6 font-bold opacity-35">
-            Guess the song from <span></span>
-          </p>
-          <div
-            class={`animate-levitate mb-4 relative`}
-            style={{ filter: `blur(calc(12px * ${blurRatio()}))` }}
-          >
-            <div class="absolute shadow-[inset_0_0_40px_rgba(0,0,0,0.8),0_0_20px_rgba(0,0,0,0.3)] inset-0 rounded-md"></div>
-            <img
-              src={props.currentSongToGuess!.imageUrl100x100}
-              width={256}
-              height={256}
-              alt="Song to guess cover"
-              class="w-64 aspect-square rounded-md"
-            />
-          </div>
-          <WordToGuess wordChars={props.currentSongToGuess!.name} />
-        </section>
-      </Show>
-    </div>
+    <>
+      <div class="flex flex-col items-center gap-2">
+        <Timer
+          maxTime={
+            props.currentSongToGuess
+              ? props.gameState.initialTimeRemaining
+              : props.gameState.initialDelay
+          }
+          currentTime={
+            props.currentSongToGuess
+              ? props.gameState.initialTimeRemaining
+              : props.gameState.initialDelay
+          }
+          onTimeChange={handleTimeChange}
+        />
+        <Show
+          when={props.currentSongToGuess}
+          fallback={<GuessingGameLeaderboardsFallback prevSong={getPreviousSong()} />}
+        >
+          <section class="flex flex-col items-center">
+            <p class="text-xl mb-6">
+              <span class="text-foreground/35">Guess the song from</span>{" "}
+              <span class="font-semibold text-foreground/80">
+                {props.currentSongByPlayer?.name ?? "Unknown"}
+              </span>
+            </p>
+            <div
+              class={`animate-levitate mb-4 relative`}
+              style={{ filter: `blur(calc(12px * ${blurRatio()}))` }}
+            >
+              <div class="absolute shadow-[inset_0_0_40px_rgba(0,0,0,0.8),0_0_20px_rgba(0,0,0,0.3)] inset-0 rounded-md"></div>
+              <img
+                src={props.currentSongToGuess!.imageUrl100x100}
+                width={256}
+                height={256}
+                alt="Song to guess cover"
+                class="w-64 aspect-square rounded-md"
+              />
+            </div>
+            <WordToGuess wordChars={props.currentSongToGuess!.name} />
+          </section>
+        </Show>
+      </div>
+    </>
   );
 }
 
 type GuessingGameLeaderboardsProps = {
   prevSong: Maybe<Pick<Song, "name" | "artist">>;
-  players: Player[];
 };
 
 function GuessingGameLeaderboardsFallback(props: GuessingGameLeaderboardsProps) {
@@ -663,11 +681,6 @@ function GuessingGameLeaderboardsFallback(props: GuessingGameLeaderboardsProps) 
           <span> by </span>
           <span class="font-bold text-foreground">{props.prevSong?.artist}</span>
         </div>
-        {/* <Leaderboards
-          ref={ref}
-          players={[...props.players, ...props.players]}
-          maxHeightCSS={`calc(var(--custom-height) - ${heightTopOffsetCSS()})`}
-        /> */}
       </Show>
     </div>
   );
