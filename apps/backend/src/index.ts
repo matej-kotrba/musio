@@ -17,8 +17,8 @@ import {
   createNewMessageToClient,
   type WS_MessageMapClient,
   toPayloadToClient,
-  fromMessage,
   messageLengthSchema,
+  fromMessageOnServer,
 } from "shared";
 import { getReceivedPoints, isHost } from "./lib/game.js";
 import { createNewLobby, createNewPlayer, createNewSong } from "./lib/create.js";
@@ -176,11 +176,11 @@ app.get(
         console.log("[ws] message");
         eventsHandleService.reset();
 
-        let parsed: ReturnType<typeof fromMessage<WS_MessageMapClient>>;
+        let parsed: ReturnType<typeof fromMessageOnServer>;
 
         try {
           if (typeof event.data === "string") {
-            parsed = fromMessage<WS_MessageMapClient>(event.data);
+            parsed = fromMessageOnServer(event.data);
           } else {
             throw new Error("Invalid message format");
           }

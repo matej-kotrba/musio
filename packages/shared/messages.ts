@@ -13,7 +13,7 @@ export const messageConfig = {
     START_GAME: {} as {},
   },
   picking: {
-    PICK_SONG: {} as Omit<Song, "fromPlayerById">,
+    PICK_SONG: {} as Omit<Song, "fromPlayerByPublicId">,
   },
   guessing: {},
   leaderboard: {
@@ -30,16 +30,14 @@ export const messageToClientGameState = Object.fromEntries(
   [K in keyof typeof messageConfig]: (keyof (typeof messageConfig)[K])[];
 };
 
-// TODO: I think that PayloadData is being used from server to client and vice versa
-// but server sends back publicId while client sends back privateId, so I need to possibly
-// create second type for client to server messages
-type PayloadData<T> = { publicId: string; message: T };
+type IdType = "publicId" | "privateId";
+type PayloadData<T, R extends IdType> = { [Type in R]: string } & { message: T };
 
-const toPayload = <T extends () => unknown>(
+const toPayload = <T extends () => unknown, R extends IdType>(
   from: string,
   message: ReturnType<T>,
-  idType: "publicId" | "privateId"
-) => JSON.stringify({ [idType]: from, message: message } satisfies PayloadData<ReturnType<T>>);
+  idType: R
+) => JSON.stringify({ [idType]: from, message: message } as PayloadData<ReturnType<T>, R>);
 
 export const toPayloadToClient = (
   from: string,
@@ -79,6 +77,14 @@ export function createNewMessageToServer<T extends WS_MESSAGE_TO_CLIENT_TYPE>(
   return createNewMessage<WS_MessageMapClient, T>(lobbyId, type, payload);
 }
 
-export function fromMessage<T extends WS_MESSAGE>(serializedMessage: string) {
-  return JSON.parse(serializedMessage) as PayloadData<WS_MessageInterface<T>[keyof T]>;
+function fromMessage<T extends WS_MESSAGE, R extends IdType>(serializedMessage: string) {
+  return JSON.parse(serializedMessage) as PayloadData<WS_MessageInterface<T>[keyof T], R>;
+}
+
+export function fromMessageOnClient(serializedMessage: string) {
+  return fromMessage<WS_MessageMapServer, "publicId">(serializedMessage);
+}
+
+export function fromMessageOnServer(serializedMessage: string) {
+  return fromMessage<WS_MessageMapClient, "privateId">(serializedMessage);
 }

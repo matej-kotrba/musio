@@ -16,7 +16,7 @@ import Chat from "~/components/lobby/chat/Chat";
 import { isWsConnectionContext, WsConnectionContext } from "~/contexts/connection";
 import { useParams, useNavigate } from "@solidjs/router";
 import ProfileSelection, { ProfileData } from "~/components/lobby/profile/ProfileSelection";
-import { createNewMessageToServer, fromMessage, toPayloadToServer } from "shared";
+import { createNewMessageToServer, fromMessageOnClient, toPayloadToServer } from "shared";
 import { getLobbyURL as getLobbyId } from "~/utils/rscs";
 import {
   ChatMessage,
@@ -210,7 +210,7 @@ export default function Lobby() {
   const onMessage = (event: MessageEvent<string>) => {
     if (!ctx?.connection) return;
 
-    const data = fromMessage<WS_MessageMapServer>(event.data);
+    const data = fromMessageOnClient(event.data);
     console.log(data);
 
     switch (data.message.type) {
@@ -612,7 +612,9 @@ function GuessingGamePhase(props: GuessingGamePhaseProps) {
         }
       >
         <section class="flex flex-col items-center">
-          <p class="text-xl mb-6 font-bold opacity-35">Guess the song:</p>
+          <p class="text-xl mb-6 font-bold opacity-35">
+            Guess the song from <span></span>
+          </p>
           <div
             class={`animate-levitate mb-4 relative`}
             style={{ filter: `blur(calc(12px * ${blurRatio()}))` }}
