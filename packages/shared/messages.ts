@@ -1,4 +1,4 @@
-import type { GameStateType, Song } from "./index.types";
+import type { GameState, GameStateType, LobbyGameState, Song } from "./index.types";
 import type {
   WS_MESSAGE,
   WS_MESSAGE_TO_CLIENT_TYPE,
@@ -88,3 +88,15 @@ export function fromMessageOnClient(serializedMessage: string) {
 export function fromMessageOnServer(serializedMessage: string) {
   return fromMessage<WS_MessageMapClient, "privateId">(serializedMessage);
 }
+
+export type FromMessageOnServer = ReturnType<typeof fromMessageOnServer>;
+export type FromMessageOnServerByStateType<T extends GameState["state"]> = Omit<
+  FromMessageOnServer,
+  "message"
+> & {
+  message: {
+    [State in FromMessageOnServer["message"] as State["type"] extends (typeof messageToClientGameState)[T][number]
+      ? State["type"]
+      : never]: State;
+  };
+};

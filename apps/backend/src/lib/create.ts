@@ -1,8 +1,51 @@
 import type { WSContext } from "hono/ws";
-import type { LobbiesMap, Lobby } from "./lobby";
+import type { Lobby } from "./lobby";
 import { getRandomId } from "./utils";
 import type { Song } from "shared";
 import type { PlayerServer } from "./player";
+
+export class LobbyMap<K extends string, V extends Lobby> extends Map<K, V> {
+  publish(lobbyId: K, senderId: string, message: string) {
+    const lobby = this.get(lobbyId);
+    if (!lobby) return;
+
+    lobby.players.forEach((player) => {
+      if (player.privateId === senderId) return;
+      player.ws.send(message);
+    });
+  }
+
+  broadcast(lobbyId: K, message: string) {
+    const lobby = this.get(lobbyId);
+    if (!lobby) return;
+
+    lobby.players.forEach((player) => {
+      player.ws.send(message);
+    });
+  }
+}
+
+export type LobbiesMap = LobbyMap<string, Lobby>;
+
+class LobbiesService {
+  static #instance: LobbiesService;
+  #lobbies: LobbiesMap;
+
+  constructor() {
+    if (!LobbiesService.#instance) {
+      LobbiesService.#instance = this;
+      this.#lobbies = new LobbyMap<string, Lobby>();
+    } else {
+      this.#lobbies = LobbiesService.#instance.#lobbies;
+    }
+  }
+
+  get lobbies() {
+    return this.#lobbies;
+  }
+}
+
+export const getLobbiesService = () => new LobbiesService();
 
 export function createNewLobby(lobbies: LobbiesMap) {
   const id = getRandomId();

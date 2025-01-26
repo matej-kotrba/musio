@@ -21,7 +21,13 @@ import {
   fromMessageOnServer,
 } from "shared";
 import { getReceivedPoints, isHost } from "./lib/game.js";
-import { createNewLobby, createNewPlayer, createNewSong } from "./lib/create.js";
+import {
+  createNewLobby,
+  createNewPlayer,
+  createNewSong,
+  getLobbiesService,
+  LobbiesService,
+} from "./lib/create.js";
 import { setTimeout } from "timers/promises";
 import { getPlayerByPrivateId, removePlayerFromLobby, type PlayerServer } from "./lib/player.js";
 import { stringSimilarity } from "string-similarity-js";
@@ -30,27 +36,27 @@ import { EventHandleService } from "./lib/events.js";
 const app = new Hono();
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
 
-const lobbies: LobbiesMap = new LobbyMap<string, Lobby>();
+// const lobbies: LobbiesMap = new LobbyMap<string, Lobby>();
 
 // Dev only endpoints
 // ****
 app.get("/getLobbies", (c) => {
   if (isDev()) return c.notFound();
 
-  return c.json([...lobbies.keys()]);
+  return c.json([...getLobbiesService().lobbies.keys()]);
 });
 
 app.get("/purgeLobbies", (c) => {
   if (isDev()) return c.notFound();
 
-  lobbies.clear();
+  getLobbiesService().lobbies.clear();
   return c.json("Lobbies purged");
 });
 
 app.get("/getLobby", (c) => {
   if (isDev()) return c.notFound();
 
-  return c.json(lobbies.get(c.req.query("lobbyId")!));
+  return c.json(getLobbiesService().lobbies.get(c.req.query("lobbyId")!));
 });
 
 app.get("/calculatePoints", (c) => {
@@ -62,6 +68,7 @@ app.get("/calculatePoints", (c) => {
 
 app.get("/getLobbyId", (c) => {
   const lobbyId = c.req.query("lobbyId");
+  const lobbies = getLobbiesService().lobbies;
 
   if (!lobbyId || !lobbies.has(lobbyId)) {
     const newLobby = createNewLobby(lobbies);
@@ -88,7 +95,7 @@ function handleChatMessage(
     )
   );
 
-  lobbies.publish(
+  getLobbiesService().lobbies.publish(
     lobby.id,
     player.privateId,
     toPayloadToClient(
@@ -110,6 +117,7 @@ app.get(
         const lobbyId = c.req.query("lobbyId");
         const name = c.req.query("name");
         const icon = c.req.query("icon");
+        const lobbies = getLobbiesService().lobbies;
 
         if (
           !playerNameValidator.safeParse(name).success ||
@@ -194,37 +202,38 @@ app.get(
           // }
 
           if (isLobbyState(lobby.stateProperties, "lobby")) {
-            lobby.stateProperties.state;
-            if (
-              eventsHandleService.isMessageType(
-                lobby.stateProperties.state,
-                parsed.message,
-                "START_GAME"
-              )
-            ) {
-              if (!isHost(parsed.privateId, lobby)) return;
-              const initialData = getInitialPickingGameState();
-              changeLobbyState(lobby, initialData);
+            handleLobbyEvent();
+            // lobby.stateProperties.state;
+            // if (
+            //   eventsHandleService.isMessageType(
+            //     lobby.stateProperties.state,
+            //     parsed.message,
+            //     "START_GAME"
+            //   )
+            // ) {
+            //   if (!isHost(parsed.privateId, lobby)) return;
+            //   const initialData = getInitialPickingGameState();
+            //   changeLobbyState(lobby, initialData);
 
-              // After set time, cancel picking phase and swap to guessing phase
-              lobby.data.currentTimeoutAbortController = new AbortController();
+            //   // After set time, cancel picking phase and swap to guessing phase
+            //   lobby.data.currentTimeoutAbortController = new AbortController();
 
-              setTimeout(initialData.gameState.initialTimeRemainingInSec * 1000, null, {
-                signal: lobby.data.currentTimeoutAbortController.signal,
-              })
-                .then(() => changeToGuessingGameLobbyState(lobbies, lobby))
-                .catch((e) => {});
+            //   setTimeout(initialData.gameState.initialTimeRemainingInSec * 1000, null, {
+            //     signal: lobby.data.currentTimeoutAbortController.signal,
+            //   })
+            //     .then(() => changeToGuessingGameLobbyState(lobbies, lobby))
+            //     .catch((e) => {});
 
-              lobbies.broadcast(
-                lobby.id,
-                toPayloadToClient(
-                  "server",
-                  createNewMessageToClient(lobby.id, "CHANGE_GAME_STATE", {
-                    properties: lobby.stateProperties,
-                  })
-                )
-              );
-            }
+            //   lobbies.broadcast(
+            //     lobby.id,
+            //     toPayloadToClient(
+            //       "server",
+            //       createNewMessageToClient(lobby.id, "CHANGE_GAME_STATE", {
+            //         properties: lobby.stateProperties,
+            //       })
+            //     )
+            //   );
+            // }
           } else if (isLobbyState(lobby.stateProperties, "picking")) {
             if (
               eventsHandleService.isMessageType(
