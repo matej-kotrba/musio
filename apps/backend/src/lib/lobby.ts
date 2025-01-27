@@ -138,10 +138,10 @@ type MessageToClientGameState = typeof messageToClientGameState;
 type Messages = WS_MessageInterface<WS_MessageMapClient>[keyof WS_MessageMapClient];
 
 export function isLobbyState<T extends GameStateType>(
-  props: GameState,
+  lobby: Lobby,
   condition: T
-): props is Extract<typeof props, { state: T }> {
-  return props.state === condition;
+): lobby is Extract<Lobby, { stateProperties: { state: T } }> {
+  return lobby.stateProperties.state === condition;
 }
 
 export async function runGuessingSongQueue(
@@ -185,7 +185,7 @@ export async function runGuessingSongQueue(
             )
           );
 
-          if (isLobbyState(lobby.stateProperties, "guessing")) {
+          if (isLobbyState(lobby, "guessing")) {
             lobby.stateProperties.isGuessingPaused = true;
             await waitFor(DELAY_BETWEEN_SONGS_IN_MS);
             lobby.stateProperties.isGuessingPaused = false;

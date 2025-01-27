@@ -8,7 +8,7 @@ import { getPlayerByPrivateId } from "../player";
 import { createNewSong, getLobbiesService } from "../create";
 import { normalizeString } from "../utils";
 
-export function handleLobbyEvent(
+export function handlePickingEvent(
   lobby: Lobby<"picking">,
   data: FromMessageOnServerByStateType<"picking">
 ) {

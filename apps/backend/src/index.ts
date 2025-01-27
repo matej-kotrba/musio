@@ -1,30 +1,23 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { createNodeWebSocket } from "@hono/node-ws";
-import {
-  changeLobbyState,
-  changeToGuessingGameLobbyState,
-  getInitialPickingGameState,
-  isLobbyState,
-  type LobbiesMap,
-  type Lobby,
-} from "./lib/lobby.js";
+import { changeToGuessingGameLobbyState, isLobbyState, type Lobby } from "./lib/lobby.js";
 import { getRandomId, isDev, normalizeString } from "./lib/utils.js";
-import { LobbyMap } from "./lib/map.js";
 import {
   playerNameValidator,
   playerIconNameValidator,
   createNewMessageToClient,
-  type WS_MessageMapClient,
   toPayloadToClient,
   messageLengthSchema,
   fromMessageOnServer,
+  type FromMessageOnServerByStateType,
 } from "shared";
 import { getReceivedPoints, isHost } from "./lib/game.js";
 import { createNewLobby, createNewPlayer, createNewSong, getLobbiesService } from "./lib/create.js";
-import { setTimeout } from "timers/promises";
 import { getPlayerByPrivateId, removePlayerFromLobby, type PlayerServer } from "./lib/player.js";
 import { stringSimilarity } from "string-similarity-js";
+import { handleLobbyEvent } from "./lib/events/lobby.js";
+import { handlePickingEvent } from "./lib/events/picking.js";
 
 const app = new Hono();
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
@@ -103,8 +96,6 @@ function handleChatMessage(
 app.get(
   "/ws",
   upgradeWebSocket((c) => {
-    const eventsHandleService = new EventHandleService();
-
     return {
       onOpen: (event, ws) => {
         const lobbyId = c.req.query("lobbyId");
@@ -175,7 +166,7 @@ app.get(
       },
       onMessage: (event, ws) => {
         console.log("[ws] message");
-        eventsHandleService.reset();
+        // eventsHandleService.reset();
 
         let parsed: ReturnType<typeof fromMessageOnServer>;
 
@@ -185,7 +176,7 @@ app.get(
           } else {
             throw new Error("Invalid message format");
           }
-          const lobby = lobbies.get(parsed.message.lobbyId);
+          const lobby = getLobbiesService().lobbies.get(parsed.message.lobbyId);
 
           if (!lobby) throw new Error("Invalid lobbyId");
 
@@ -194,9 +185,8 @@ app.get(
           //   throw new Error("Invalid message type for current game state");
           // }
 
-          if (isLobbyState(lobby.stateProperties, "lobby")) {
-            parsed.message;
-            handleLobbyEvent();
+          if (isLobbyState(lobby, "lobby")) {
+            handleLobbyEvent(lobby, parsed as FromMessageOnServerByStateType<"lobby">);
             // lobby.stateProperties.state;
             // if (
             //   eventsHandleService.isMessageType(
@@ -228,42 +218,43 @@ app.get(
             //     )
             //   );
             // }
-          } else if (isLobbyState(lobby.stateProperties, "picking")) {
-            if (
-              eventsHandleService.isMessageType(
-                lobby.stateProperties.state,
-                parsed.message,
-                "PICK_SONG"
-              )
-            ) {
-              const player = getPlayerByPrivateId(lobby, parsed.privateId);
+          } else if (isLobbyState(lobby, "picking")) {
+            handlePickingEvent(lobby, parsed as FromMessageOnServerByStateType<"picking">);
+            // if (
+            //   eventsHandleService.isMessageType(
+            //     lobby.stateProperties.state,
+            //     parsed.message,
+            //     "PICK_SONG"
+            //   )
+            // ) {
+            //   const player = getPlayerByPrivateId(lobby, parsed.privateId);
 
-              if (!player) return;
-              if (lobby.stateProperties.playersWhoPickedIds.includes(parsed.privateId)) return;
+            //   if (!player) return;
+            //   if (lobby.stateProperties.playersWhoPickedIds.includes(parsed.privateId)) return;
 
-              const { name, artist, trackUrl, imageUrl100x100 } = parsed.message.payload;
+            //   const { name, artist, trackUrl, imageUrl100x100 } = parsed.message.payload;
 
-              const newSong = createNewSong(
-                normalizeString(name),
-                artist,
-                trackUrl,
-                imageUrl100x100,
-                player.publicId
-              );
-              lobby.data.pickedSongs.push(newSong);
+            //   const newSong = createNewSong(
+            //     normalizeString(name),
+            //     artist,
+            //     trackUrl,
+            //     imageUrl100x100,
+            //     player.publicId
+            //   );
+            //   lobby.data.pickedSongs.push(newSong);
 
-              if (lobby.data.pickedSongs.length === lobby.players.length) {
-                changeToGuessingGameLobbyState(lobbies, lobby);
-              } else {
-                lobbies.broadcast(
-                  lobby.id,
-                  toPayloadToClient(
-                    player.publicId,
-                    createNewMessageToClient(lobby.id, "PLAYER_PICKED_SONG", {})
-                  )
-                );
-              }
-            }
+            //   if (lobby.data.pickedSongs.length === lobby.players.length) {
+            //     changeToGuessingGameLobbyState(lobbies, lobby);
+            //   } else {
+            //     lobbies.broadcast(
+            //       lobby.id,
+            //       toPayloadToClient(
+            //         player.publicId,
+            //         createNewMessageToClient(lobby.id, "PLAYER_PICKED_SONG", {})
+            //       )
+            //     );
+            //   }
+            // }
           } else if (isLobbyState(lobby.stateProperties, "guessing")) {
             if (
               !lobby.stateProperties.isGuessingPaused &&
