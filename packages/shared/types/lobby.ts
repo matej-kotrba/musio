@@ -34,10 +34,13 @@ export type LeaderboardGameState = {
   pickedSongs: Song[];
 };
 
-export type GameState =
-  | LobbyGameState
-  | PickingGameState
-  | GuessingGameState
-  | LeaderboardGameState;
+export type GameStateMap = {
+  lobby: LobbyGameState;
+  picking: PickingGameState;
+  guessing: GuessingGameState;
+  leaderboard: LeaderboardGameState;
+};
+
+export type GameState = GameStateMap[keyof GameStateMap];
 
 export type GameStateType = GameState["state"];

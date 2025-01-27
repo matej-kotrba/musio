@@ -11,7 +11,6 @@ import type {
 export const messageConfig = {
   lobby: {
     START_GAME: {} as {},
-    CHANGE_GAME_STATE: {} as { properties: GameState },
   },
   picking: {
     PICK_SONG: {} as Omit<Song, "fromPlayerByPublicId">,

@@ -3,6 +3,7 @@ import {
   messageToClientGameState,
   toPayloadToClient,
   type GameState,
+  type GameStateMap,
   type GameStateType,
   type GuessingGameState,
   type LeaderboardGameState,
@@ -21,19 +22,35 @@ import { type PlayerServer } from "./player.js";
 import { setTimeout } from "timers/promises";
 import type { LobbiesMap } from "./create.js";
 
-export type Lobby = {
-  id: string;
-  stateProperties: GameState;
-  players: PlayerServer[];
-  leaderPlayerId?: string;
-  data: {
-    currentTimeoutAbortController?: AbortController;
-    pickedSongs: Song[];
-    songQueue: Song[];
-    songQueueGenerator?: Generator;
-    currentSongIndex: number;
+// export type Lobby<T extends GameState["state"] | undefined = undefined> = {
+//   id: string;
+//   stateProperties: T extends undefined ? GameState : Extract<GameState, { state: T }>;
+//   players: PlayerServer[];
+//   leaderPlayerId?: string;
+//   data: {
+//     currentTimeoutAbortController?: AbortController;
+//     pickedSongs: Song[];
+//     songQueue: Song[];
+//     songQueueGenerator?: Generator;
+//     currentSongIndex: number;
+//   };
+// };
+
+export type Lobby<T extends GameState["state"] | undefined = undefined> = {
+  [Key in keyof GameStateMap]: {
+    id: string;
+    stateProperties: GameStateMap[Key];
+    players: PlayerServer[];
+    leaderPlayerId?: string;
+    data: {
+      currentTimeoutAbortController?: AbortController;
+      pickedSongs: Song[];
+      songQueue: Song[];
+      songQueueGenerator?: Generator;
+      currentSongIndex: number;
+    };
   };
-};
+}[T extends undefined ? GameStateType : T];
 
 // export function getBasicEventData(
 //   lobbies: LobbiesMap,
@@ -119,17 +136,6 @@ export function changeToGuessingGameLobbyState(lobbies: LobbiesMap, lobby: Lobby
 
 type MessageToClientGameState = typeof messageToClientGameState;
 type Messages = WS_MessageInterface<WS_MessageMapClient>[keyof WS_MessageMapClient];
-
-export function isMessageType<
-  T extends keyof MessageToClientGameState,
-  K extends MessageToClientGameState[T][number]
->(
-  lobbyState: T,
-  message: Messages,
-  targetMessageType: K
-): message is Extract<Messages, { type: K }> {
-  return message.type === targetMessageType;
-}
 
 export function isLobbyState<T extends GameStateType>(
   props: GameState,

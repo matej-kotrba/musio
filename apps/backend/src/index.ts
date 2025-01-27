@@ -21,17 +21,10 @@ import {
   fromMessageOnServer,
 } from "shared";
 import { getReceivedPoints, isHost } from "./lib/game.js";
-import {
-  createNewLobby,
-  createNewPlayer,
-  createNewSong,
-  getLobbiesService,
-  LobbiesService,
-} from "./lib/create.js";
+import { createNewLobby, createNewPlayer, createNewSong, getLobbiesService } from "./lib/create.js";
 import { setTimeout } from "timers/promises";
 import { getPlayerByPrivateId, removePlayerFromLobby, type PlayerServer } from "./lib/player.js";
 import { stringSimilarity } from "string-similarity-js";
-import { EventHandleService } from "./lib/events.js";
 
 const app = new Hono();
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
@@ -202,6 +195,7 @@ app.get(
           // }
 
           if (isLobbyState(lobby.stateProperties, "lobby")) {
+            parsed.message;
             handleLobbyEvent();
             // lobby.stateProperties.state;
             // if (
