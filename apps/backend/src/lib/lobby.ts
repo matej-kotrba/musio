@@ -1,5 +1,6 @@
 import {
   createNewMessageToClient,
+  messageToClientGameState,
   toPayloadToClient,
   type GameState,
   type GameStateType,
@@ -7,8 +8,9 @@ import {
   type LeaderboardGameState,
   type PickingGameState,
   type Song,
+  type WS_MessageInterface,
+  type WS_MessageMapClient,
 } from "shared";
-import type { LobbyMap } from "./map.js";
 import {
   DELAY_BETWEEN_SONGS_IN_MS,
   INITIAL_GUESSING_DELAY_IN_MS,
@@ -17,8 +19,7 @@ import {
 import { abortLobbyTimeoutSignalAndRemove, shuffleArray, waitFor } from "./utils.js";
 import { type PlayerServer } from "./player.js";
 import { setTimeout } from "timers/promises";
-
-export type LobbiesMap = LobbyMap<string, Lobby>;
+import type { LobbiesMap } from "./create.js";
 
 export type Lobby = {
   id: string;
@@ -114,6 +115,20 @@ export function changeToGuessingGameLobbyState(lobbies: LobbiesMap, lobby: Lobby
   runGuessingSongQueue(lobbies, lobby.id, {
     initialDelay: INITIAL_GUESSING_DELAY_IN_MS,
   });
+}
+
+type MessageToClientGameState = typeof messageToClientGameState;
+type Messages = WS_MessageInterface<WS_MessageMapClient>[keyof WS_MessageMapClient];
+
+export function isMessageType<
+  T extends keyof MessageToClientGameState,
+  K extends MessageToClientGameState[T][number]
+>(
+  lobbyState: T,
+  message: Messages,
+  targetMessageType: K
+): message is Extract<Messages, { type: K }> {
+  return message.type === targetMessageType;
 }
 
 export function isLobbyState<T extends GameStateType>(

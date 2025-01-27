@@ -11,6 +11,7 @@ import type {
 export const messageConfig = {
   lobby: {
     START_GAME: {} as {},
+    CHANGE_GAME_STATE: {} as { properties: GameState },
   },
   picking: {
     PICK_SONG: {} as Omit<Song, "fromPlayerByPublicId">,
@@ -95,8 +96,15 @@ export type FromMessageOnServerByStateType<T extends GameState["state"]> = Omit<
   "message"
 > & {
   message: {
-    [State in FromMessageOnServer["message"] as State["type"] extends (typeof messageToClientGameState)[T][number]
-      ? State["type"]
-      : never]: State;
-  };
+    [K in keyof (typeof messageConfig)[T]]: {
+      type: K;
+      payload: (typeof messageConfig)[T][K];
+      lobbyId: string;
+    };
+  }[keyof (typeof messageConfig)[T]];
 };
+
+// const a: FromMessageOnServerByStateType<"lobby"> = {
+//   message: { type: "START_GAME", payload: {}, lobbyId: "1" },
+//   privateId: "1",
+// };

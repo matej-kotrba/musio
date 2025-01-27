@@ -29,15 +29,15 @@ export type LobbiesMap = LobbyMap<string, Lobby>;
 
 class LobbiesService {
   static #instance: LobbiesService;
-  #lobbies: LobbiesMap;
+  #lobbies!: LobbiesMap;
 
   constructor() {
     if (!LobbiesService.#instance) {
       LobbiesService.#instance = this;
       this.#lobbies = new LobbyMap<string, Lobby>();
-    } else {
-      this.#lobbies = LobbiesService.#instance.#lobbies;
     }
+
+    return LobbiesService.#instance;
   }
 
   get lobbies() {

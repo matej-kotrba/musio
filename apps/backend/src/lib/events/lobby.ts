@@ -8,20 +8,21 @@ import {
   changeLobbyState,
   changeToGuessingGameLobbyState,
   getInitialPickingGameState,
+  isMessageType,
   type Lobby,
 } from "../lobby";
 import { getLobbiesService } from "../create";
 import { setTimeout } from "timers/promises";
 
 export function handleLobbyEvent(lobby: Lobby, data: FromMessageOnServerByStateType<"lobby">) {
-  data;
   const lobbies = getLobbiesService().lobbies;
 
   lobby.stateProperties.state;
   if (
-    eventsHandleService.isMessageType(lobby.stateProperties.state, parsed.message, "START_GAME")
+    // isMessageType(lobby.stateProperties.state, data.message, "START_GAME")
+    data.message === "START_GAME"
   ) {
-    if (!isHost(parsed.privateId, lobby)) return;
+    if (!isHost(data.privateId, lobby)) return;
     const initialData = getInitialPickingGameState();
     changeLobbyState(lobby, initialData);
 
