@@ -65,34 +65,6 @@ app.get("/getLobbyId", (c) => {
   return c.json(lobbies.get(lobbyId)!.id);
 });
 
-function handleChatMessage(
-  player: PlayerServer,
-  lobby: Lobby,
-  { messageId, content }: { messageId: string; content: string }
-) {
-  player.ws.send(
-    toPayloadToClient(
-      lobby.id,
-      createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
-        isOk: true,
-        messageId,
-        type: false,
-      })
-    )
-  );
-
-  getLobbiesService().lobbies.publish(
-    lobby.id,
-    player.privateId,
-    toPayloadToClient(
-      player.publicId,
-      createNewMessageToClient(lobby.id, "CHAT_MESSAGE", {
-        content: content,
-      })
-    )
-  );
-}
-
 app.get(
   "/ws",
   upgradeWebSocket((c) => {

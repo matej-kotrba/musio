@@ -15,7 +15,9 @@ export const messageConfig = {
   picking: {
     PICK_SONG: {} as Omit<Song, "fromPlayerByPublicId">,
   },
-  guessing: {},
+  guessing: {
+    CHAT_MESSAGE: {} as { content: string; messageId: string },
+  },
   leaderboard: {
     UPDATE_LEADERBOARD: {} as {},
   },
