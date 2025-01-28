@@ -18,6 +18,8 @@ import { getPlayerByPrivateId, removePlayerFromLobby } from "./lib/player.js";
 import { stringSimilarity } from "string-similarity-js";
 import { handleLobbyEvent } from "./lib/events/lobby.js";
 import { handlePickingEvent } from "./lib/events/picking.js";
+import { handleGuessingEvent } from "./lib/events/guessing.js";
+import { handleAllEvent } from "./lib/events/all.js";
 
 const app = new Hono();
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
@@ -140,15 +142,15 @@ app.get(
         console.log("[ws] message");
         // eventsHandleService.reset();
 
-        let parsed: ReturnType<typeof fromMessageOnServer>;
+        let parsedData: ReturnType<typeof fromMessageOnServer>;
 
         try {
           if (typeof event.data === "string") {
-            parsed = fromMessageOnServer(event.data);
+            parsedData = fromMessageOnServer(event.data);
           } else {
             throw new Error("Invalid message format");
           }
-          const lobby = getLobbiesService().lobbies.get(parsed.message.lobbyId);
+          const lobby = getLobbiesService().lobbies.get(parsedData.message.lobbyId);
 
           if (!lobby) throw new Error("Invalid lobbyId");
 
@@ -158,7 +160,7 @@ app.get(
           // }
 
           if (isLobbyState(lobby, "lobby")) {
-            handleLobbyEvent(lobby, parsed as FromMessageOnServerByStateType<"lobby">);
+            handleLobbyEvent(lobby, parsedData as FromMessageOnServerByStateType<"lobby">);
             // lobby.stateProperties.state;
             // if (
             //   eventsHandleService.isMessageType(
@@ -191,7 +193,7 @@ app.get(
             //   );
             // }
           } else if (isLobbyState(lobby, "picking")) {
-            handlePickingEvent(lobby, parsed as FromMessageOnServerByStateType<"picking">);
+            handlePickingEvent(lobby, parsedData as FromMessageOnServerByStateType<"picking">);
             // if (
             //   eventsHandleService.isMessageType(
             //     lobby.stateProperties.state,
@@ -227,102 +229,102 @@ app.get(
             //     );
             //   }
             // }
-          } else if (isLobbyState(lobby.stateProperties, "guessing")) {
-            if (
-              !lobby.stateProperties.isGuessingPaused &&
-              eventsHandleService.isMessageType("all", parsed.message, "CHAT_MESSAGE")
-            ) {
-              const STRING_SIMILARITY_THRESHOLD = 0.7;
+          } else if (isLobbyState(lobby, "guessing")) {
+            handleGuessingEvent(lobby, parsedData as FromMessageOnServerByStateType<"guessing">);
+            // if (
+            //   !lobby.stateProperties.isGuessingPaused &&
+            //   eventsHandleService.isMessageType("all", parsed.message, "CHAT_MESSAGE")
+            // ) {
+            //   const STRING_SIMILARITY_THRESHOLD = 0.7;
 
-              const { content, messageId } = parsed.message.payload;
-              if (messageLengthSchema.safeParse(content).success === false) return;
+            //   const { content, messageId } = parsed.message.payload;
+            //   if (messageLengthSchema.safeParse(content).success === false) return;
 
-              const player = getPlayerByPrivateId(lobby, parsed.privateId);
-              if (!player) return;
+            //   const player = getPlayerByPrivateId(lobby, parsed.privateId);
+            //   if (!player) return;
 
-              const currentSong = lobby.data.songQueue[lobby.data.currentSongIndex];
-              if (currentSong.fromPlayerByPublicId === player.publicId) {
-                player.ws.send(
-                  toPayloadToClient(
-                    "server",
-                    createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
-                      isOk: false,
-                      messageId,
-                      type: false,
-                    })
-                  )
-                );
-                return;
-              }
+            //   const currentSong = lobby.data.songQueue[lobby.data.currentSongIndex];
+            //   if (currentSong.fromPlayerByPublicId === player.publicId) {
+            //     player.ws.send(
+            //       toPayloadToClient(
+            //         "server",
+            //         createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
+            //           isOk: false,
+            //           messageId,
+            //           type: false,
+            //         })
+            //       )
+            //     );
+            //     return;
+            //   }
 
-              if (currentSong.fromPlayerByPublicId)
-                if (normalizeString(content) === currentSong.name) {
-                  const receivedPoints = getReceivedPoints(
-                    lobby.stateProperties.playersWhoGuessed.length,
-                    Date.now(),
-                    lobby.stateProperties.startTime,
-                    lobby.stateProperties.initialTimeRemaining * 1000
-                  );
+            //   if (currentSong.fromPlayerByPublicId)
+            //     if (normalizeString(content) === currentSong.name) {
+            //       const receivedPoints = getReceivedPoints(
+            //         lobby.stateProperties.playersWhoGuessed.length,
+            //         Date.now(),
+            //         lobby.stateProperties.startTime,
+            //         lobby.stateProperties.initialTimeRemaining * 1000
+            //       );
 
-                  lobbies.broadcast(
-                    lobby.id,
-                    toPayloadToClient(
-                      player.publicId,
-                      createNewMessageToClient(lobby.id, "CHANGE_POINTS", {
-                        newPoints: receivedPoints,
-                      })
-                    )
-                  );
+            //       lobbies.broadcast(
+            //         lobby.id,
+            //         toPayloadToClient(
+            //           player.publicId,
+            //           createNewMessageToClient(lobby.id, "CHANGE_POINTS", {
+            //             newPoints: receivedPoints,
+            //           })
+            //         )
+            //       );
 
-                  lobby.stateProperties.playersWhoGuessed.push({
-                    privateId: player.privateId,
-                    points: receivedPoints,
-                  });
+            //       lobby.stateProperties.playersWhoGuessed.push({
+            //         privateId: player.privateId,
+            //         points: receivedPoints,
+            //       });
 
-                  player.ws.send(
-                    toPayloadToClient(
-                      "server",
-                      createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
-                        isOk: true,
-                        type: "guessed",
-                        messageId,
-                      })
-                    )
-                  );
+            //       player.ws.send(
+            //         toPayloadToClient(
+            //           "server",
+            //           createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
+            //             isOk: true,
+            //             type: "guessed",
+            //             messageId,
+            //           })
+            //         )
+            //       );
 
-                  if (
-                    lobby.players.length > 1 &&
-                    lobby.stateProperties.playersWhoGuessed.length === lobby.players.length - 1
-                  ) {
-                    lobby.data.currentTimeoutAbortController?.abort();
-                  }
-                } else if (
-                  stringSimilarity(content, currentSong.name) >= STRING_SIMILARITY_THRESHOLD
-                ) {
-                  player.ws.send(
-                    toPayloadToClient(
-                      "server",
-                      createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
-                        isOk: true,
-                        type: "near",
-                        messageId,
-                      })
-                    )
-                  );
-                } else handleChatMessage(player, lobby, { messageId, content });
-            }
+            //       if (
+            //         lobby.players.length > 1 &&
+            //         lobby.stateProperties.playersWhoGuessed.length === lobby.players.length - 1
+            //       ) {
+            //         lobby.data.currentTimeoutAbortController?.abort();
+            //       }
+            //     } else if (
+            //       stringSimilarity(content, currentSong.name) >= STRING_SIMILARITY_THRESHOLD
+            //     ) {
+            //       player.ws.send(
+            //         toPayloadToClient(
+            //           "server",
+            //           createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
+            //             isOk: true,
+            //             type: "near",
+            //             messageId,
+            //           })
+            //         )
+            //       );
+            //     } else handleChatMessage(player, lobby, { messageId, content });
+            // }
           }
 
-          if (
-            !eventsHandleService.getTriggeredMessageEventType() &&
-            eventsHandleService.isMessageType("all", parsed.message, "CHAT_MESSAGE")
-          ) {
-            const player = getPlayerByPrivateId(lobby, parsed.privateId);
-            if (!player) return;
+          // if (
+          // ) {
+          //   handleAllEvent(lobby, parsedData);
+          //   // const player = getPlayerByPrivateId(lobby, parsedData.privateId);
+          //   // if (!player) return;
 
-            const { content, messageId } = parsed.message.payload;
-            handleChatMessage(player, lobby, { messageId, content });
-          }
+          //   // const { content, messageId } = parsedData.message.payload;
+          //   // handleChatMessage(player, lobby, { messageId, content });
+          // }
         } catch {}
       },
       onClose: (event, ws) => {
