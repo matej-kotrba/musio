@@ -40,14 +40,22 @@ export function handleGuessingEvent(
         return;
       }
 
-      if (normalizeString(content) === currentSong.name)
+      if (areStringsSame(normalizeString(content), currentSong.name))
         handleGuessWhenSame(lobby, player, messageId);
-      else if (stringSimilarity(content, currentSong.name) >= STRING_SIMILARITY_THRESHOLD)
+      else if (areStringSimilarByThreshold(content, currentSong.name, STRING_SIMILARITY_THRESHOLD))
         handleGuessWhenSimilar(lobby, player, messageId);
       else handleChatMessage(player, lobby, { messageId, content });
 
       break;
   }
+}
+
+function areStringsSame(str1: string, str2: string) {
+  return str1.toLowerCase() === str2.toLowerCase();
+}
+
+function areStringSimilarByThreshold(str1: string, str2: string, threshold: number) {
+  return stringSimilarity(str1, str2) >= threshold;
 }
 
 function handleGuessWhenSame(lobby: Lobby<"guessing">, player: PlayerServer, messageId: string) {
@@ -84,12 +92,16 @@ function handleGuessWhenSame(lobby: Lobby<"guessing">, player: PlayerServer, mes
     )
   );
 
-  if (
+  if (shouldAbortGuessTimeout(lobby)) lobby.data.currentTimeoutAbortController?.abort();
+}
+
+function shouldAbortGuessTimeout(lobby: Lobby<"guessing">) {
+  return (
+    // Check for length just for debugging purposes, none will be able to play the game alone
+    // but in dev you can test the picking phase... with it
     lobby.players.length > 1 &&
     lobby.stateProperties.playersWhoGuessed.length === lobby.players.length - 1
-  ) {
-    lobby.data.currentTimeoutAbortController?.abort();
-  }
+  );
 }
 
 function handleGuessWhenSimilar(lobby: Lobby<"guessing">, player: PlayerServer, messageId: string) {
