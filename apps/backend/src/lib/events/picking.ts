@@ -63,7 +63,7 @@ export function handlePickingEvent(
   }
 }
 
-function changeToGuessingGameLobbyState(lobby: Lobby, lobbies: LobbiesMap) {
+export function changeToGuessingGameLobbyState(lobby: Lobby, lobbies: LobbiesMap) {
   changeToLobbyState(lobby, lobbies, getInitialGuessingGameState(lobby.data.pickedSongs), () => {
     runGuessingSongQueue(lobbies, lobby.id, {
       initialDelay: INITIAL_GUESSING_DELAY_IN_MS,
@@ -71,7 +71,7 @@ function changeToGuessingGameLobbyState(lobby: Lobby, lobbies: LobbiesMap) {
   });
 }
 
-export async function runGuessingSongQueue(
+async function runGuessingSongQueue(
   lobbies: LobbiesMap,
   lobbyId: string,
   { initialDelay = 5000 }: { initialDelay?: number }

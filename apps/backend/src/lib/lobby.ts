@@ -62,7 +62,7 @@ export function changeToLobbyState(
   lobby: Lobby,
   lobbies: LobbiesMap,
   initialGameState: InitialGamePhaseData<GameState>,
-  callback: () => void
+  callback?: () => void
 ) {
   abortLobbyTimeoutSignalAndRemoveIt(lobby);
   changeLobbyStateOnServer(lobby, initialGameState);
@@ -77,7 +77,7 @@ export function changeToLobbyState(
     )
   );
 
-  callback();
+  callback?.();
 }
 
 export const getInitialLobbyState: () => InitialGamePhaseData<GameState> = () => ({

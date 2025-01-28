@@ -1,12 +1,9 @@
-import {
-  toPayloadToClient,
-  createNewMessageToClient,
-  type FromMessageOnServerByStateType,
-} from "shared";
+import { type FromMessageOnServerByStateType } from "shared";
 import { isHost } from "../game";
-import { changeLobbyStateOnServer, getInitialPickingGameState, type Lobby } from "../lobby";
+import { changeToLobbyState, getInitialPickingGameState, type Lobby } from "../lobby";
 import { getLobbiesService } from "../create";
 import { setTimeout } from "timers/promises";
+import { changeToGuessingGameLobbyState } from "./picking";
 
 export function handleLobbyEvent(
   lobby: Lobby<"lobby">,
@@ -18,8 +15,9 @@ export function handleLobbyEvent(
   switch (data.message.type) {
     case "START_GAME":
       if (!isHost(data.privateId, lobby)) return;
+
       const initialData = getInitialPickingGameState();
-      changeLobbyStateOnServer(lobby, initialData);
+      changeToLobbyState(lobby, lobbies, initialData);
 
       // After set time, cancel picking phase and swap to guessing phase
       lobby.data.currentTimeoutAbortController = new AbortController();
@@ -27,18 +25,8 @@ export function handleLobbyEvent(
       setTimeout(initialData.gameState.initialTimeRemainingInSec * 1000, null, {
         signal: lobby.data.currentTimeoutAbortController.signal,
       })
-        .then(() => changeToGuessingGameLobbyState(lobbies, lobby))
+        .then(() => changeToGuessingGameLobbyState(lobby, lobbies))
         .catch((e) => {});
-
-      lobbies.broadcast(
-        lobby.id,
-        toPayloadToClient(
-          "server",
-          createNewMessageToClient(lobby.id, "CHANGE_GAME_STATE", {
-            properties: lobby.stateProperties,
-          })
-        )
-      );
 
       break;
   }
