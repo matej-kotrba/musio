@@ -1,5 +1,6 @@
 // Id handling
 
+import { setTimeout } from "timers/promises";
 import type { Lobby } from "./lobby";
 
 // ****
@@ -28,15 +29,19 @@ export function shuffleArray<T extends unknown[]>(arr: T) {
   return newArr;
 }
 
-export function abortLobbyTimeoutSignalAndRemove(lobby: Lobby) {
+export function abortLobbyTimeoutSignalAndRemoveIt(lobby: Lobby) {
   if (lobby.data.currentTimeoutAbortController) {
     lobby.data.currentTimeoutAbortController.abort();
     delete lobby.data.currentTimeoutAbortController;
   }
 }
 
-export function waitFor(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+export async function waitFor(ms: number, signal?: AbortSignal) {
+  return new Promise((resolve) =>
+    setTimeout(ms, null, { signal: signal })
+      .catch((e) => {})
+      .finally(() => resolve("done"))
+  );
 }
 
 export function normalizeString(str: string) {

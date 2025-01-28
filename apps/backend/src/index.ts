@@ -1,7 +1,7 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { createNodeWebSocket } from "@hono/node-ws";
-import { changeToGuessingGameLobbyState, isLobbyState, type Lobby } from "./lib/lobby.js";
+import { isLobbyState } from "./lib/lobby.js";
 import { getRandomId, isDev, normalizeString } from "./lib/utils.js";
 import {
   playerNameValidator,
@@ -13,8 +13,8 @@ import {
   type FromMessageOnServerByStateType,
 } from "shared";
 import { getReceivedPoints, isHost } from "./lib/game.js";
-import { createNewLobby, createNewPlayer, createNewSong, getLobbiesService } from "./lib/create.js";
-import { getPlayerByPrivateId, removePlayerFromLobby, type PlayerServer } from "./lib/player.js";
+import { createNewLobby, createNewPlayer, getLobbiesService } from "./lib/create.js";
+import { getPlayerByPrivateId, removePlayerFromLobby } from "./lib/player.js";
 import { stringSimilarity } from "string-similarity-js";
 import { handleLobbyEvent } from "./lib/events/lobby.js";
 import { handlePickingEvent } from "./lib/events/picking.js";

@@ -4,12 +4,7 @@ import {
   type FromMessageOnServerByStateType,
 } from "shared";
 import { isHost } from "../game";
-import {
-  changeLobbyState,
-  changeToGuessingGameLobbyState,
-  getInitialPickingGameState,
-  type Lobby,
-} from "../lobby";
+import { changeLobbyStateOnServer, getInitialPickingGameState, type Lobby } from "../lobby";
 import { getLobbiesService } from "../create";
 import { setTimeout } from "timers/promises";
 
@@ -24,7 +19,7 @@ export function handleLobbyEvent(
     case "START_GAME":
       if (!isHost(data.privateId, lobby)) return;
       const initialData = getInitialPickingGameState();
-      changeLobbyState(lobby, initialData);
+      changeLobbyStateOnServer(lobby, initialData);
 
       // After set time, cancel picking phase and swap to guessing phase
       lobby.data.currentTimeoutAbortController = new AbortController();
