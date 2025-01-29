@@ -1,7 +1,7 @@
 import { type FromMessageOnServerByStateType } from "shared";
-import { isHost } from "../game";
-import { changeToLobbyState, getInitialPickingGameState, type Lobby } from "../lobby";
-import { getLobbiesService } from "../create";
+import { isHost } from "../game/game-utils";
+import { changeToLobbyState, getInitialPickingGameState, type Lobby } from "../game/lobby";
+import { getLobbiesService } from "../game/create";
 import { setTimeout } from "timers/promises";
 import { changeToGuessingGameLobbyState } from "./picking";
 

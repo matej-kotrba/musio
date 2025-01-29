@@ -4,12 +4,13 @@ import {
   toPayloadToClient,
   type FromMessageOnServerByStateType,
 } from "shared";
-import type { Lobby } from "../lobby";
-import { getPlayerByPrivateId, type PlayerServer } from "../player";
-import { normalizeString } from "../utils";
-import { getReceivedPoints as getPointsToReceive, handleChatMessage } from "../game";
-import { getLobbiesService } from "../create";
+import type { Lobby } from "../game/lobby";
+import { getPlayerByPrivateId, type PlayerServer } from "../game/player";
+import { getReceivedPoints as getPointsToReceive } from "../game/game-utils";
+import { getLobbiesService } from "../game/create";
 import stringSimilarity from "string-similarity-js";
+import { handleChatMessage } from "./all";
+import { normalizeString } from "../common/utils";
 
 export function handleGuessingEvent(
   lobby: Lobby<"guessing">,

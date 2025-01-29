@@ -1,8 +1,5 @@
-import { createNewMessageToClient, toPayloadToClient } from "shared";
-import { POINTS_CALCULATION_BASE } from "./constants";
+import { POINTS_CALCULATION_BASE } from "../common/constants";
 import type { Lobby } from "./lobby";
-import type { PlayerServer } from "./player";
-import { getLobbiesService } from "./create";
 
 const playerGuessPositionBonus: Record<number, number> = {
   0: 5,
@@ -34,33 +31,4 @@ export function getReceivedPoints(
   const adjustedPercentage = Math.sqrt(timeRemainingPercentage);
 
   return Math.round(POINTS_CALCULATION_BASE * adjustedPercentage) + positionBonus;
-}
-
-export function handleChatMessage(
-  player: PlayerServer,
-  lobby: Lobby,
-  { messageId, content }: { messageId: string; content: string }
-) {
-  console.log("Chat message received", content);
-  player.ws.send(
-    toPayloadToClient(
-      lobby.id,
-      createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
-        isOk: true,
-        messageId,
-        type: false,
-      })
-    )
-  );
-
-  getLobbiesService().lobbies.publish(
-    lobby.id,
-    player.privateId,
-    toPayloadToClient(
-      player.publicId,
-      createNewMessageToClient(lobby.id, "CHAT_MESSAGE", {
-        content: content,
-      })
-    )
-  );
 }

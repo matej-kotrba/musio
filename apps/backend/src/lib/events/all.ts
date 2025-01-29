@@ -1,7 +1,7 @@
-import type { fromMessageOnServer } from "shared";
-import type { Lobby } from "../lobby";
-import { getPlayerByPrivateId } from "../player";
-import { handleChatMessage } from "../game";
+import { createNewMessageToClient, toPayloadToClient, type fromMessageOnServer } from "shared";
+import type { Lobby } from "../game/lobby";
+import { getPlayerByPrivateId, type PlayerServer } from "../game/player";
+import { getLobbiesService } from "../game/create";
 
 export function handleAllEvent(lobby: Lobby, data: ReturnType<typeof fromMessageOnServer>) {
   switch (data.message.type) {
@@ -15,4 +15,32 @@ export function handleAllEvent(lobby: Lobby, data: ReturnType<typeof fromMessage
 
       handleChatMessage(player, lobby, { messageId, content });
   }
+}
+
+export function handleChatMessage(
+  player: PlayerServer,
+  lobby: Lobby,
+  { messageId, content }: { messageId: string; content: string }
+) {
+  player.ws.send(
+    toPayloadToClient(
+      lobby.id,
+      createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
+        isOk: true,
+        messageId,
+        type: false,
+      })
+    )
+  );
+
+  getLobbiesService().lobbies.publish(
+    lobby.id,
+    player.privateId,
+    toPayloadToClient(
+      player.publicId,
+      createNewMessageToClient(lobby.id, "CHAT_MESSAGE", {
+        content: content,
+      })
+    )
+  );
 }

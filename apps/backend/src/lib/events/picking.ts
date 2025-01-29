@@ -2,7 +2,6 @@ import {
   createNewMessageToClient,
   toPayloadToClient,
   type FromMessageOnServerByStateType,
-  type GameState,
   type GuessingGameState,
   type SongWithNameHidden,
 } from "shared";
@@ -13,15 +12,15 @@ import {
   getInitialLeaderboardsGameState,
   isLobbyState,
   type Lobby,
-} from "../lobby";
-import { getPlayerByPrivateId } from "../player";
-import { createNewSong, getLobbiesService, type LobbiesMap } from "../create";
-import { abortLobbyTimeoutSignalAndRemoveIt, normalizeString, waitFor } from "../utils";
+} from "../game/lobby";
+import { getPlayerByPrivateId } from "../game/player";
+import { createNewSong, getLobbiesService, type LobbiesMap } from "../game/create";
 import {
   DELAY_BETWEEN_SONGS_IN_MS,
   INITIAL_GUESSING_DELAY_IN_MS,
-  SONG_PICKING_DURATION,
-} from "../constants";
+  SONG_PICKING_DURATION_IN_SEC,
+} from "../common/constants";
+import { normalizeString, waitFor, abortLobbyTimeoutSignalAndRemoveIt } from "../common/utils";
 
 export function handlePickingEvent(
   lobby: Lobby<"picking">,
@@ -95,7 +94,10 @@ async function runGuessingSongQueue(
     resetGuessingState(lobby.stateProperties);
     lobby.data.currentTimeoutAbortController = new AbortController();
 
-    await waitFor(SONG_PICKING_DURATION * 1000, lobby.data.currentTimeoutAbortController.signal);
+    await waitFor(
+      SONG_PICKING_DURATION_IN_SEC * 1000,
+      lobby.data.currentTimeoutAbortController.signal
+    );
 
     lobbies.broadcast(
       lobby.id,
@@ -143,7 +145,7 @@ function* handleSongInQueue(lobbies: LobbiesMap, lobby: Lobby) {
             ...song,
             name: transformSongNameToHidden(song.name),
           },
-          initialTimeRemaining: SONG_PICKING_DURATION,
+          initialTimeRemaining: SONG_PICKING_DURATION_IN_SEC,
         })
       )
     );

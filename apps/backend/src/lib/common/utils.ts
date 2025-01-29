@@ -1,7 +1,7 @@
 // Id handling
 
 import { setTimeout } from "timers/promises";
-import type { Lobby } from "./lobby";
+import type { Lobby } from "../game/lobby";
 
 // ****
 export function getRandomId() {

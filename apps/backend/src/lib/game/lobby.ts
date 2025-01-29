@@ -1,6 +1,5 @@
 import {
   createNewMessageToClient,
-  messageToClientGameState,
   toPayloadToClient,
   type GameState,
   type GameStateMap,
@@ -9,13 +8,11 @@ import {
   type LeaderboardGameState,
   type PickingGameState,
   type Song,
-  type WS_MessageInterface,
-  type WS_MessageMapClient,
 } from "shared";
-import { INITIAL_GUESSING_DELAY_IN_MS, SONG_PICKING_DURATION } from "./constants.js";
-import { abortLobbyTimeoutSignalAndRemoveIt, shuffleArray } from "./utils.js";
+import { INITIAL_GUESSING_DELAY_IN_MS, SONG_PICKING_DURATION_IN_SEC } from "../common/constants.js";
 import { type PlayerServer } from "./player.js";
 import type { LobbiesMap } from "./create.js";
+import { abortLobbyTimeoutSignalAndRemoveIt, shuffleArray } from "../common/utils.js";
 
 export type Lobby<T extends GameState["state"] | undefined = undefined> = {
   [Key in keyof GameStateMap]: {
@@ -33,25 +30,17 @@ export type Lobby<T extends GameState["state"] | undefined = undefined> = {
   };
 }[T extends undefined ? GameStateType : T];
 
-// export function getBasicEventData(
-//   lobbies: LobbiesMap,
-//   parsed: ReturnType<typeof fromMessage<WS_MessageMapClient>>
-// ): { success: false } | { success: true; lobby: Lobby; player: PlayerServer } {
-//   const lobby = lobbies.get(parsed.message.lobbyId);
-//   if (!lobby) return { success: false };
-//   const player = getPlayerByPrivateId(lobby, parsed.privateId);
-//   if (!player) return { success: false };
-//   return {
-//     success: true,
-//     lobby,
-//     player,
-//   };
-// }
-
 type InitialGamePhaseData<T extends GameState> = {
   gameState: T;
   lobbyData: { [Key in keyof Lobby["data"]]?: Lobby["data"][Key] };
 };
+
+export function isLobbyState<T extends GameStateType>(
+  lobby: Lobby,
+  condition: T
+): lobby is Extract<Lobby, { stateProperties: { state: T } }> {
+  return lobby.stateProperties.state === condition;
+}
 
 export function changeLobbyStateOnServer(lobby: Lobby, state: InitialGamePhaseData<GameState>) {
   lobby.stateProperties = state.gameState;
@@ -89,7 +78,7 @@ export const getInitialPickingGameState: () => InitialGamePhaseData<PickingGameS
   gameState: {
     state: "picking",
     playersWhoPickedIds: [],
-    initialTimeRemainingInSec: SONG_PICKING_DURATION,
+    initialTimeRemainingInSec: SONG_PICKING_DURATION_IN_SEC,
   },
   lobbyData: { pickedSongs: [], songQueue: [] },
 });
@@ -99,8 +88,8 @@ export const getInitialGuessingGameState: (
 ) => InitialGamePhaseData<GuessingGameState> = (songs) => ({
   gameState: {
     state: "guessing",
-    initialTimeRemaining: SONG_PICKING_DURATION,
-    currentInitialTimeRemaining: SONG_PICKING_DURATION,
+    initialTimeRemaining: SONG_PICKING_DURATION_IN_SEC,
+    currentInitialTimeRemaining: SONG_PICKING_DURATION_IN_SEC,
     startTime: 0,
     initialDelay: INITIAL_GUESSING_DELAY_IN_MS / 1000,
     playersWhoGuessed: [],
@@ -117,13 +106,3 @@ export const getInitialLeaderboardsGameState: (
   gameState: { state: "leaderboard", pickedSongs: songs },
   lobbyData: {},
 });
-
-type MessageToClientGameState = typeof messageToClientGameState;
-type Messages = WS_MessageInterface<WS_MessageMapClient>[keyof WS_MessageMapClient];
-
-export function isLobbyState<T extends GameStateType>(
-  lobby: Lobby,
-  condition: T
-): lobby is Extract<Lobby, { stateProperties: { state: T } }> {
-  return lobby.stateProperties.state === condition;
-}

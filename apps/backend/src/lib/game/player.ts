@@ -1,6 +1,7 @@
 import type { WSContext } from "hono/ws";
-import type { LobbiesMap, Lobby } from "./lobby";
+import type { Lobby } from "./lobby";
 import type { Player } from "shared";
+import type { LobbiesMap } from "./create";
 
 export type PlayerServer = Omit<PlayerServerWithoutWS, "ws"> & {
   ws: WSContext<unknown>;

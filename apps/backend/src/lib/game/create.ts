@@ -1,6 +1,6 @@
 import type { WSContext } from "hono/ws";
 import type { Lobby } from "./lobby";
-import { getRandomId } from "./utils";
+import { getRandomId } from "../common/utils";
 import type { Song } from "shared";
 import type { PlayerServer } from "./player";
 
