@@ -41,6 +41,7 @@ export function handleChatMessage(
   lobby: Lobby,
   { messageId, content }: { messageId: string; content: string }
 ) {
+  console.log("Chat message received", content);
   player.ws.send(
     toPayloadToClient(
       lobby.id,

@@ -150,185 +150,25 @@ app.get(
           } else {
             throw new Error("Invalid message format");
           }
+
           const lobby = getLobbiesService().lobbies.get(parsedData.message.lobbyId);
 
           if (!lobby) throw new Error("Invalid lobbyId");
 
-          // If the event is not compatible with the current game state, ignore it
-          // if (!isMessageTypeValidForGameState(lobby.stateProperties.state, parsed.message.type)) {
-          //   throw new Error("Invalid message type for current game state");
-          // }
-
-          if (isLobbyState(lobby, "lobby")) {
+          if (isLobbyState(lobby, "lobby"))
             handleLobbyEvent(lobby, parsedData as FromMessageOnServerByStateType<"lobby">);
-            // lobby.stateProperties.state;
-            // if (
-            //   eventsHandleService.isMessageType(
-            //     lobby.stateProperties.state,
-            //     parsed.message,
-            //     "START_GAME"
-            //   )
-            // ) {
-            //   if (!isHost(parsed.privateId, lobby)) return;
-            //   const initialData = getInitialPickingGameState();
-            //   changeLobbyState(lobby, initialData);
-
-            //   // After set time, cancel picking phase and swap to guessing phase
-            //   lobby.data.currentTimeoutAbortController = new AbortController();
-
-            //   setTimeout(initialData.gameState.initialTimeRemainingInSec * 1000, null, {
-            //     signal: lobby.data.currentTimeoutAbortController.signal,
-            //   })
-            //     .then(() => changeToGuessingGameLobbyState(lobbies, lobby))
-            //     .catch((e) => {});
-
-            //   lobbies.broadcast(
-            //     lobby.id,
-            //     toPayloadToClient(
-            //       "server",
-            //       createNewMessageToClient(lobby.id, "CHANGE_GAME_STATE", {
-            //         properties: lobby.stateProperties,
-            //       })
-            //     )
-            //   );
-            // }
-          } else if (isLobbyState(lobby, "picking")) {
+          else if (isLobbyState(lobby, "picking"))
             handlePickingEvent(lobby, parsedData as FromMessageOnServerByStateType<"picking">);
-            // if (
-            //   eventsHandleService.isMessageType(
-            //     lobby.stateProperties.state,
-            //     parsed.message,
-            //     "PICK_SONG"
-            //   )
-            // ) {
-            //   const player = getPlayerByPrivateId(lobby, parsed.privateId);
-
-            //   if (!player) return;
-            //   if (lobby.stateProperties.playersWhoPickedIds.includes(parsed.privateId)) return;
-
-            //   const { name, artist, trackUrl, imageUrl100x100 } = parsed.message.payload;
-
-            //   const newSong = createNewSong(
-            //     normalizeString(name),
-            //     artist,
-            //     trackUrl,
-            //     imageUrl100x100,
-            //     player.publicId
-            //   );
-            //   lobby.data.pickedSongs.push(newSong);
-
-            //   if (lobby.data.pickedSongs.length === lobby.players.length) {
-            //     changeToGuessingGameLobbyState(lobbies, lobby);
-            //   } else {
-            //     lobbies.broadcast(
-            //       lobby.id,
-            //       toPayloadToClient(
-            //         player.publicId,
-            //         createNewMessageToClient(lobby.id, "PLAYER_PICKED_SONG", {})
-            //       )
-            //     );
-            //   }
-            // }
-          } else if (isLobbyState(lobby, "guessing")) {
+          else if (isLobbyState(lobby, "guessing"))
             handleGuessingEvent(lobby, parsedData as FromMessageOnServerByStateType<"guessing">);
-            // if (
-            //   !lobby.stateProperties.isGuessingPaused &&
-            //   eventsHandleService.isMessageType("all", parsed.message, "CHAT_MESSAGE")
-            // ) {
-            //   const STRING_SIMILARITY_THRESHOLD = 0.7;
 
-            //   const { content, messageId } = parsed.message.payload;
-            //   if (messageLengthSchema.safeParse(content).success === false) return;
-
-            //   const player = getPlayerByPrivateId(lobby, parsed.privateId);
-            //   if (!player) return;
-
-            //   const currentSong = lobby.data.songQueue[lobby.data.currentSongIndex];
-            //   if (currentSong.fromPlayerByPublicId === player.publicId) {
-            //     player.ws.send(
-            //       toPayloadToClient(
-            //         "server",
-            //         createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
-            //           isOk: false,
-            //           messageId,
-            //           type: false,
-            //         })
-            //       )
-            //     );
-            //     return;
-            //   }
-
-            //   if (currentSong.fromPlayerByPublicId)
-            //     if (normalizeString(content) === currentSong.name) {
-            //       const receivedPoints = getReceivedPoints(
-            //         lobby.stateProperties.playersWhoGuessed.length,
-            //         Date.now(),
-            //         lobby.stateProperties.startTime,
-            //         lobby.stateProperties.initialTimeRemaining * 1000
-            //       );
-
-            //       lobbies.broadcast(
-            //         lobby.id,
-            //         toPayloadToClient(
-            //           player.publicId,
-            //           createNewMessageToClient(lobby.id, "CHANGE_POINTS", {
-            //             newPoints: receivedPoints,
-            //           })
-            //         )
-            //       );
-
-            //       lobby.stateProperties.playersWhoGuessed.push({
-            //         privateId: player.privateId,
-            //         points: receivedPoints,
-            //       });
-
-            //       player.ws.send(
-            //         toPayloadToClient(
-            //           "server",
-            //           createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
-            //             isOk: true,
-            //             type: "guessed",
-            //             messageId,
-            //           })
-            //         )
-            //       );
-
-            //       if (
-            //         lobby.players.length > 1 &&
-            //         lobby.stateProperties.playersWhoGuessed.length === lobby.players.length - 1
-            //       ) {
-            //         lobby.data.currentTimeoutAbortController?.abort();
-            //       }
-            //     } else if (
-            //       stringSimilarity(content, currentSong.name) >= STRING_SIMILARITY_THRESHOLD
-            //     ) {
-            //       player.ws.send(
-            //         toPayloadToClient(
-            //           "server",
-            //           createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
-            //             isOk: true,
-            //             type: "near",
-            //             messageId,
-            //           })
-            //         )
-            //       );
-            //     } else handleChatMessage(player, lobby, { messageId, content });
-            // }
-          }
-
-          // if (
-          // ) {
-          //   handleAllEvent(lobby, parsedData);
-          //   // const player = getPlayerByPrivateId(lobby, parsedData.privateId);
-          //   // if (!player) return;
-
-          //   // const { content, messageId } = parsedData.message.payload;
-          //   // handleChatMessage(player, lobby, { messageId, content });
-          // }
+          handleAllEvent(lobby, parsedData);
         } catch {}
       },
       onClose: (event, ws) => {
         const lobbyId = c.req.query("lobbyId");
+        const lobbies = getLobbiesService().lobbies;
+
         const lobby = lobbies.get(lobbyId!);
         if (!lobby) return;
 
