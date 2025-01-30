@@ -39,6 +39,7 @@ import Timer from "~/components/lobby/picking-phase/Timer";
 import SongPicker from "~/components/lobby/picking-phase/SongPicker";
 import TextBouncy from "~/components/ui/fancy/text-bouncy";
 import { LeaderboardsEmphasized } from "~/components/lobby/leaderboards/leaderboards";
+import useWebsockets from "./services/websockets-service";
 
 const dummy_players: PlayerToDisplay[] = [
   {
@@ -112,13 +113,16 @@ const dummySongName = ["R", null, null, null, " ", null, null, "t", null, null, 
 const dummySongImage = "/2000x2000bb.jpg";
 
 export default function Lobby() {
+  const { connect, disconnect, send } = useWebsockets();
+
   const params = useParams();
   const navigate = useNavigate();
   const copyToClipboard = useCopyToClipboard();
 
-  const ctx = useContext(WsConnectionContext);
+  // const ctx = useContext(WsConnectionContext);
 
   const [profileData, setProfileData] = createSignal<ProfileData | null>(null);
+
   const [players, setPlayers] = createSignal<PlayerToDisplay[]>(dummy_players);
   const [chatMessages, setChatMessages] = createSignal<ChatMessage[]>([]);
   const [thisPlayerIds, setThisPlayerIds] = createSignal<{

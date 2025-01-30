@@ -31,6 +31,9 @@ export default function useWebsockets() {
   return {
     connect,
     disconnect,
+    get send() {
+      return ws?.send;
+    },
   };
   // const wsConnection: Maybe<WsConnection> = {
   //   ws: undefined,
