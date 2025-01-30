@@ -13,7 +13,7 @@ type GameStore = {
 };
 
 export function createNewGameStore() {
-  const [get, set] = createStore<GameStore>({
+  const [store, setStore] = createStore<GameStore>({
     players: [],
     chatMessages: [],
     thisPlayerIds: { public: "", private: "" },
@@ -22,7 +22,11 @@ export function createNewGameStore() {
     didPick: false,
   });
 
-  const actions = {};
+  const actions = {
+    resetPlayerChecks() {
+      setStore("didPick", false);
+    },
+  };
 
-  return [get, actions];
+  return [store, actions] as const;
 }

@@ -8,6 +8,7 @@ import {
   createEffect,
   createUniqueId,
   For,
+  onCleanup,
 } from "solid-js";
 import PlayerDisplay, { getAllIcons, PlayerToDisplay } from "~/components/lobby/Player";
 import WordToGuess from "~/components/lobby/WordToGuess";
@@ -35,11 +36,12 @@ import { TextField, TextFieldRoot } from "~/components/ui/textfield";
 import { useCopyToClipboard } from "~/hooks";
 import { Icon } from "@iconify-icon/solid";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
-import Timer from "~/components/lobby/picking-phase/Timer";
-import SongPicker from "~/components/lobby/picking-phase/SongPicker";
+import Timer from "~/components/lobby/game-phases/picking-phase/components/timer/Timer";
+import SongPicker from "~/components/lobby/game-phases/picking-phase/components/song-picker/SongPicker";
 import TextBouncy from "~/components/ui/fancy/text-bouncy";
-import { LeaderboardsEmphasized } from "~/components/lobby/leaderboards/leaderboards";
+import { LeaderboardsEmphasized } from "~/components/lobby/game-phases/leaderboards/leaderboards";
 import useWebsockets from "./services/websockets-service";
+import { createNewGameStore } from "./stores/game-store";
 
 const dummy_players: PlayerToDisplay[] = [
   {
@@ -114,6 +116,7 @@ const dummySongImage = "/2000x2000bb.jpg";
 
 export default function Lobby() {
   const { connect, disconnect, send } = useWebsockets();
+  const [gameStore, { resetPlayerChecks }] = createNewGameStore();
 
   const params = useParams();
   const navigate = useNavigate();
@@ -123,55 +126,15 @@ export default function Lobby() {
 
   const [profileData, setProfileData] = createSignal<ProfileData | null>(null);
 
-  const [players, setPlayers] = createSignal<PlayerToDisplay[]>(dummy_players);
-  const [chatMessages, setChatMessages] = createSignal<ChatMessage[]>([]);
-  const [thisPlayerIds, setThisPlayerIds] = createSignal<{
-    public: string;
-    private: string;
-  }>();
-  const [gameState, setGameState] = createSignal<GameState>({ state: "lobby" });
-
-  // {
-  //   state: "guessing",
-  //   initialTimeRemaining: 30,
-  //   currentInitialTimeRemaining: 30,
-  //   playersWhoGuessed: [],
-  //   initialDelay: 5,
-  //   isGuessingPaused: true,
-  //   startTime: 0,
-  // }
-
-  // Temporary game state specific states
-  const [didPick, setDidPick] = createSignal<boolean>(false);
-  const [currentSongToGuess, setCurrentSongToGuess] = createSignal<SongWithNameHidden>();
-  const [previousCorrectSongName, setPreviousCorrectSongName] = createSignal<Maybe<string>>();
-
-  // {
-  //   artist: "TheFatRat",
-  //   name: [
-  //     ["N", "o", "b", null, null, null, null],
-  //     ["C", null, null, null, null, null, null],
-  //     [null, null],
-  //     [null, null, null],
-  //     [null, null, null, null, null],
-  //   ],
-  //   fromPlayerByPublicId: "asd",
-  //   trackUrl:
-  //     "https://music.apple.com/us/album/monody-feat-laura-brehm-radio-edit/1444888726?i=1444888936&uo=4",
-  //   imageUrl100x100:
-  //     "https://is1-ssl.mzstatic.com/image/thumb/Music128/v4/f3/69/33/f3693389-7610-f6e0-9767-4b3ba8f61acc/00602557309201.rgb.jpg/100x100bb.jpg",
-  // }
-
   const lobbyId = () => params.id;
 
-  const getLobbyHost = () => players().find((player) => player.isHost);
+  const getLobbyHost = () => gameStore.players.find((player) => player.isHost);
   const getThisPlayer = () =>
-    players().find((player) => player.publicId === thisPlayerIds()?.public);
+    gameStore.players.find((player) => player.publicId === gameStore.thisPlayerIds.public);
   const getPlayerByPublicId = (publicId: string) =>
-    players().find((player) => player.publicId === publicId);
+    gameStore.players.find((player) => player.publicId === publicId);
 
-  const resetPlayerChecks = () =>
-    setPlayers((old) => old.map((player) => ({ ...player, isChecked: false })));
+  onCleanup(() => disconnect());
 
   async function handleProfileSelected(data: ProfileData) {
     setProfileData(data);
@@ -180,202 +143,60 @@ export default function Lobby() {
       navigate(`/lobby/${newLobbyId}`, { replace: true });
     }
 
-    if (ctx && isWsConnectionContext(ctx?.connection)) {
-      wsConnect();
-    }
+    connect(newLobbyId, data);
   }
 
-  const onMessage = (event: MessageEvent<string>) => {
-    if (!ctx?.connection) return;
+  // const onNextRoundStartButtonClick = () => {
+  //   if (!thisPlayerIds()?.private) return;
 
-    const data = fromMessageOnClient(event.data);
-    console.log(data);
+  //   ctx?.connection.ws?.send(
+  //     toPayloadToServer(
+  //       thisPlayerIds()!.private,
+  //       createNewMessageToServer(lobbyId(), "START_GAME", {})
+  //     )
+  //   );
+  // };
 
-    switch (data.message.type) {
-      // TODO: Possible race conditions when handling new player join
-      case "PLAYER_INIT": {
-        const payload = data.message.payload;
-        const allPlayers = payload.allPlayers.map(playerServerToPlayer);
-        setPlayers(allPlayers);
-        setThisPlayerIds({
-          private: payload.thisPlayerPrivateId,
-          public: payload.thisPlayerPublicId,
-        });
+  // const handleChatMessage = (content: string) => {
+  //   if (!thisPlayerIds()?.public || !getThisPlayer()) return;
 
-        ctx.setConnection((old) => {
-          return {
-            ...old,
-            playerId: payload.thisPlayerPrivateId,
-          };
-        });
+  //   const newMessage: ChatMessage = {
+  //     id: createUniqueId(),
+  //     content: content,
+  //     guessRelation: false,
+  //     senderName: getThisPlayer()!.name,
+  //     isOptimistic: true,
+  //   };
 
-        break;
-      }
-      case "PLAYER_JOIN": {
-        const payload = data.message.payload;
-        setPlayers((old) => [...old, playerServerToPlayer(payload)]);
+  //   // Optimistically update messages
+  //   setChatMessages((old) => [...old, newMessage]);
 
-        break;
-      }
+  //   ctx?.connection.ws?.send(
+  //     toPayloadToServer(
+  //       thisPlayerIds()!.private,
+  //       createNewMessageToServer(lobbyId(), "CHAT_MESSAGE", {
+  //         messageId: newMessage.id!,
+  //         content,
+  //       })
+  //     )
+  //   );
+  // };
 
-      case "CHANGE_GAME_STATE": {
-        const payload = data.message.payload;
-        setGameState(payload.properties);
-        resetPlayerChecks();
+  // const handleSongSelection = (selectedSong: ItunesSong) => {
+  //   if (!thisPlayerIds()?.private) return;
 
-        break;
-      }
-
-      case "PLAYER_PICKED_SONG": {
-        setPlayers((old) =>
-          old.map((player) => ({ ...player, isChecked: player.publicId === data.publicId }))
-        );
-
-        if (thisPlayerIds()?.public === data.publicId) {
-          setDidPick(true);
-        }
-
-        break;
-      }
-
-      case "PLAYER_REMOVED_FROM_LOBBY": {
-        const payload = data.message.payload;
-
-        setPlayers((old) => old.filter((player) => player.publicId !== payload.publicId));
-        break;
-      }
-
-      case "NEW_SONG_TO_GUESS": {
-        const payload = data.message.payload;
-
-        setCurrentSongToGuess(payload.song);
-        break;
-      }
-
-      case "IN_BETWEEN_SONGS_DELAY": {
-        const payload = data.message.payload;
-        setCurrentSongToGuess(undefined);
-        setPreviousCorrectSongName(payload.correctSongName);
-        setGameState((old) => {
-          return {
-            ...old,
-            initialDelay: payload.delay / 1000,
-          };
-        });
-
-        break;
-      }
-
-      case "CHAT_MESSAGE_CONFIRM": {
-        const payload = data.message.payload;
-        setChatMessages((old) => {
-          const idx = old.findIndex((message) => message.id === payload.messageId);
-          if (idx !== -1) {
-            let newArr = old;
-            if (payload.isOk) {
-              newArr = old.with(idx, {
-                ...old[idx],
-                isOptimistic: false,
-                guessRelation: payload.type,
-              });
-            } else {
-              newArr = old.filter((_, i) => i !== idx);
-            }
-            return newArr;
-          }
-          return old;
-        });
-
-        break;
-      }
-
-      case "CHAT_MESSAGE": {
-        const payload = data.message.payload;
-
-        const sender = players().find((player) => player.publicId === data.publicId);
-        if (!sender) break;
-
-        setChatMessages((old) => [
-          ...old,
-          {
-            content: payload.content,
-            guessRelation: false,
-            senderName: sender.name,
-          },
-        ]);
-        break;
-      }
-
-      case "CHANGE_POINTS": {
-        const payload = data.message.payload;
-
-        setPlayers((old) =>
-          old.map((player) => {
-            if (player.publicId === data.publicId) {
-              return {
-                ...player,
-                points: player.points + payload.newPoints,
-                previousPoints: player.points,
-              };
-            }
-            return player;
-          })
-        );
-      }
-    }
-  };
-
-  const onNextRoundStartButtonClick = () => {
-    if (!thisPlayerIds()?.private) return;
-
-    ctx?.connection.ws?.send(
-      toPayloadToServer(
-        thisPlayerIds()!.private,
-        createNewMessageToServer(lobbyId(), "START_GAME", {})
-      )
-    );
-  };
-
-  const handleChatMessage = (content: string) => {
-    if (!thisPlayerIds()?.public || !getThisPlayer()) return;
-
-    const newMessage: ChatMessage = {
-      id: createUniqueId(),
-      content: content,
-      guessRelation: false,
-      senderName: getThisPlayer()!.name,
-      isOptimistic: true,
-    };
-
-    // Optimistically update messages
-    setChatMessages((old) => [...old, newMessage]);
-
-    ctx?.connection.ws?.send(
-      toPayloadToServer(
-        thisPlayerIds()!.private,
-        createNewMessageToServer(lobbyId(), "CHAT_MESSAGE", {
-          messageId: newMessage.id!,
-          content,
-        })
-      )
-    );
-  };
-
-  const handleSongSelection = (selectedSong: ItunesSong) => {
-    if (!thisPlayerIds()?.private) return;
-
-    ctx?.connection.ws?.send(
-      toPayloadToServer(
-        thisPlayerIds()!.private,
-        createNewMessageToServer(lobbyId(), "PICK_SONG", {
-          name: selectedSong.trackName,
-          artist: selectedSong.artistName,
-          trackUrl: selectedSong.trackViewUrl,
-          imageUrl100x100: selectedSong.artworkUrl100,
-        })
-      )
-    );
-  };
+  //   ctx?.connection.ws?.send(
+  //     toPayloadToServer(
+  //       thisPlayerIds()!.private,
+  //       createNewMessageToServer(lobbyId(), "PICK_SONG", {
+  //         name: selectedSong.trackName,
+  //         artist: selectedSong.artistName,
+  //         trackUrl: selectedSong.trackViewUrl,
+  //         imageUrl100x100: selectedSong.artworkUrl100,
+  //       })
+  //     )
+  //   );
+  // };
 
   return (
     <>
@@ -676,3 +497,29 @@ function LeaderboardsGamePhase(props: LeaderboardsGamePhaseProps) {
     </>
   );
 }
+
+// {
+//   state: "guessing",
+//   initialTimeRemaining: 30,
+//   currentInitialTimeRemaining: 30,
+//   playersWhoGuessed: [],
+//   initialDelay: 5,
+//   isGuessingPaused: true,
+//   startTime: 0,
+// }
+
+// {
+//   artist: "TheFatRat",
+//   name: [
+//     ["N", "o", "b", null, null, null, null],
+//     ["C", null, null, null, null, null, null],
+//     [null, null],
+//     [null, null, null],
+//     [null, null, null, null, null],
+//   ],
+//   fromPlayerByPublicId: "asd",
+//   trackUrl:
+//     "https://music.apple.com/us/album/monody-feat-laura-brehm-radio-edit/1444888726?i=1444888936&uo=4",
+//   imageUrl100x100:
+//     "https://is1-ssl.mzstatic.com/image/thumb/Music128/v4/f3/69/33/f3693389-7610-f6e0-9767-4b3ba8f61acc/00602557309201.rgb.jpg/100x100bb.jpg",
+// }

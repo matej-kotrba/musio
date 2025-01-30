@@ -1,8 +1,8 @@
 import { Player } from "shared";
 import { createEffect, createSignal, For } from "solid-js";
 import { createStore } from "solid-js/store";
-import { LeaderboardsEmphasized } from "~/components/lobby/leaderboards/leaderboards";
-import SongPicker from "~/components/lobby/picking-phase/SongPicker";
+import { LeaderboardsEmphasized } from "~/components/lobby/game-phases/leaderboards/leaderboards";
+import SongPicker from "~/components/lobby/game-phases/picking-phase/components/song-picker/SongPicker";
 import PlayerDisplay, { getAllIcons } from "~/components/lobby/Player";
 
 const dummy_players: Player[] = [
