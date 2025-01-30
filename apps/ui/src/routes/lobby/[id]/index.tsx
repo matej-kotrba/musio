@@ -169,46 +169,12 @@ export default function Lobby() {
   const resetPlayerChecks = () =>
     setPlayers((old) => old.map((player) => ({ ...player, isChecked: false })));
 
-  function wsConnect() {
-    const context = ctx?.connection;
-    if (!context) return;
-
-    if (context.ws) {
-      context.log("ws", "Closing previous connection before reconnecting…");
-      context.ws.close();
-      context.ws = undefined;
-      context.clear();
-    }
-
-    const pd = profileData();
-    if (!pd) return;
-
-    context.log("ws", "Connecting to", context.href, "…");
-    const new_ws = new WebSocket(context.href);
-
-    new_ws.addEventListener("message", context.onMessage);
-    new_ws.addEventListener("open", () => {
-      ctx.setConnection("ws", new_ws);
-      context.log("ws", "Connected!");
-    });
-  }
-
   async function handleProfileSelected(data: ProfileData) {
     setProfileData(data);
     const newLobbyId = await getLobbyId(lobbyId());
     if (newLobbyId !== lobbyId()) {
       navigate(`/lobby/${newLobbyId}`, { replace: true });
     }
-
-    ctx?.setConnection({
-      ws: undefined,
-      href: `ws://localhost:5173/ws?lobbyId=${newLobbyId}&name=${data.name}&icon=${data.icon}`,
-      lobbyId: newLobbyId,
-      onMessage,
-      log: () => {},
-      clear: () => {},
-      send: (data) => ctx.connection.ws?.send(data),
-    });
 
     if (ctx && isWsConnectionContext(ctx?.connection)) {
       wsConnect();
