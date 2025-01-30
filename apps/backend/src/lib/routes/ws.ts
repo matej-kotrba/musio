@@ -24,6 +24,7 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
     upgradeWebSocket((c) => {
       return {
         onOpen: (event, ws) => {
+          console.log("adasdasdasd");
           const lobbyId = c.req.query("lobbyId");
           const name = c.req.query("name");
           const icon = c.req.query("icon");

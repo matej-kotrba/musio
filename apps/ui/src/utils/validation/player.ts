@@ -1,6 +1,6 @@
 import { playerNameValidator } from "shared";
 import { z } from "zod";
-import { getAllIcons } from "~/components/lobby/Player";
+import { getAllIcons } from "~/components/game/Player";
 
 const validIconNames = getAllIcons().map((icon) => icon.name);
 

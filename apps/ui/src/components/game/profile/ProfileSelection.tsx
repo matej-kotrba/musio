@@ -1,4 +1,3 @@
-import { getAllIcons } from "~/components/lobby/Player";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +20,7 @@ import { playerProfileSchema } from "~/utils/validation/player";
 import toast from "solid-toast";
 import { iconNameToDisplayName } from "~/utils/game/common";
 import { playerNameValidator } from "shared";
+import { getAllIcons } from "../Player";
 
 type CarouselIconType = "selected" | "neighbour" | "none";
 

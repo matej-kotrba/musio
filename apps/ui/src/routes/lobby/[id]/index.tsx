@@ -1,47 +1,31 @@
-import styles from "./index.module.css";
-import {
-  createSignal,
-  Show,
-  useContext,
-  Switch,
-  Match,
-  createEffect,
-  createUniqueId,
-  For,
-  onCleanup,
-} from "solid-js";
-import PlayerDisplay, { getAllIcons, PlayerToDisplay } from "~/components/lobby/Player";
-import WordToGuess from "~/components/lobby/WordToGuess";
+import { createSignal, Show, Switch, Match, createEffect, onCleanup } from "solid-js";
 import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
-import Chat from "~/components/lobby/chat/Chat";
-import { isWsConnectionContext, WsConnectionContext } from "~/contexts/connection";
 import { useParams, useNavigate } from "@solidjs/router";
-import ProfileSelection, { ProfileData } from "~/components/lobby/profile/ProfileSelection";
-import { createNewMessageToServer, fromMessageOnClient, toPayloadToServer } from "shared";
 import { getLobbyURL as getLobbyId } from "~/utils/rscs";
 import {
-  ChatMessage,
-  GameState,
   GuessingGameState,
   ItunesSong,
   PickingGameState,
   Player,
   Song,
   SongWithNameHidden,
-  WS_MessageMapServer,
 } from "shared/index.types";
-import { playerServerToPlayer } from "~/utils/game/common";
 import { Button } from "~/components/ui/button";
 import { TextField, TextFieldRoot } from "~/components/ui/textfield";
 import { useCopyToClipboard } from "~/hooks";
 import { Icon } from "@iconify-icon/solid";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
-import Timer from "~/components/lobby/game-phases/picking-phase/components/timer/Timer";
-import SongPicker from "~/components/lobby/game-phases/picking-phase/components/song-picker/SongPicker";
 import TextBouncy from "~/components/ui/fancy/text-bouncy";
-import { LeaderboardsEmphasized } from "~/components/lobby/game-phases/leaderboards/leaderboards";
 import useWebsockets from "./services/websockets-service";
-import { createNewGameStore } from "./stores/game-store";
+import { getGameStore, getNewGameStore } from "./stores/game-store";
+import { getAllIcons, PlayerToDisplay } from "~/components/game/Player";
+import ProfileSelection, { ProfileData } from "~/components/game/profile/ProfileSelection";
+import PlayerList from "~/components/game/phases/shared/player-list/PlayerList";
+import { toPayloadToServer, createNewMessageToServer } from "shared";
+import { LeaderboardsEmphasized } from "~/components/game/phases/leaderboards/leaderboards";
+import SongPicker from "~/components/game/phases/picking/components/song-picker/SongPicker";
+import Timer from "~/components/game/phases/picking/components/timer/Timer";
+import WordToGuess from "~/components/game/WordToGuess";
 
 const dummy_players: PlayerToDisplay[] = [
   {
@@ -116,7 +100,7 @@ const dummySongImage = "/2000x2000bb.jpg";
 
 export default function Lobby() {
   const { connect, disconnect, send } = useWebsockets();
-  const [gameStore, { resetPlayerChecks }] = createNewGameStore();
+  const [gameStore, { resetPlayerChecks }] = getGameStore();
 
   const params = useParams();
   const navigate = useNavigate();
@@ -143,11 +127,12 @@ export default function Lobby() {
       navigate(`/lobby/${newLobbyId}`, { replace: true });
     }
 
-    connect(newLobbyId, data);
+    await connect(newLobbyId, data);
+    console.log("SELECTED");
   }
 
   // const onNextRoundStartButtonClick = () => {
-  //   if (!thisPlayerIds()?.private) return;
+  //   if (!gameStore.thisPlayerIds.private) return;
 
   //   ctx?.connection.ws?.send(
   //     toPayloadToServer(
@@ -182,21 +167,21 @@ export default function Lobby() {
   //   );
   // };
 
-  // const handleSongSelection = (selectedSong: ItunesSong) => {
-  //   if (!thisPlayerIds()?.private) return;
+  const handleSongSelection = (selectedSong: ItunesSong) => {
+    if (!gameStore.thisPlayerIds.private) return;
 
-  //   ctx?.connection.ws?.send(
-  //     toPayloadToServer(
-  //       thisPlayerIds()!.private,
-  //       createNewMessageToServer(lobbyId(), "PICK_SONG", {
-  //         name: selectedSong.trackName,
-  //         artist: selectedSong.artistName,
-  //         trackUrl: selectedSong.trackViewUrl,
-  //         imageUrl100x100: selectedSong.artworkUrl100,
-  //       })
-  //     )
-  //   );
-  // };
+    send?.(
+      toPayloadToServer(
+        gameStore.thisPlayerIds.private,
+        createNewMessageToServer(lobbyId(), "PICK_SONG", {
+          name: selectedSong.trackName,
+          artist: selectedSong.artistName,
+          trackUrl: selectedSong.trackViewUrl,
+          imageUrl100x100: selectedSong.artworkUrl100,
+        })
+      )
+    );
+  };
 
   return (
     <>
@@ -209,32 +194,16 @@ export default function Lobby() {
         }}
       >
         <div class="grid grid-cols-[auto,1fr,auto] gap-4 py-4 overflow-hidden">
-          <aside
-            class={`${styles.aside__scrollbar} relative flex flex-col gap-4 w-80 pr-2 overflow-x-clip h-full overflow-y-auto`}
-            style={{
-              height: "var(--custom-height)",
-              "scroll-snap-type": "y mandatory",
-            }}
-          >
-            <Show when={!!profileData()} fallback={<p>Selecting...</p>}>
-              <For each={players().toSorted((a, b) => b.points - a.points)}>
-                {(player, index) => (
-                  <PlayerDisplay
-                    maxPoints={100}
-                    player={player}
-                    isLeading={!index}
-                    previousPoints={player.previousPoints}
-                  />
-                )}
-              </For>
-            </Show>
-          </aside>
-          <Switch>
-            <Match when={gameState().state === "lobby"}>
+          {/* Player sidebar */}
+          <PlayerList shouldShow={!!profileData()} />
+          {/* ___ */}
+          {/* <Switch>
+            <Match when={gameStore.gameState.state === "lobby"}>
               <section class="grid place-content-center">
                 <p class="text-foreground/70">
-                  Currently <span class="font-bold text-foreground">{players().length}</span>{" "}
-                  players in lobby
+                  Currently{" "}
+                  <span class="font-bold text-foreground">{gameStore.players.length}</span> players
+                  in lobby
                 </p>
                 <Show
                   fallback={
@@ -242,12 +211,12 @@ export default function Lobby() {
                       Waiting for the host to start next round
                     </span>
                   }
-                  when={getLobbyHost()?.publicId === thisPlayerIds()?.public}
+                  when={getLobbyHost()?.publicId === gameStore.thisPlayerIds.public}
                 >
                   <Button
                     variant={"default"}
                     class="mb-2"
-                    disabled={players().length === 0}
+                    disabled={gameStore.players.length === 0}
                     on:click={onNextRoundStartButtonClick}
                   >
                     Start next round
@@ -294,9 +263,9 @@ export default function Lobby() {
                 handleSongSelection={handleSongSelection}
               />
             </Match>
-            <Match when={gameState().state === "guessing"}>
-              {/* <Show when={!!profileData()} fallback={<p>Selecting...</p>}> */}
-              <GuessingGamePhase
+            <Match when={gameState().state === "guessing"}> */}
+          {/* <Show when={!!profileData()} fallback={<p>Selecting...</p>}> */}
+          {/* <GuessingGamePhase
                 gameState={gameState() as GuessingGameState}
                 currentSongToGuess={currentSongToGuess()}
                 currentSongByPlayer={
@@ -304,17 +273,17 @@ export default function Lobby() {
                   getPlayerByPublicId(currentSongToGuess()!.fromPlayerByPublicId)
                 }
                 previousSongName={previousCorrectSongName()}
-              />
-              {/* </Show> */}
-            </Match>
+              /> */}
+          {/* </Show> */}
+          {/* </Match>
             <Match when={gameState().state === "leaderboard"}>
               <LeaderboardsGamePhase
                 players={players()}
                 isThisPlayerHost={getThisPlayer()?.isHost}
               />
             </Match>
-          </Switch>
-          <aside
+          </Switch> */}
+          {/* <aside
             class="h-full max-h-full w-80"
             style={{
               height: "var(--custom-height)",
@@ -327,7 +296,7 @@ export default function Lobby() {
                 disabled={currentSongToGuess()?.fromPlayerByPublicId === thisPlayerIds()?.public}
               />
             </Show>
-          </aside>
+          </aside> */}
         </div>
       </div>
     </>
