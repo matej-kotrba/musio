@@ -23,8 +23,19 @@ const getGameStoreActions = (store: GameStore, setStore: SetStoreFunction<GameSt
   } as const;
 };
 
+const getGameStoreQueries = (store: GameStore) => {
+  return {
+    getLobbyHost: () => store.players.find((player) => player.isHost),
+    getThisPlayer: () =>
+      store.players.find((player) => player.publicId === store.thisPlayerIds.public),
+    getPlayerByPublicId: (publicId: string) =>
+      store.players.find((player) => player.publicId === publicId),
+  } as const;
+};
+
 type GetGameStoreActions = ReturnType<typeof getGameStoreActions>;
-type GetNewGameStoreReturnType = readonly [GameStore, GetGameStoreActions];
+type GetGameStoreQueries = ReturnType<typeof getGameStoreQueries>;
+type GetNewGameStoreReturnType = readonly [GameStore, GetGameStoreActions, GetGameStoreQueries];
 
 export function getNewGameStore(): GetNewGameStoreReturnType {
   const [store, setStore] = createStore<GameStore>({
@@ -36,7 +47,7 @@ export function getNewGameStore(): GetNewGameStoreReturnType {
     didPick: false,
   });
 
-  return [store, getGameStoreActions(store, setStore)] as const;
+  return [store, getGameStoreActions(store, setStore), getGameStoreQueries(store)] as const;
 }
 
 const GameStoreContext = createContext<GetNewGameStoreReturnType>(getNewGameStore());

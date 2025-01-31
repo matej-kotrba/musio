@@ -105,19 +105,12 @@ export default function Lobby() {
 
   const params = useParams();
   const navigate = useNavigate();
-  const copyToClipboard = useCopyToClipboard();
 
   // const ctx = useContext(WsConnectionContext);
 
   const [profileData, setProfileData] = createSignal<ProfileData | null>(null);
 
   const lobbyId = () => params.id;
-
-  const getLobbyHost = () => gameStore.players.find((player) => player.isHost);
-  const getThisPlayer = () =>
-    gameStore.players.find((player) => player.publicId === gameStore.thisPlayerIds.public);
-  const getPlayerByPublicId = (publicId: string) =>
-    gameStore.players.find((player) => player.publicId === publicId);
 
   onCleanup(() => disconnect());
 
@@ -130,17 +123,6 @@ export default function Lobby() {
 
     await connect(newLobbyId, data);
   }
-
-  // const onNextRoundStartButtonClick = () => {
-  //   if (!gameStore.thisPlayerIds.private) return;
-
-  //   ctx?.connection.ws?.send(
-  //     toPayloadToServer(
-  //       thisPlayerIds()!.private,
-  //       createNewMessageToServer(lobbyId(), "START_GAME", {})
-  //     )
-  //   );
-  // };
 
   // const handleChatMessage = (content: string) => {
   //   if (!thisPlayerIds()?.public || !getThisPlayer()) return;
@@ -199,61 +181,7 @@ export default function Lobby() {
           {/* ___ */}
           {/* <Switch>
             <Match when={gameStore.gameState.state === "lobby"}>
-              <section class="grid place-content-center">
-                <p class="text-foreground/70">
-                  Currently{" "}
-                  <span class="font-bold text-foreground">{gameStore.players.length}</span> players
-                  in lobby
-                </p>
-                <Show
-                  fallback={
-                    <span class="text-lg font-semibold">
-                      Waiting for the host to start next round
-                    </span>
-                  }
-                  when={getLobbyHost()?.publicId === gameStore.thisPlayerIds.public}
-                >
-                  <Button
-                    variant={"default"}
-                    class="mb-2"
-                    disabled={gameStore.players.length === 0}
-                    on:click={onNextRoundStartButtonClick}
-                  >
-                    Start next round
-                  </Button>
-                  <div class="flex gap-1 mb-4">
-                    <TextFieldRoot class="w-full">
-                      <TextField
-                        type="text"
-                        name="lobbyId"
-                        autocomplete="off"
-                        readOnly
-                        value={lobbyId()}
-                        class="text-center uppercase font-bold tracking-wider"
-                      />
-                    </TextFieldRoot>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <Button
-                          type="button"
-                          variant={"outline"}
-                          on:click={() => copyToClipboard(window.location.href)}
-                        >
-                          <Icon
-                            icon="solar:copy-bold-duotone"
-                            class="text-2xl py-1 text-foreground"
-                          />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Copy URL</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                </Show>
-
-                <img src="/svgs/waiting.svg" alt="" class="w-80 aspect-[2/3]" />
-              </section>
+              
             </Match>
             <Match when={gameState().state === "picking"}>
               <PickingGamePhase
