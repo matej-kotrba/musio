@@ -16,8 +16,8 @@ import { useCopyToClipboard } from "~/hooks";
 import { Icon } from "@iconify-icon/solid";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
 import TextBouncy from "~/components/ui/fancy/text-bouncy";
-import useWebsockets from "./services/websockets-service";
-import { getGameStore, getNewGameStore } from "./stores/game-store";
+import useWebsocket from "./services/websockets-service";
+import { useGameStore, getNewGameStore } from "./stores/game-store";
 import { getAllIcons, PlayerToDisplay } from "~/components/game/Player";
 import ProfileSelection, { ProfileData } from "~/components/game/profile/ProfileSelection";
 import PlayerList from "~/components/game/phases/shared/player-list/PlayerList";
@@ -99,8 +99,8 @@ const dummySongName = ["R", null, null, null, " ", null, null, "t", null, null, 
 const dummySongImage = "/2000x2000bb.jpg";
 
 export default function Lobby() {
-  const { connect, disconnect, send } = useWebsockets();
-  const [gameStore, { resetPlayerChecks }] = getGameStore();
+  const { connect, disconnect, send } = useWebsocket();
+  const [gameStore, { resetPlayerChecks }] = useGameStore();
 
   const params = useParams();
   const navigate = useNavigate();
@@ -128,7 +128,6 @@ export default function Lobby() {
     }
 
     await connect(newLobbyId, data);
-    console.log("SELECTED");
   }
 
   // const onNextRoundStartButtonClick = () => {

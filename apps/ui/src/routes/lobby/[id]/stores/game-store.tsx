@@ -16,6 +16,7 @@ export type GameStore = {
 
 const getGameStoreActions = (store: GameStore, setStore: SetStoreFunction<GameStore>) => {
   return {
+    setGameStore: setStore,
     resetPlayerChecks() {
       setStore("didPick", false);
     },
@@ -51,4 +52,4 @@ export function GameStoreProvider(props: GameStoreProviderProps) {
   );
 }
 
-export const getGameStore = () => useContext(GameStoreContext);
+export const useGameStore = () => useContext(GameStoreContext);

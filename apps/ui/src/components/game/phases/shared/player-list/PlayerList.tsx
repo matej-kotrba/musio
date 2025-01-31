@@ -1,14 +1,14 @@
 import { For, Show } from "solid-js";
 import styles from "./index.module.css";
 import PlayerDisplay from "~/components/game/Player";
-import { getGameStore } from "~/routes/lobby/[id]/stores/game-store";
+import { useGameStore } from "~/routes/lobby/[id]/stores/game-store";
 
 type Props = {
   shouldShow: boolean;
 };
 
 export default function PlayerList(props: Props) {
-  const [gameStore] = getGameStore();
+  const [gameStore] = useGameStore();
 
   return (
     <aside
