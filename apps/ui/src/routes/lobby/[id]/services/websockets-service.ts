@@ -11,7 +11,7 @@ export type WsConnection = {
   send: (data: string | ArrayBufferLike | Blob | ArrayBufferView) => void;
 };
 
-export default function useWebsocket() {
+export default function useWebsocket(onMessageHandler: (event: MessageEvent<string>) => void) {
   let ws: Maybe<WebSocket> = undefined;
 
   async function connect(lobbyId: string, data: ProfileData) {
@@ -21,9 +21,7 @@ export default function useWebsocket() {
 
     return new Promise((res) => {
       ws!.addEventListener("open", res);
-      ws!.onmessage = (event) => {
-        console.log(event.data);
-      };
+      ws!.onmessage = onMessageHandler;
     });
   }
 

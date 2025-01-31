@@ -26,6 +26,7 @@ import { LeaderboardsEmphasized } from "~/components/game/phases/leaderboards/le
 import SongPicker from "~/components/game/phases/picking/components/song-picker/SongPicker";
 import Timer from "~/components/game/phases/picking/components/timer/Timer";
 import WordToGuess from "~/components/game/WordToGuess";
+import { handleOnWsMessage } from "./services/on-message-handler";
 
 const dummy_players: PlayerToDisplay[] = [
   {
@@ -99,8 +100,8 @@ const dummySongName = ["R", null, null, null, " ", null, null, "t", null, null, 
 const dummySongImage = "/2000x2000bb.jpg";
 
 export default function Lobby() {
-  const { connect, disconnect, send } = useWebsocket();
-  const [gameStore, { resetPlayerChecks }] = useGameStore();
+  const { connect, disconnect, send } = useWebsocket(handleOnWsMessage());
+  const [gameStore] = useGameStore();
 
   const params = useParams();
   const navigate = useNavigate();
