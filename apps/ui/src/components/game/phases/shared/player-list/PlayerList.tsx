@@ -2,6 +2,7 @@ import { For, Show } from "solid-js";
 import styles from "./index.module.css";
 import PlayerDisplay from "~/components/game/Player";
 import { useGameStore } from "~/routes/lobby/[id]/stores/game-store";
+import { TransitionGroup } from "solid-transition-group";
 
 type Props = {
   shouldShow: boolean;
@@ -19,16 +20,20 @@ export default function PlayerList(props: Props) {
       }}
     >
       <Show when={props.shouldShow} fallback={<p>Selecting...</p>}>
-        <For each={gameStore.players.toSorted((a, b) => b.points - a.points)}>
-          {(player, index) => (
-            <PlayerDisplay
-              maxPoints={100}
-              player={player}
-              isLeading={!index()}
-              previousPoints={player.previousPoints}
-            />
-          )}
-        </For>
+        <TransitionGroup name="player-sidebar">
+          <For each={gameStore.players.toSorted((a, b) => b.points - a.points)}>
+            {(player, index) => (
+              <div class="duration-200">
+                <PlayerDisplay
+                  maxPoints={100}
+                  player={player}
+                  isLeading={!index()}
+                  previousPoints={player.previousPoints}
+                />
+              </div>
+            )}
+          </For>
+        </TransitionGroup>
       </Show>
     </aside>
   );
