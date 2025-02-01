@@ -91,9 +91,13 @@ function PlayerOnTopThree(props: PlayerComponentProps) {
         transition={{ duration: 1.5, delay: 0.5, easing: "ease" }}
       >
         <p
-          class={`h-full w-full text-ellipsis whitespace-nowrap overflow-hidden text-lg font-bold`}
+          class={`h-full w-full min-w-[28px] text-ellipsis whitespace-nowrap overflow-hidden text-lg font-bold`}
           style={{
             "writing-mode": "vertical-lr",
+            "-webkit-writing-mode": "vertical-lr",
+            "-ms-writing-mode": "vertical-lr",
+            "text-orientation": "mixed",
+            "-webkit-text-orientation": "mixed",
             mask: "linear-gradient(to bottom, black, transparent 120%)",
           }}
           title={props.player.name}

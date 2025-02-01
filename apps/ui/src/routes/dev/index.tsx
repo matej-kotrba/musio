@@ -1,6 +1,7 @@
 import { Player } from "shared";
 import { createEffect, createSignal, For } from "solid-js";
 import { createStore } from "solid-js/store";
+import { LeaderboardsEmphasized } from "~/components/game/phases/leaderboards/components/leaderboards";
 import PlayerDisplay, { getAllIcons } from "~/components/game/Player";
 
 const dummy_players: Player[] = [
@@ -78,7 +79,8 @@ export default function Dev() {
 
   return (
     <div class="w-72 mx-auto flex flex-col gap-2">
-      <For each={players}>
+      <LeaderboardsEmphasized players={dummy_players} />
+      {/* <For each={players}>
         {(item, index) => (
           <>
             <button on:click={() => add(item.publicId)} type="button">
@@ -92,7 +94,7 @@ export default function Dev() {
             />
           </>
         )}
-      </For>
+      </For> */}
     </div>
   );
 }
