@@ -1,28 +1,33 @@
+import { createEffect, createSignal } from "solid-js";
 import { ProfileData } from "~/components/game/profile/ProfileSelection";
 
 export default function useWebsocket(onMessageHandler: (event: MessageEvent<string>) => void) {
-  let ws: Maybe<WebSocket> = undefined;
+  const [ws, setWs] = createSignal<Maybe<WebSocket>>(undefined);
 
   async function connect(lobbyId: string, data: ProfileData) {
-    ws = new WebSocket(
+    const newWs = new WebSocket(
       `ws://localhost:5173/ws?lobbyId=${lobbyId}&name=${data.name}&icon=${data.icon}`
     );
 
     return new Promise((res) => {
-      ws!.addEventListener("open", res);
-      ws!.onmessage = onMessageHandler;
+      newWs.addEventListener("open", () => {
+        setWs(newWs);
+        res("");
+      });
+      newWs.onmessage = onMessageHandler;
     });
   }
 
   function disconnect() {
-    ws?.close();
+    ws()?.close();
   }
 
   return {
     connect,
     disconnect,
+    isConnected: () => ws()?.readyState === WebSocket.OPEN,
     get send() {
-      return ws?.send;
+      return ws()?.send.bind(ws());
     },
   };
   // const wsConnection: Maybe<WsConnection> = {

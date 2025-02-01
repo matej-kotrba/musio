@@ -1,4 +1,12 @@
-import { createSignal, Show, Switch, Match, onCleanup, createUniqueId } from "solid-js";
+import {
+  createSignal,
+  Show,
+  Switch,
+  Match,
+  onCleanup,
+  createUniqueId,
+  createEffect,
+} from "solid-js";
 import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
 import { useParams, useNavigate } from "@solidjs/router";
 import { getLobbyURL as getLobbyId } from "~/utils/rscs";
@@ -88,7 +96,7 @@ const dummySongName = ["R", null, null, null, " ", null, null, "t", null, null, 
 const dummySongImage = "/2000x2000bb.jpg";
 
 export default function Lobby() {
-  const { connect, disconnect, send } = useWebsocket(handleOnWsMessage());
+  const ws = useWebsocket(handleOnWsMessage());
   const [gameStore, { actions, queries }] = useGameStore();
   const { getThisPlayer } = queries;
   const { setGameStore } = actions;
@@ -98,11 +106,15 @@ export default function Lobby() {
 
   // const ctx = useContext(WsConnectionContext);
 
+  createEffect(() => {
+    console.log("ws", ws.isConnected(), ws.send);
+  });
+
   const [profileData, setProfileData] = createSignal<ProfileData | null>(null);
 
   const getLobbyIdFromParams = () => params.id;
 
-  onCleanup(() => disconnect());
+  onCleanup(() => ws.disconnect());
 
   async function handleProfileSelected(data: ProfileData) {
     setProfileData(data);
@@ -112,7 +124,7 @@ export default function Lobby() {
     }
 
     setGameStore("lobbyId", newLobbyId);
-    await connect(newLobbyId, data);
+    await ws.connect(newLobbyId, data);
   }
 
   const handleChatMessage = (content: string) => {
@@ -129,7 +141,7 @@ export default function Lobby() {
     // Optimistically update messages
     setGameStore("chatMessages", gameStore.chatMessages.length, newMessage);
 
-    send?.(
+    ws.send?.(
       toPayloadToServer(
         gameStore.thisPlayerIds.private,
         createNewMessageToServer(gameStore.lobbyId, "CHAT_MESSAGE", {
@@ -144,7 +156,7 @@ export default function Lobby() {
     gameStore.currentSongToGuess?.fromPlayerByPublicId === gameStore.thisPlayerIds?.public;
 
   return (
-    <WsConnectionProvider wsConnection={{ send }}>
+    <WsConnectionProvider wsConnection={ws}>
       <ProfileSelection onProfileSelected={handleProfileSelected} />
       <div
         class="relative"

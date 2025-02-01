@@ -1,6 +1,6 @@
 import { Icon } from "@iconify-icon/solid";
 import { toPayloadToServer, createNewMessageToServer } from "shared";
-import { Show } from "solid-js";
+import { createEffect, Show } from "solid-js";
 import { Button } from "~/components/ui/button";
 import { TextField, TextFieldRoot } from "~/components/ui/textfield";
 import { TooltipTrigger, TooltipContent, Tooltip } from "~/components/ui/tooltip";
@@ -11,14 +11,19 @@ import { useGameStore } from "~/routes/lobby/[id]/stores/game-store";
 export default function LobbyPhase() {
   const [gameStore, { queries }] = useGameStore();
   const { getLobbyHost } = queries;
-  const { send } = useWsConnection();
+  const ws = useWsConnection();
+
+  createEffect(() => {
+    console.log("lobby ws", ws, ws.send);
+  });
 
   const copyToClipboard = useCopyToClipboard();
 
   const onNextRoundStartButtonClick = () => {
     if (!gameStore.thisPlayerIds?.private) return;
+    console.log("SEND", ws.send);
 
-    send?.(
+    ws.send?.(
       toPayloadToServer(
         gameStore.thisPlayerIds.private,
         createNewMessageToServer(gameStore.lobbyId, "START_GAME", {})
