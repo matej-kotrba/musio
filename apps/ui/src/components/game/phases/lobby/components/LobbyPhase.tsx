@@ -8,7 +8,7 @@ import { useWsConnection } from "~/contexts/wsConnection";
 import { useCopyToClipboard } from "~/hooks";
 import { useGameStore } from "~/routes/lobby/[id]/stores/game-store";
 
-export default function WaitingLobby() {
+export default function LobbyPhase() {
   const [gameStore, { queries }] = useGameStore();
   const { getLobbyHost } = queries;
   const { send } = useWsConnection();
@@ -16,7 +16,7 @@ export default function WaitingLobby() {
   const copyToClipboard = useCopyToClipboard();
 
   const onNextRoundStartButtonClick = () => {
-    if (!gameStore.thisPlayerIds.private) return;
+    if (!gameStore.thisPlayerIds?.private) return;
 
     send?.(
       toPayloadToServer(
@@ -36,7 +36,7 @@ export default function WaitingLobby() {
         fallback={
           <span class="text-lg font-semibold">Waiting for the host to start next round</span>
         }
-        when={getLobbyHost()?.publicId === gameStore.thisPlayerIds.public}
+        when={getLobbyHost()?.publicId === gameStore.thisPlayerIds?.public}
       >
         <Button
           variant={"default"}

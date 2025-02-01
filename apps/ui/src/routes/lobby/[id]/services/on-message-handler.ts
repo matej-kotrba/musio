@@ -52,7 +52,7 @@ export const handleOnWsMessage = () => {
         //   old.map((player) => ({ ...player, isChecked: player.publicId === data.publicId }))
         // );
 
-        if (gameStore.thisPlayerIds.public === data.publicId) {
+        if (gameStore.thisPlayerIds?.public === data.publicId) {
           setGameStore("didPick", true);
         }
 

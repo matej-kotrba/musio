@@ -19,6 +19,8 @@ export default function PickingPhase() {
   const { send } = useWsConnection();
 
   const handleSongSelection = (selectedSong: ItunesSong) => {
+    if (!gameStore.thisPlayerIds) return;
+
     send?.(
       toPayloadToServer(
         gameStore.thisPlayerIds.private,

@@ -1,15 +1,11 @@
 export const getServerURL = () => {
-  return process.env.NODE_ENV === "production"
-    ? "https://example.com"
-    : "http://localhost:5173";
+  return process.env.NODE_ENV === "production" ? "https://example.com" : "http://localhost:5173";
 };
 
 export const getUiURL = () => {
-  return process.env.NODE_ENV === "production"
-    ? "https://example.com"
-    : "http://localhost:3000";
+  return process.env.NODE_ENV === "production" ? "https://example.com" : "http://localhost:3000";
 };
 
-export const construstURL = (...path: string[]) => {
+export const constructURL = (...path: string[]) => {
   return path.join("/");
 };

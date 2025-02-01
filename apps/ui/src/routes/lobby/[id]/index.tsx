@@ -1,36 +1,20 @@
-import { createSignal, Show, Switch, Match, createEffect, onCleanup } from "solid-js";
+import { createSignal, Show, Switch, Match, onCleanup, createUniqueId } from "solid-js";
 import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
 import { useParams, useNavigate } from "@solidjs/router";
 import { getLobbyURL as getLobbyId } from "~/utils/rscs";
-import {
-  GuessingGameState,
-  ItunesSong,
-  PickingGameState,
-  Player,
-  Song,
-  SongWithNameHidden,
-} from "shared/index.types";
-import { Button } from "~/components/ui/button";
-import { TextField, TextFieldRoot } from "~/components/ui/textfield";
-import { useCopyToClipboard } from "~/hooks";
-import { Icon } from "@iconify-icon/solid";
-import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
-import TextBouncy from "~/components/ui/fancy/text-bouncy";
 import useWebsocket from "./services/websockets-service";
-import { useGameStore, getNewGameStore } from "./stores/game-store";
+import { useGameStore } from "./stores/game-store";
 import { getAllIcons, PlayerToDisplay } from "~/components/game/Player";
 import ProfileSelection, { ProfileData } from "~/components/game/profile/ProfileSelection";
 import PlayerList from "~/components/game/phases/shared/player-list/PlayerList";
-import { toPayloadToServer, createNewMessageToServer } from "shared";
-import { LeaderboardsEmphasized } from "~/components/game/phases/leaderboards/components/leaderboards";
-import SongPicker from "~/components/game/phases/picking/components/song-picker/SongPicker";
-import Timer from "~/components/game/phases/picking/components/timer/Timer";
-import WordToGuess from "~/components/game/WordToGuess";
 import { handleOnWsMessage } from "./services/on-message-handler";
 import { WsConnectionProvider } from "~/contexts/wsConnection";
-import WaitingLobby from "~/components/game/phases/lobby/components/WaitingLobby";
 import PickingPhase from "~/components/game/phases/picking/components/PickingPhase";
 import GuessingGamePhase from "~/components/game/phases/guessing/components/GuessingPhase";
+import LobbyPhase from "~/components/game/phases/lobby/components/LobbyPhase";
+import LeaderboardsGamePhase from "~/components/game/phases/leaderboards/components/LeaderboardsPhase";
+import Chat from "~/components/game/chat/Chat";
+import { ChatMessage, createNewMessageToServer, toPayloadToServer } from "shared";
 
 const dummy_players: PlayerToDisplay[] = [
   {
@@ -105,7 +89,8 @@ const dummySongImage = "/2000x2000bb.jpg";
 
 export default function Lobby() {
   const { connect, disconnect, send } = useWebsocket(handleOnWsMessage());
-  const [gameStore, { actions }] = useGameStore();
+  const [gameStore, { actions, queries }] = useGameStore();
+  const { getThisPlayer } = queries;
   const { setGameStore } = actions;
 
   const params = useParams();
@@ -115,14 +100,14 @@ export default function Lobby() {
 
   const [profileData, setProfileData] = createSignal<ProfileData | null>(null);
 
-  const lobbyId = () => params.id;
+  const getLobbyIdFromParams = () => params.id;
 
   onCleanup(() => disconnect());
 
   async function handleProfileSelected(data: ProfileData) {
     setProfileData(data);
-    const newLobbyId = await getLobbyId(lobbyId());
-    if (newLobbyId !== lobbyId()) {
+    const newLobbyId = await getLobbyId(getLobbyIdFromParams());
+    if (newLobbyId !== getLobbyIdFromParams()) {
       navigate(`/lobby/${newLobbyId}`, { replace: true });
     }
 
@@ -130,30 +115,33 @@ export default function Lobby() {
     await connect(newLobbyId, data);
   }
 
-  // const handleChatMessage = (content: string) => {
-  //   if (!thisPlayerIds()?.public || !getThisPlayer()) return;
+  const handleChatMessage = (content: string) => {
+    if (!gameStore.thisPlayerIds?.public || !getThisPlayer()) return;
 
-  //   const newMessage: ChatMessage = {
-  //     id: createUniqueId(),
-  //     content: content,
-  //     guessRelation: false,
-  //     senderName: getThisPlayer()!.name,
-  //     isOptimistic: true,
-  //   };
+    const newMessage: ChatMessage = {
+      id: createUniqueId(),
+      content: content,
+      guessRelation: false,
+      senderName: getThisPlayer()!.name,
+      isOptimistic: true,
+    };
 
-  //   // Optimistically update messages
-  //   setChatMessages((old) => [...old, newMessage]);
+    // Optimistically update messages
+    setGameStore("chatMessages", gameStore.chatMessages.length, newMessage);
 
-  //   ctx?.connection.ws?.send(
-  //     toPayloadToServer(
-  //       thisPlayerIds()!.private,
-  //       createNewMessageToServer(lobbyId(), "CHAT_MESSAGE", {
-  //         messageId: newMessage.id!,
-  //         content,
-  //       })
-  //     )
-  //   );
-  // };
+    send?.(
+      toPayloadToServer(
+        gameStore.thisPlayerIds.private,
+        createNewMessageToServer(gameStore.lobbyId, "CHAT_MESSAGE", {
+          messageId: newMessage.id!,
+          content,
+        })
+      )
+    );
+  };
+
+  const isSongToGuessFromThisPlayer = () =>
+    gameStore.currentSongToGuess?.fromPlayerByPublicId === gameStore.thisPlayerIds?.public;
 
   return (
     <WsConnectionProvider wsConnection={{ send }}>
@@ -171,7 +159,7 @@ export default function Lobby() {
           {/* ___ */}
           <Switch>
             <Match when={gameStore.gameState.state === "lobby"}>
-              <WaitingLobby />
+              <LobbyPhase />
             </Match>
             <Match when={gameStore.gameState.state === "picking"}>
               <PickingPhase />
@@ -179,11 +167,8 @@ export default function Lobby() {
             <Match when={gameStore.gameState.state === "guessing"}>
               <GuessingGamePhase />
             </Match>
-            <Match when={gameState().state === "leaderboard"}>
-              <LeaderboardsGamePhase
-                players={players()}
-                isThisPlayerHost={getThisPlayer()?.isHost}
-              />
+            <Match when={gameStore.gameState.state === "leaderboard"}>
+              <LeaderboardsGamePhase />
             </Match>
           </Switch>
           <aside
@@ -194,9 +179,9 @@ export default function Lobby() {
           >
             <Show when={!!profileData()} fallback={<p>Selecting...</p>}>
               <Chat
-                messages={chatMessages()}
+                messages={gameStore.chatMessages}
                 onChatMessage={handleChatMessage}
-                disabled={currentSongToGuess()?.fromPlayerByPublicId === thisPlayerIds()?.public}
+                disabled={isSongToGuessFromThisPlayer()}
               />
             </Show>
           </aside>

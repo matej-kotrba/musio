@@ -7,7 +7,7 @@ export type GameStore = {
   lobbyId: string;
   players: PlayerToDisplay[];
   chatMessages: ChatMessage[];
-  thisPlayerIds: { public: string; private: string };
+  thisPlayerIds?: { public: string; private: string };
   gameState: GameState;
 
   didPick: boolean;
@@ -28,7 +28,7 @@ const getGameStoreQueries = (store: GameStore) => {
   return {
     getLobbyHost: () => store.players.find((player) => player.isHost),
     getThisPlayer: () =>
-      store.players.find((player) => player.publicId === store.thisPlayerIds.public),
+      store.players.find((player) => player.publicId === store.thisPlayerIds?.public),
     getPlayerByPublicId: (publicId: string) =>
       store.players.find((player) => player.publicId === publicId),
   } as const;
@@ -46,7 +46,6 @@ export function getNewGameStore(): GetNewGameStoreReturnType {
     lobbyId: "",
     players: [],
     chatMessages: [],
-    thisPlayerIds: { public: "", private: "" },
     gameState: { state: "lobby" },
 
     didPick: false,
