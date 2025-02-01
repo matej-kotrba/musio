@@ -31,6 +31,10 @@ export default function PlayerDisplay(props: Props) {
     return (props.player.points / props.maxPoints) * 100;
   }
 
+  createEffect(() => {
+    console.log("previousPoints", props.previousPoints);
+  });
+
   return (
     <>
       <div class="relative flex gap-2 snap-start">
@@ -78,15 +82,18 @@ export default function PlayerDisplay(props: Props) {
               ></div>
             </div>
           </div>
-          <Show when={props.previousPoints !== undefined} keyed>
-            <Motion.div
-              initial={{ opacity: 1 }}
-              animate={{ opacity: 0, x: 50 }}
-              transition={{ duration: 3 }}
-              class="absolute bottom-0 left-1/2 -translate-x-1/2"
-            >
-              <span class="text-green-600">+{props.player.points - props.previousPoints!}</span>
-            </Motion.div>
+          <Show when={props.previousPoints !== undefined}>
+            {/* +1 is needed because zero is interpreted as false so it wont display */}
+            <Show when={props.previousPoints! + 1} keyed>
+              <Motion.div
+                initial={{ opacity: 1 }}
+                animate={{ opacity: 0, x: 50 }}
+                transition={{ duration: 3 }}
+                class="absolute bottom-0 left-1/2 -translate-x-1/2"
+              >
+                <span class="text-green-600">+{props.player.points - props.previousPoints!}</span>
+              </Motion.div>
+            </Show>
           </Show>
         </div>
       </div>

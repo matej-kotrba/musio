@@ -150,10 +150,10 @@ export const handleOnWsMessage = () => {
         setGameStore(
           "players",
           (player) => player.publicId === data.publicId,
-          "points",
-          (old) => {
-            return old + payload.newPoints;
-          }
+          produce((player) => {
+            player.previousPoints = player.points;
+            player.points = player.points + payload.newPoints;
+          })
         );
         // setPlayers((old) =>
         //   old.map((player) => {

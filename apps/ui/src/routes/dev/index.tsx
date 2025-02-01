@@ -1,16 +1,14 @@
 import { Player } from "shared";
 import { createEffect, createSignal, For } from "solid-js";
 import { createStore } from "solid-js/store";
-import { LeaderboardsEmphasized } from "~/components/lobby/game-phases/leaderboards/leaderboards";
-import SongPicker from "~/components/lobby/game-phases/picking-phase/components/song-picker/SongPicker";
-import PlayerDisplay, { getAllIcons } from "~/components/lobby/Player";
+import PlayerDisplay, { getAllIcons } from "~/components/game/Player";
 
 const dummy_players: Player[] = [
   {
     name: "Player 1",
     icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
     isHost: true,
-    points: 120,
+    points: 0,
     publicId: "a",
   },
   {
@@ -75,7 +73,7 @@ export default function Dev() {
 
   function add(publicId: string) {
     const idx = players.findIndex((player) => player.publicId === publicId);
-    setPlayers(idx, { previousPoints: players[idx].points, points: players[idx].points + 10 });
+    setPlayers(idx, { previousPoints: players[idx].points, points: players[idx].points + 1 });
   }
 
   return (

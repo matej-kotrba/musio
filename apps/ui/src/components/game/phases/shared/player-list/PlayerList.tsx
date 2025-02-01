@@ -24,7 +24,7 @@ export default function PlayerList(props: Props) {
             <PlayerDisplay
               maxPoints={100}
               player={player}
-              isLeading={!index}
+              isLeading={!index()}
               previousPoints={player.previousPoints}
             />
           )}
