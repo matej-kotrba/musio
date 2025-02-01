@@ -22,7 +22,7 @@ import { getAllIcons, PlayerToDisplay } from "~/components/game/Player";
 import ProfileSelection, { ProfileData } from "~/components/game/profile/ProfileSelection";
 import PlayerList from "~/components/game/phases/shared/player-list/PlayerList";
 import { toPayloadToServer, createNewMessageToServer } from "shared";
-import { LeaderboardsEmphasized } from "~/components/game/phases/leaderboards/leaderboards";
+import { LeaderboardsEmphasized } from "~/components/game/phases/leaderboards/components/leaderboards";
 import SongPicker from "~/components/game/phases/picking/components/song-picker/SongPicker";
 import Timer from "~/components/game/phases/picking/components/timer/Timer";
 import WordToGuess from "~/components/game/WordToGuess";
@@ -30,6 +30,7 @@ import { handleOnWsMessage } from "./services/on-message-handler";
 import { WsConnectionProvider } from "~/contexts/wsConnection";
 import WaitingLobby from "~/components/game/phases/lobby/components/WaitingLobby";
 import PickingPhase from "~/components/game/phases/picking/components/PickingPhase";
+import GuessingGamePhase from "~/components/game/phases/guessing/components/GuessingPhase";
 
 const dummy_players: PlayerToDisplay[] = [
   {
@@ -175,18 +176,8 @@ export default function Lobby() {
             <Match when={gameStore.gameState.state === "picking"}>
               <PickingPhase />
             </Match>
-            <Match when={gameState().state === "guessing"}>
-              <Show when={!!profileData()} fallback={<p>Selecting...</p>}>
-                <GuessingGamePhase
-                  gameState={gameState() as GuessingGameState}
-                  currentSongToGuess={currentSongToGuess()}
-                  currentSongByPlayer={
-                    currentSongToGuess() &&
-                    getPlayerByPublicId(currentSongToGuess()!.fromPlayerByPublicId)
-                  }
-                  previousSongName={previousCorrectSongName()}
-                />
-              </Show>
+            <Match when={gameStore.gameState.state === "guessing"}>
+              <GuessingGamePhase />
             </Match>
             <Match when={gameState().state === "leaderboard"}>
               <LeaderboardsGamePhase
@@ -212,139 +203,6 @@ export default function Lobby() {
         </div>
       </div>
     </WsConnectionProvider>
-  );
-}
-
-type GuessingGamePhaseProps = {
-  gameState: GuessingGameState;
-  currentSongByPlayer?: Player;
-  currentSongToGuess?: SongWithNameHidden;
-  previousSongName?: string;
-};
-
-function GuessingGamePhase(props: GuessingGamePhaseProps) {
-  const [blurRatio, setBlurRatio] = createSignal<number>(
-    props.gameState.currentInitialTimeRemaining / props.gameState.initialTimeRemaining
-  );
-  const [previousSong, setPreviousSong] = createSignal<Maybe<SongWithNameHidden>>(
-    props.currentSongToGuess
-  );
-
-  const getPreviousSong: () => Maybe<Pick<Song, "name" | "artist">> = () =>
-    props.previousSongName && previousSong()
-      ? { name: props.previousSongName, artist: previousSong()!.artist }
-      : undefined;
-
-  function handleTimeChange(current: number) {
-    const base = current / props.gameState.initialTimeRemaining;
-    const pow = base ** 2;
-    setBlurRatio(base + (base - pow));
-  }
-
-  createEffect(() => {
-    if (props.currentSongToGuess) {
-      setPreviousSong(props.currentSongToGuess);
-    }
-  });
-
-  return (
-    <>
-      <div class="flex flex-col items-center gap-2">
-        <Timer
-          maxTime={
-            props.currentSongToGuess
-              ? props.gameState.initialTimeRemaining
-              : props.gameState.initialDelay
-          }
-          currentTime={
-            props.currentSongToGuess
-              ? props.gameState.initialTimeRemaining
-              : props.gameState.initialDelay
-          }
-          onTimeChange={handleTimeChange}
-        />
-        <Show
-          when={props.currentSongToGuess}
-          fallback={<GuessingGameLeaderboardsFallback prevSong={getPreviousSong()} />}
-        >
-          <section class="flex flex-col items-center">
-            <p class="text-xl mb-6">
-              <span class="text-foreground/35">Guess the song from</span>{" "}
-              <span class="font-semibold text-foreground/80">
-                {props.currentSongByPlayer?.name ?? "Unknown"}
-              </span>
-            </p>
-            <div
-              class={`animate-levitate mb-4 relative`}
-              style={{ filter: `blur(calc(12px * ${blurRatio()}))` }}
-            >
-              <div class="absolute shadow-[inset_0_0_40px_rgba(0,0,0,0.8),0_0_20px_rgba(0,0,0,0.3)] inset-0 rounded-md"></div>
-              <img
-                src={props.currentSongToGuess!.imageUrl100x100}
-                width={256}
-                height={256}
-                alt="Song to guess cover"
-                class="w-64 aspect-square rounded-md"
-              />
-            </div>
-            <WordToGuess wordChars={props.currentSongToGuess!.name} />
-          </section>
-        </Show>
-      </div>
-    </>
-  );
-}
-
-type GuessingGameLeaderboardsProps = {
-  prevSong: Maybe<Pick<Song, "name" | "artist">>;
-};
-
-function GuessingGameLeaderboardsFallback(props: GuessingGameLeaderboardsProps) {
-  // let ref!: HTMLDivElement;
-  // const [heightTopOffsetCSS, setHeightTopOffsetCSS] = createSignal<string>("");
-
-  // createEffect(() => {
-  //   if (!ref) return;
-  //   const rect = ref.getBoundingClientRect();
-  //   setHeightTopOffsetCSS(`${rect.top}px + ${NAV_HEIGHT}`);
-  //   console.log(`${rect.top}px + ${NAV_HEIGHT}`);
-  // });
-
-  return (
-    <div class="max-w-96">
-      <div class="font-bold text-lg text-foreground text-center mb-2">
-        {props.prevSong ? "Next round starting soon..." : "Get ready, starting soon..."}
-      </div>
-      <Show when={props.prevSong}>
-        <div class="text-foreground/80 text-center">
-          <span>Last song: </span>
-          <span class="font-bold text-foreground">{props.prevSong?.name}</span>
-          <span> by </span>
-          <span class="font-bold text-foreground">{props.prevSong?.artist}</span>
-        </div>
-      </Show>
-    </div>
-  );
-}
-
-type LeaderboardsGamePhaseProps = {
-  players: Player[];
-  isThisPlayerHost?: boolean;
-};
-
-function LeaderboardsGamePhase(props: LeaderboardsGamePhaseProps) {
-  return (
-    <>
-      <div class="px-2 mt-8">
-        <Show when={props.isThisPlayerHost || true}>
-          <Button class="ml-auto flex items-center gap-1">
-            <span class="font-bold">Next round</span>{" "}
-            <Icon icon="mingcute:repeat-fill" class="text-xl" />
-          </Button>
-        </Show>
-        <LeaderboardsEmphasized players={props.players} />
-      </div>
-    </>
   );
 }
 

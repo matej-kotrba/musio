@@ -11,7 +11,7 @@ export type GameStore = {
   gameState: GameState;
 
   didPick: boolean;
-  currentToGuess?: SongWithNameHidden;
+  currentSongToGuess?: SongWithNameHidden;
   previousCorrectSongName?: string;
 };
 

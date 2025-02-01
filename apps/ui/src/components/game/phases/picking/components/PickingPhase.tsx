@@ -12,15 +12,11 @@ import SongPicker from "./song-picker/SongPicker";
 import Timer from "./timer/Timer";
 import { useGameStore } from "~/routes/lobby/[id]/stores/game-store";
 import { useWsConnection } from "~/contexts/wsConnection";
+import { getGamePhaseIfValid } from "~/utils/game/common";
 
 export default function PickingPhase() {
   const [gameStore] = useGameStore();
   const { send } = useWsConnection();
-
-  function getPhaseIfPicking(gameState: GameState) {
-    if (gameState.state === "picking") return gameState as PickingGameState;
-    return false;
-  }
 
   const handleSongSelection = (selectedSong: ItunesSong) => {
     send?.(
@@ -37,7 +33,7 @@ export default function PickingPhase() {
   };
 
   return (
-    <Show when={getPhaseIfPicking(gameStore.gameState)}>
+    <Show when={getGamePhaseIfValid<PickingGameState>(gameStore.gameState, "picking")}>
       {(pickingState) => (
         <div class="flex flex-col items-center">
           <Timer
