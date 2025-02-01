@@ -1,6 +1,7 @@
 import { Player } from "shared";
 import { createEffect, createSignal, For } from "solid-js";
 import { createStore } from "solid-js/store";
+import { TransitionGroup } from "solid-transition-group";
 import { LeaderboardsEmphasized } from "~/components/game/phases/leaderboards/components/leaderboards";
 import PlayerDisplay, { getAllIcons } from "~/components/game/Player";
 
@@ -74,27 +75,30 @@ export default function Dev() {
 
   function add(publicId: string) {
     const idx = players.findIndex((player) => player.publicId === publicId);
-    setPlayers(idx, { previousPoints: players[idx].points, points: players[idx].points + 1 });
+    setPlayers(idx, { previousPoints: players[idx].points, points: players[idx].points + 10 });
+    setPlayers(players.toSorted((a, b) => b.points - a.points));
   }
 
   return (
     <div class="w-72 mx-auto flex flex-col gap-2">
-      <LeaderboardsEmphasized players={dummy_players} />
-      {/* <For each={players}>
-        {(item, index) => (
-          <>
-            <button on:click={() => add(item.publicId)} type="button">
-              Increment
-            </button>
-            <PlayerDisplay
-              maxPoints={100}
-              player={item}
-              previousPoints={item.previousPoints}
-              isLeading={!index()}
-            />
-          </>
-        )}
-      </For> */}
+      {/* <LeaderboardsEmphasized players={dummy_players} /> */}
+      <TransitionGroup name="group-item">
+        <For each={players}>
+          {(item, index) => (
+            <div class="duration-300">
+              <button on:click={() => add(item.publicId)} type="button">
+                Increment
+              </button>
+              <PlayerDisplay
+                maxPoints={100}
+                player={item}
+                previousPoints={item.previousPoints}
+                isLeading={!index()}
+              />
+            </div>
+          )}
+        </For>
+      </TransitionGroup>
     </div>
   );
 }
