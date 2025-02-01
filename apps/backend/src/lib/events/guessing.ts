@@ -8,7 +8,7 @@ import type { Lobby } from "../game/lobby";
 import { getPlayerByPrivateId, type PlayerServer } from "../game/player";
 import { getReceivedPoints as getPointsToReceive } from "../game/game-utils";
 import { getLobbiesService } from "../game/create";
-import stringSimilarity from "string-similarity-js";
+import { stringSimilarity } from "string-similarity-js";
 import { handleChatMessage } from "./all";
 import { normalizeString } from "../common/utils";
 
