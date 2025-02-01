@@ -27,6 +27,9 @@ import SongPicker from "~/components/game/phases/picking/components/song-picker/
 import Timer from "~/components/game/phases/picking/components/timer/Timer";
 import WordToGuess from "~/components/game/WordToGuess";
 import { handleOnWsMessage } from "./services/on-message-handler";
+import { WsConnectionProvider } from "~/contexts/wsConnection";
+import WaitingLobby from "~/components/game/phases/lobby/components/WaitingLobby";
+import PickingPhase from "~/components/game/phases/picking/components/PickingPhase";
 
 const dummy_players: PlayerToDisplay[] = [
   {
@@ -101,7 +104,8 @@ const dummySongImage = "/2000x2000bb.jpg";
 
 export default function Lobby() {
   const { connect, disconnect, send } = useWebsocket(handleOnWsMessage());
-  const [gameStore] = useGameStore();
+  const [gameStore, { actions }] = useGameStore();
+  const { setGameStore } = actions;
 
   const params = useParams();
   const navigate = useNavigate();
@@ -121,6 +125,7 @@ export default function Lobby() {
       navigate(`/lobby/${newLobbyId}`, { replace: true });
     }
 
+    setGameStore("lobbyId", newLobbyId);
     await connect(newLobbyId, data);
   }
 
@@ -149,24 +154,8 @@ export default function Lobby() {
   //   );
   // };
 
-  const handleSongSelection = (selectedSong: ItunesSong) => {
-    if (!gameStore.thisPlayerIds.private) return;
-
-    send?.(
-      toPayloadToServer(
-        gameStore.thisPlayerIds.private,
-        createNewMessageToServer(lobbyId(), "PICK_SONG", {
-          name: selectedSong.trackName,
-          artist: selectedSong.artistName,
-          trackUrl: selectedSong.trackViewUrl,
-          imageUrl100x100: selectedSong.artworkUrl100,
-        })
-      )
-    );
-  };
-
   return (
-    <>
+    <WsConnectionProvider wsConnection={{ send }}>
       <ProfileSelection onProfileSelected={handleProfileSelected} />
       <div
         class="relative"
@@ -179,39 +168,34 @@ export default function Lobby() {
           {/* Player sidebar */}
           <PlayerList shouldShow={!!profileData()} />
           {/* ___ */}
-          {/* <Switch>
+          <Switch>
             <Match when={gameStore.gameState.state === "lobby"}>
-              
+              <WaitingLobby />
             </Match>
-            <Match when={gameState().state === "picking"}>
-              <PickingGamePhase
-                gameState={gameState() as PickingGameState}
-                didPick={didPick()}
-                players={players()}
-                handleSongSelection={handleSongSelection}
-              />
+            <Match when={gameStore.gameState.state === "picking"}>
+              <PickingPhase />
             </Match>
-            <Match when={gameState().state === "guessing"}> */}
-          {/* <Show when={!!profileData()} fallback={<p>Selecting...</p>}> */}
-          {/* <GuessingGamePhase
-                gameState={gameState() as GuessingGameState}
-                currentSongToGuess={currentSongToGuess()}
-                currentSongByPlayer={
-                  currentSongToGuess() &&
-                  getPlayerByPublicId(currentSongToGuess()!.fromPlayerByPublicId)
-                }
-                previousSongName={previousCorrectSongName()}
-              /> */}
-          {/* </Show> */}
-          {/* </Match>
+            <Match when={gameState().state === "guessing"}>
+              <Show when={!!profileData()} fallback={<p>Selecting...</p>}>
+                <GuessingGamePhase
+                  gameState={gameState() as GuessingGameState}
+                  currentSongToGuess={currentSongToGuess()}
+                  currentSongByPlayer={
+                    currentSongToGuess() &&
+                    getPlayerByPublicId(currentSongToGuess()!.fromPlayerByPublicId)
+                  }
+                  previousSongName={previousCorrectSongName()}
+                />
+              </Show>
+            </Match>
             <Match when={gameState().state === "leaderboard"}>
               <LeaderboardsGamePhase
                 players={players()}
                 isThisPlayerHost={getThisPlayer()?.isHost}
               />
             </Match>
-          </Switch> */}
-          {/* <aside
+          </Switch>
+          <aside
             class="h-full max-h-full w-80"
             style={{
               height: "var(--custom-height)",
@@ -224,41 +208,10 @@ export default function Lobby() {
                 disabled={currentSongToGuess()?.fromPlayerByPublicId === thisPlayerIds()?.public}
               />
             </Show>
-          </aside> */}
+          </aside>
         </div>
       </div>
-    </>
-  );
-}
-
-type PickingGamePhaseProps = {
-  gameState: PickingGameState;
-  players: Player[];
-  didPick: boolean;
-  handleSongSelection: (selectedSong: ItunesSong) => void;
-};
-
-function PickingGamePhase(props: PickingGamePhaseProps) {
-  return (
-    <div class="flex flex-col items-center">
-      <Timer
-        maxTime={props.gameState.initialTimeRemainingInSec}
-        currentTime={props.gameState.initialTimeRemainingInSec}
-      />
-      <Show
-        when={!props.didPick}
-        fallback={
-          <div class="mt-2">
-            <div class="text-center font-bold text-4xl mb-2">
-              {props.players.filter((player) => player.isChecked).length}/{props.players.length}
-            </div>
-            <TextBouncy text="Waiting for others to pick!" class="font-bold text-2xl" />
-          </div>
-        }
-      >
-        <SongPicker onSongSelect={props.handleSongSelection} />
-      </Show>
-    </div>
+    </WsConnectionProvider>
   );
 }
 

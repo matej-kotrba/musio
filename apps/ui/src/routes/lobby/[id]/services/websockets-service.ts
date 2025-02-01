@@ -1,16 +1,5 @@
 import { ProfileData } from "~/components/game/profile/ProfileSelection";
 
-export type WsConnection = {
-  ws: WebSocket | undefined;
-  href: string;
-  lobbyId: string;
-  playerId: string;
-  onMessage: (event: MessageEvent<string>) => void;
-  log: (user: string, ...args: Array<string>) => void;
-  clear: () => void;
-  send: (data: string | ArrayBufferLike | Blob | ArrayBufferView) => void;
-};
-
 export default function useWebsocket(onMessageHandler: (event: MessageEvent<string>) => void) {
   let ws: Maybe<WebSocket> = undefined;
 

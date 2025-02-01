@@ -1,22 +1,27 @@
 import { Icon } from "@iconify-icon/solid";
+import { toPayloadToServer, createNewMessageToServer } from "shared";
 import { Show } from "solid-js";
 import { Button } from "~/components/ui/button";
 import { TextField, TextFieldRoot } from "~/components/ui/textfield";
 import { TooltipTrigger, TooltipContent, Tooltip } from "~/components/ui/tooltip";
+import { useWsConnection } from "~/contexts/wsConnection";
 import { useCopyToClipboard } from "~/hooks";
 import { useGameStore } from "~/routes/lobby/[id]/stores/game-store";
 
 export default function WaitingLobby() {
-  const [gameStore, , { getLobbyHost }] = useGameStore();
+  const [gameStore, { queries }] = useGameStore();
+  const { getLobbyHost } = queries;
+  const { send } = useWsConnection();
+
   const copyToClipboard = useCopyToClipboard();
 
   const onNextRoundStartButtonClick = () => {
     if (!gameStore.thisPlayerIds.private) return;
 
-    ctx?.connection.ws?.send(
+    send?.(
       toPayloadToServer(
-        thisPlayerIds()!.private,
-        createNewMessageToServer(lobbyId(), "START_GAME", {})
+        gameStore.thisPlayerIds.private,
+        createNewMessageToServer(gameStore.lobbyId, "START_GAME", {})
       )
     );
   };
@@ -48,7 +53,7 @@ export default function WaitingLobby() {
               name="lobbyId"
               autocomplete="off"
               readOnly
-              value={lobbyId()}
+              value={gameStore.lobbyId}
               class="text-center uppercase font-bold tracking-wider"
             />
           </TextFieldRoot>

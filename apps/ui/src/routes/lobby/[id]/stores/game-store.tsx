@@ -4,6 +4,7 @@ import { createContext, JSX, useContext } from "solid-js";
 import { createStore, SetStoreFunction } from "solid-js/store";
 
 export type GameStore = {
+  lobbyId: string;
   players: PlayerToDisplay[];
   chatMessages: ChatMessage[];
   thisPlayerIds: { public: string; private: string };
@@ -35,10 +36,14 @@ const getGameStoreQueries = (store: GameStore) => {
 
 type GetGameStoreActions = ReturnType<typeof getGameStoreActions>;
 type GetGameStoreQueries = ReturnType<typeof getGameStoreQueries>;
-type GetNewGameStoreReturnType = readonly [GameStore, GetGameStoreActions, GetGameStoreQueries];
+type GetNewGameStoreReturnType = readonly [
+  GameStore,
+  { actions: GetGameStoreActions; queries: GetGameStoreQueries }
+];
 
 export function getNewGameStore(): GetNewGameStoreReturnType {
   const [store, setStore] = createStore<GameStore>({
+    lobbyId: "",
     players: [],
     chatMessages: [],
     thisPlayerIds: { public: "", private: "" },
@@ -47,7 +52,10 @@ export function getNewGameStore(): GetNewGameStoreReturnType {
     didPick: false,
   });
 
-  return [store, getGameStoreActions(store, setStore), getGameStoreQueries(store)] as const;
+  return [
+    store,
+    { actions: getGameStoreActions(store, setStore), queries: getGameStoreQueries(store) },
+  ] as const;
 }
 
 const GameStoreContext = createContext<GetNewGameStoreReturnType>(getNewGameStore());
@@ -63,4 +71,10 @@ export function GameStoreProvider(props: GameStoreProviderProps) {
   );
 }
 
-export const useGameStore = () => useContext(GameStoreContext);
+export const useGameStore = () => {
+  const context = useContext(GameStoreContext);
+  if (!context) {
+    throw new Error("useGameStore must be used within a GameStoreProvider");
+  }
+  return context;
+};

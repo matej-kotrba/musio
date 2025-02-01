@@ -4,7 +4,8 @@ import { useGameStore } from "../stores/game-store";
 import { produce } from "solid-js/store";
 
 export const handleOnWsMessage = () => {
-  const [gameStore, { setGameStore, resetPlayerChecks }] = useGameStore();
+  const [gameStore, { actions }] = useGameStore();
+  const { setGameStore, resetPlayerChecks } = actions;
 
   return (event: MessageEvent<string>) => {
     const data = fromMessageOnClient(event.data);
