@@ -96,7 +96,7 @@ const dummySongName = ["R", null, null, null, " ", null, null, "t", null, null, 
 const dummySongImage = "/2000x2000bb.jpg";
 
 export default function Lobby() {
-  const ws = useWebsocket(handleOnWsMessage());
+  const [{ connect, disconnect }, wsActions] = useWebsocket(handleOnWsMessage());
   const [gameStore, { actions, queries }] = useGameStore();
   const { getThisPlayer } = queries;
   const { setGameStore } = actions;
@@ -106,15 +106,11 @@ export default function Lobby() {
 
   // const ctx = useContext(WsConnectionContext);
 
-  createEffect(() => {
-    console.log("ws", ws.isConnected(), ws.send);
-  });
-
   const [profileData, setProfileData] = createSignal<ProfileData | null>(null);
 
   const getLobbyIdFromParams = () => params.id;
 
-  onCleanup(() => ws.disconnect());
+  onCleanup(() => disconnect());
 
   async function handleProfileSelected(data: ProfileData) {
     setProfileData(data);
@@ -124,7 +120,7 @@ export default function Lobby() {
     }
 
     setGameStore("lobbyId", newLobbyId);
-    await ws.connect(newLobbyId, data);
+    await connect(newLobbyId, data);
   }
 
   const handleChatMessage = (content: string) => {
@@ -141,7 +137,7 @@ export default function Lobby() {
     // Optimistically update messages
     setGameStore("chatMessages", gameStore.chatMessages.length, newMessage);
 
-    ws.send?.(
+    wsActions.send?.(
       toPayloadToServer(
         gameStore.thisPlayerIds.private,
         createNewMessageToServer(gameStore.lobbyId, "CHAT_MESSAGE", {
@@ -156,7 +152,7 @@ export default function Lobby() {
     gameStore.currentSongToGuess?.fromPlayerByPublicId === gameStore.thisPlayerIds?.public;
 
   return (
-    <WsConnectionProvider wsConnection={ws}>
+    <WsConnectionProvider wsConnection={wsActions}>
       <ProfileSelection onProfileSelected={handleProfileSelected} />
       <div
         class="relative"

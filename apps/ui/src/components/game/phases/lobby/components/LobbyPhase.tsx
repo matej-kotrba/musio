@@ -13,15 +13,10 @@ export default function LobbyPhase() {
   const { getLobbyHost } = queries;
   const ws = useWsConnection();
 
-  createEffect(() => {
-    console.log("lobby ws", ws, ws.send);
-  });
-
   const copyToClipboard = useCopyToClipboard();
 
   const onNextRoundStartButtonClick = () => {
     if (!gameStore.thisPlayerIds?.private) return;
-    console.log("SEND", ws.send);
 
     ws.send?.(
       toPayloadToServer(

@@ -22,14 +22,17 @@ export default function useWebsocket(onMessageHandler: (event: MessageEvent<stri
     ws()?.close();
   }
 
-  return {
-    connect,
-    disconnect,
-    isConnected: () => ws()?.readyState === WebSocket.OPEN,
-    get send() {
-      return ws()?.send.bind(ws());
+  return [
+    {
+      connect,
+      disconnect,
     },
-  };
+    {
+      get send() {
+        return ws()?.send.bind(ws());
+      },
+    },
+  ] as const;
   // const wsConnection: Maybe<WsConnection> = {
   //   ws: undefined,
   //   href: `ws://localhost:5173/ws?lobbyId=${newLobbyId}&name=${data.name}&icon=${data.icon}`,
