@@ -3,6 +3,7 @@
   appearance: none; /* Remove default styles for all browsers */
   height: 16px; /* Matches the track height for consistency */
   background: transparent; /* Ensures no default background interferes */
+  cursor: pointer;
 }
 
 /* Thumb styling */
@@ -15,7 +16,6 @@
   background: hsl(var(--foreground));
   border: none;
   border-radius: 50%;
-  cursor: pointer;
   transform: translateY(-45%);
 
   transition: 100ms;
@@ -64,6 +64,8 @@
     hsl(var(--foreground)) var(--percentage),
     transparent var(--percentage)
   );
+  cursor: pointer;
+
   @apply bg-gray-500 rounded-md;
 }
 
@@ -77,8 +79,6 @@
   background: hsl(var(--foreground));
   border: none;
   border-radius: 50%;
-  cursor: pointer;
-  transform: translateY(-45%);
 
   transition: 100ms;
 }
@@ -94,7 +94,12 @@
   transition: 100ms;
 }
 
-.track[type="range"]:hover::-webkit-slider-thumb,
+.track[type="range"]:hover::-webkit-slider-thumb {
+  width: 16px;
+  height: 16px;
+  transform: translateY(-25%);
+}
+
 .track[type="range"]:hover::-moz-range-thumb {
   width: 16px;
   height: 16px;

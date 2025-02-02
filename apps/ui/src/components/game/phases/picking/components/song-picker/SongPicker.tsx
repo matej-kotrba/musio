@@ -378,7 +378,7 @@ export default function SongPicker(props: Props) {
             {selectedSong()!.trackName}
           </p>
           <div class="flex flex-col">
-            <div class={`${styles.effect} relative overflow-hiddens`}>
+            <div class={`${styles.effect} relative`}>
               <img src={selectedSong()!.artworkUrl100} alt="Picked song" class={`mx-auto`} />
             </div>
           </div>
@@ -441,10 +441,10 @@ export default function SongPicker(props: Props) {
                         width={56}
                         height={56}
                         alt=""
-                        class="absolute size-16 left-0"
-                        style={{ mask: "linear-gradient(to right, black, transparent 100%)" }}
+                        class="size-14 left-0 rounded-lg shadow-md"
+                        // style={{ mask: "linear-gradient(to right, black, transparent 100%)" }}
                       />
-                      <div class="pl-14 flex flex-col items-start overflow-hidden">
+                      <div class="flex flex-col items-start overflow-hidden">
                         <div class="w-full text-base font-semibold overflow-hidden whitespace-nowrap text-ellipsis">
                           {song().trackName}
                         </div>
