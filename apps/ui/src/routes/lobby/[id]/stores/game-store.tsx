@@ -12,7 +12,10 @@ export type GameStore = {
 
   didPick: boolean;
   currentSongToGuess?: SongWithNameHidden;
-  previousCorrectSongName?: string;
+  previousSongData?: {
+    correctSongName: string;
+    pointsPerPlayers: { publicId: string; points: number }[];
+  };
 };
 
 const getGameStoreActions = (store: GameStore, setStore: SetStoreFunction<GameStore>) => {

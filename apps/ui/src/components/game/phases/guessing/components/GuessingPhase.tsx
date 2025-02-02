@@ -1,9 +1,11 @@
-import { SongWithNameHidden, Song, GuessingGameState } from "shared";
-import { createSignal, createEffect, Show } from "solid-js";
+import { SongWithNameHidden, Song, GuessingGameState, Player } from "shared";
+import { createSignal, createEffect, Show, For } from "solid-js";
 import WordToGuess from "~/components/game/WordToGuess";
 import Timer from "../../picking/components/timer/Timer";
 import { useGameStore } from "~/routes/lobby/[id]/stores/game-store";
 import { getGamePhaseIfValid } from "~/utils/game/common";
+import { PlayerToDisplay } from "~/components/game/Player";
+import { Motion } from "solid-motionone";
 
 export default function GuessingGamePhase() {
   const [gameStore] = useGameStore();
@@ -31,8 +33,8 @@ function GuessingGamePhaseInner(props: GuessingGamePhaseInnerProps) {
   );
 
   const getPreviousSong: () => Maybe<Pick<Song, "name" | "artist">> = () =>
-    gameStore.previousCorrectSongName && previousSong()
-      ? { name: gameStore.previousCorrectSongName, artist: previousSong()!.artist }
+    gameStore.previousSongData && previousSong()
+      ? { name: gameStore.previousSongData.correctSongName, artist: previousSong()!.artist }
       : undefined;
 
   const getPlayerWhoRequestedCurrentSong = () => {
@@ -44,6 +46,35 @@ function GuessingGamePhaseInner(props: GuessingGamePhaseInnerProps) {
     const base = current / props.gameState.initialTimeRemaining;
     const pow = base ** 2;
     setBlurRatio(base + (base - pow));
+  }
+
+  function getPlayersPreviousSongPointGains(): PlayerOrderedByPointsGained[] {
+    const playersWhoGainedPoints: PlayerOrderedByPointsGained[] = gameStore
+      .previousSongData!.pointsPerPlayers.toSorted((a, b) => {
+        return a.points - b.points;
+      })
+      .map((player) => {
+        const temp = getPlayerByPublicId(player.publicId);
+        if (!temp) return undefined;
+
+        return {
+          name: temp.name,
+          icon: temp.icon,
+          pointsGained: player.points,
+        };
+      })
+      .filter((x) => !!x);
+
+    const restPlayers: PlayerOrderedByPointsGained[] = gameStore.players
+      .filter(
+        (player) =>
+          !gameStore
+            .previousSongData!.pointsPerPlayers.map((player) => player.publicId)
+            .includes(player.publicId)
+      )
+      .map((player) => ({ name: player.name, icon: player.icon, pointsGained: 0 }));
+
+    return [...playersWhoGainedPoints, ...restPlayers];
   }
 
   createEffect(() => {
@@ -70,7 +101,12 @@ function GuessingGamePhaseInner(props: GuessingGamePhaseInnerProps) {
         />
         <Show
           when={gameStore.currentSongToGuess}
-          fallback={<GuessingGameLeaderboardsFallback prevSong={getPreviousSong()} />}
+          fallback={
+            <GuessingGameLeaderboardsFallback
+              prevSong={getPreviousSong()}
+              playersOrderedByPointsGained={getPlayersPreviousSongPointGains()}
+            />
+          }
         >
           <section class="flex flex-col items-center">
             <p class="text-xl mb-6">
@@ -100,11 +136,14 @@ function GuessingGamePhaseInner(props: GuessingGamePhaseInnerProps) {
   );
 }
 
+type PlayerOrderedByPointsGained = { name: string; icon: Player["icon"]; pointsGained: number };
+
 type GuessingGameLeaderboardsProps = {
   prevSong: Maybe<Pick<Song, "name" | "artist">>;
+  playersOrderedByPointsGained: PlayerOrderedByPointsGained[];
 };
 
-function GuessingGameLeaderboardsFallback(props: GuessingGameLeaderboardsProps) {
+export function GuessingGameLeaderboardsFallback(props: GuessingGameLeaderboardsProps) {
   // let ref!: HTMLDivElement;
   // const [heightTopOffsetCSS, setHeightTopOffsetCSS] = createSignal<string>("");
 
@@ -126,6 +165,30 @@ function GuessingGameLeaderboardsFallback(props: GuessingGameLeaderboardsProps) 
           <span class="font-bold text-foreground">{props.prevSong?.name}</span>
           <span> by </span>
           <span class="font-bold text-foreground">{props.prevSong?.artist}</span>
+        </div>
+        <div class="flex flex-col gap-1 mt-2">
+          <For each={props.playersOrderedByPointsGained}>
+            {(player, index) => (
+              <Motion.div
+                initial={{ y: -10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.3, delay: index() * 0.15 }}
+                class="flex gap-1 items-center"
+              >
+                <img
+                  src={player.icon.url}
+                  width={48}
+                  height={48}
+                  alt={player.icon.name}
+                  class=" rounded-lg"
+                />
+                <div class="flex-1 flex justify-between">
+                  <span class="font-semibold">{player.name}</span>
+                  <span class="text-green-600">+{player.pointsGained}</span>
+                </div>
+              </Motion.div>
+            )}
+          </For>
         </div>
       </Show>
     </div>

@@ -24,6 +24,7 @@ export type WS_MessageMapServer = {
   IN_BETWEEN_SONGS_DELAY: {
     delay: number;
     correctSongName: string;
+    pointsPerPlayer: { publicId: string; points: number }[];
   };
   CHAT_MESSAGE_CONFIRM: {
     isOk: boolean;

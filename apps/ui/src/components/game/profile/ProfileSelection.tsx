@@ -175,14 +175,14 @@ export default function ProfileSelection(props: Props) {
                 <button
                   type="button"
                   on:click={moveCarouselLeft}
-                  class="hover:text-foreground duration-150 absolute left-1 top-1/2 -translate-y-1/2 focus-within:outline-none focus-within:text-foreground"
+                  class="hover:text-foreground duration-150 absolute left-1 top-1/2 -translate-y-1/2 outline-none focus-within:text-foreground"
                 >
                   <Icon icon="raphael:arrowleft" class="text-4xl px-1" />
                 </button>
                 <button
                   type="button"
                   on:click={moveCarouselRight}
-                  class="hover:text-foreground duration-150 absolute right-1 top-1/2 -translate-y-1/2 focus-within:outline-none focus-within:text-foreground"
+                  class="hover:text-foreground duration-150 absolute right-1 top-1/2 -translate-y-1/2 outline-none focus-within:text-foreground"
                 >
                   <Icon icon="raphael:arrowright" class="text-4xl px-1" />
                 </button>
