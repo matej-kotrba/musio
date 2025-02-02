@@ -15,6 +15,7 @@ import {
 } from "~/components/ui/dialog";
 import { Button } from "~/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
+import { Motion } from "solid-motionone";
 
 const ClientOnlyAudioController = clientOnly(
   () => import("~/components/common/audio-controller/AudioControl")
@@ -370,54 +371,52 @@ export default function SongPicker(props: Props) {
         </DialogContent>
       </Dialog>
       <div class="w-80 mx-auto pt-4 p-1 relative overflow-hidden">
-        <Show when={selectedSong()} fallback={<div class="size-[100px] rounded-none mx-auto" />}>
-          <p
-            title={selectedSong()!.trackName}
-            class={`text-center text-ellipsis overflow-hidden font-semibold whitespace-nowrap mb-2`}
-          >
-            {selectedSong()!.trackName}
-          </p>
-          <div class="flex flex-col">
-            <div class={`${styles.effect} relative`}>
-              <img src={selectedSong()!.artworkUrl100} alt="Picked song" class={`mx-auto`} />
+        <div class="h-40">
+          <Show when={selectedSong()}>
+            <Motion.p
+              title={selectedSong()!.trackName}
+              class={`text-center text-ellipsis overflow-hidden font-semibold whitespace-nowrap mb-2`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.2 }}
+            >
+              {selectedSong()!.trackName}
+            </Motion.p>
+            <div class="flex flex-col">
+              <div class={`${styles.effect} relative`}>
+                <Motion.img
+                  src={selectedSong()!.artworkUrl100}
+                  width={100}
+                  height={100}
+                  alt="Picked song"
+                  class={`mx-auto rounded-lg mb-1`}
+                  initial={{ opacity: 0, scale: 0.6 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.2 }}
+                />
+              </div>
             </div>
-          </div>
-        </Show>
-        <Show when={selectedSong()} fallback={<div class="w-full h-8" />}>
-          <ClientOnlyAudioController
-            audioUrl={selectedSong()!.previewUrl}
-            fallback={<div class="w-full h-8" />}
-          />
-        </Show>
+            <ClientOnlyAudioController
+              audioUrl={selectedSong()!.previewUrl}
+              fallback={<div class="w-full h-8" />}
+            />
+          </Show>
+        </div>
 
         <TextFieldRoot class="mt-4">
           <TextFieldLabel for="name" class="block text-center">
             Pick song for others to guess:
           </TextFieldLabel>
-          <div class="flex focus-within:ring-2 ring-primary-accent rounded-md duration-150">
+          <div class="focus-within:ring-2 ring-primary-accent rounded-md duration-150">
             <TextField
               type="text"
               name="name"
-              placeholder="Name"
+              placeholder="Search for a song name..."
               on:input={handleInputChange}
               min={1}
               autocomplete="off"
-              class="text-lg py-6 border-r-0 rounded-r-none focus-visible:ring-0"
+              class="text-lg py-6 focus-visible:ring-0"
             />
-            <Tooltip>
-              <TooltipTrigger
-                as={"button"}
-                class="group border border-primary bg-primary rounded-r-md px-2 grid place-content-center hover:bg-primary-darker duration-100 disabled:bg-background-accent"
-                disabled={!selectedSong()}
-                on:click={handleSongConfirmDialogOpen}
-              >
-                <Icon
-                  icon="charm:tick"
-                  class="text-2xl text-background-DEAFULT group-hover:text-foreground duration-100 group-disabled:text-gray-500"
-                />
-              </TooltipTrigger>
-              <TooltipContent>Pick this song</TooltipContent>
-            </Tooltip>
           </div>
         </TextFieldRoot>
         <Show when={searchedSongs().length > 0}>
@@ -441,7 +440,7 @@ export default function SongPicker(props: Props) {
                         width={56}
                         height={56}
                         alt=""
-                        class="size-14 left-0 rounded-lg shadow-md"
+                        class="size-14 left-0 rounded-lg shadow-md shadow-black/30"
                         // style={{ mask: "linear-gradient(to right, black, transparent 100%)" }}
                       />
                       <div class="flex flex-col items-start overflow-hidden">
@@ -457,6 +456,15 @@ export default function SongPicker(props: Props) {
             </div>
           </div>
         </Show>
+        <button
+          type="button"
+          class="w-full bg-primary text-background-highlight rounded-md px-4 py-2 mt-2 font-bold duration-200 disabled:bg-background-accent
+            disabled:text-background-highlight hover:bg-primary-darker hover:text-foreground"
+          disabled={!selectedSong()}
+          on:click={handleSongConfirmDialogOpen}
+        >
+          Select song
+        </button>
       </div>
     </div>
   );
