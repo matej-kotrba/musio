@@ -82,13 +82,16 @@ export default function Dev() {
   return (
     <div class="w-72 mx-auto flex flex-col gap-2">
       {/* <LeaderboardsEmphasized players={dummy_players} /> */}
+      <button type="button" onClick={() => setPlayers((old) => [...old, old[1]])}>
+        Add
+      </button>
       <TransitionGroup name="group-item">
         <For each={players}>
           {(item, index) => (
-            <div class="duration-300">
-              <button on:click={() => add(item.publicId)} type="button">
+            <div class="group-item duration-300">
+              {/* <button on:click={() => add(item.publicId)} type="button">
                 Increment
-              </button>
+              </button> */}
               <PlayerDisplay
                 maxPoints={100}
                 player={item}

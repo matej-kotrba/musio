@@ -23,7 +23,7 @@ export default function PlayerList(props: Props) {
         <TransitionGroup name="player-sidebar">
           <For each={gameStore.players.toSorted((a, b) => b.points - a.points)}>
             {(player, index) => (
-              <div class="duration-200">
+              <div class="player-sidebar duration-200">
                 <PlayerDisplay
                   maxPoints={100}
                   player={player}
