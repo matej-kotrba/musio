@@ -18,7 +18,9 @@ export const messageConfig = {
   guessing: {
     CHAT_MESSAGE: {} as { content: string; messageId: string },
   },
-  leaderboard: {},
+  leaderboard: {
+    BACK_TO_LOBBY: {} as {},
+  },
   all: {
     CHAT_MESSAGE: {} as { content: string; messageId: string },
   },

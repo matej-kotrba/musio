@@ -17,6 +17,7 @@ import { isLobbyState } from "../game/lobby";
 import { removePlayerFromLobby } from "../game/player";
 import type { Hono } from "hono";
 import type { UpgradeWebSocket } from "hono/ws";
+import { handleLeaderboardsEvent } from "../events/leaderboards";
 
 export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWebSocket) {
   app.get(
@@ -114,6 +115,11 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
               handlePickingEvent(lobby, parsedData as FromMessageOnServerByStateType<"picking">);
             else if (isLobbyState(lobby, "guessing"))
               handleGuessingEvent(lobby, parsedData as FromMessageOnServerByStateType<"guessing">);
+            else if (isLobbyState(lobby, "leaderboard"))
+              handleLeaderboardsEvent(
+                lobby,
+                parsedData as FromMessageOnServerByStateType<"leaderboard">
+              );
 
             handleAllEvent(lobby, parsedData);
           } catch {}

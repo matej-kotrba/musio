@@ -11,7 +11,6 @@ export function handleLobbyEvent(
 ) {
   const lobbies = getLobbiesService().lobbies;
 
-  lobby.stateProperties.state;
   switch (data.message.type) {
     case "START_GAME":
       if (!isHost(data.privateId, lobby)) return;

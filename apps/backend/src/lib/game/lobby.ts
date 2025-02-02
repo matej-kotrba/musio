@@ -71,7 +71,12 @@ export function changeToLobbyState(
 
 export const getInitialLobbyState: () => InitialGamePhaseData<GameState> = () => ({
   gameState: { state: "lobby" },
-  lobbyData: { pickedSongs: [], songQueue: [], currentSongIndex: 0 },
+  lobbyData: {
+    pickedSongs: [],
+    songQueue: [],
+    currentSongIndex: 0,
+    songQueueGenerator: undefined,
+  },
 });
 
 export const getInitialPickingGameState: () => InitialGamePhaseData<PickingGameState> = () => ({
