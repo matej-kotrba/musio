@@ -1,0 +1,35 @@
+.how-to-play__container::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  background-attachment: fixed;
+  background-image: radial-gradient(
+      circle at var(--x, 0) var(--y, 0),
+      hsl(var(--primary)),
+      transparent 8rem
+    ),
+    linear-gradient(to right, hsl(var(--secondary)), hsl(var(--secondary)));
+  z-index: -1;
+  pointer-events: none;
+}
+
+.how-to-play__container::after {
+  content: "";
+  position: absolute;
+  inset: 0px;
+  border-radius: inherit;
+  background-attachment: fixed;
+  background-image: radial-gradient(
+    circle at var(--x, 0) var(--y, 0),
+    hsl(var(--primary) / 0.75),
+    transparent 10rem
+  );
+  opacity: 0.05;
+  pointer-events: none;
+  transition: 0.3s opacity ease;
+}
+
+.how-to-play__container:hover::after {
+  opacity: 0.1;
+}

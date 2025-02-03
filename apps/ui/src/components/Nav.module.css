@@ -6,10 +6,7 @@
   left: 0;
   top: 0;
   background-color: transparent;
-  background-image: radial-gradient(
-    transparent 1px,
-    hsl(var(--background)) 1px
-  );
+  background-image: radial-gradient(hsl(var(--background) / 0.3) 1px, hsl(var(--background)) 1px);
   background-size: 4px 4px;
   backdrop-filter: blur(3px);
   mask: linear-gradient(black 60%, transparent 100%);
@@ -23,11 +20,7 @@
   height: 0.2rem;
   top: 100%;
   left: 0;
-  background-image: linear-gradient(
-    to right,
-    hsl(var(--primary)),
-    hsl(var(--primary-accent))
-  );
+  background-image: linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary-accent)));
   border-radius: 4px;
 
   transform: scaleX(0);
