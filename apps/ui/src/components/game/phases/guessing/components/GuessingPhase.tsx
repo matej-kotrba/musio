@@ -51,7 +51,7 @@ function GuessingGamePhaseInner(props: GuessingGamePhaseInnerProps) {
   function getPlayersPreviousSongPointGains(): PlayerOrderedByPointsGained[] {
     const playersWhoGainedPoints: PlayerOrderedByPointsGained[] = gameStore
       .previousSongData!.pointsPerPlayers.toSorted((a, b) => {
-        return a.points - b.points;
+        return b.points - a.points;
       })
       .map((player) => {
         const temp = getPlayerByPublicId(player.publicId);
