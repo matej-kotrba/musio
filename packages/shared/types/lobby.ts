@@ -18,13 +18,19 @@ export type PickingGameState = {
   initialTimeRemainingInSec: number;
 };
 
+type SongPointGainForPrivateId = {
+  privateId: string;
+  points: number;
+};
+
 export type GuessingGameState = {
   state: "guessing";
   initialDelay: number;
   initialTimeRemaining: number;
   currentInitialTimeRemaining: number;
   startTime: number;
-  playersWhoGuessed: { privateId: string; points: number }[];
+  playersWhoGuessed: SongPointGainForPrivateId[];
+  playerWhoPickedTheSong?: SongPointGainForPrivateId;
   // Detects whether guessing is paused, for example during delay, in between songs...
   isGuessingPaused?: boolean;
 };

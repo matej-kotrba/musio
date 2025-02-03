@@ -150,14 +150,16 @@ export const handleOnWsMessage = () => {
       case "CHANGE_POINTS": {
         const payload = data.message.payload;
 
-        setGameStore(
-          "players",
-          (player) => player.publicId === data.publicId,
-          produce((player) => {
-            player.previousPoints = player.points;
-            player.points = player.points + payload.newPoints;
-          })
-        );
+        payload.forEach(({ publicId, newPoints }) => {
+          setGameStore(
+            "players",
+            (player) => player.publicId === publicId,
+            produce((player) => {
+              player.previousPoints = player.points;
+              player.points = player.points + newPoints;
+            })
+          );
+        });
         // setPlayers((old) =>
         //   old.map((player) => {
         //     if (player.publicId === data.publicId) {

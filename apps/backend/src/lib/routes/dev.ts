@@ -29,7 +29,15 @@ export default function setupDevEndpoints(app: Hono) {
   app.get("/calculatePoints", (c) => {
     if (!isDev()) return c.notFound();
 
-    return c.json(getReceivedPoints(0, 1737400500295, 1737400499241, 10000));
+    return c.json(
+      getReceivedPoints({
+        guessedPlayersLength: 0,
+        guessTimeInMs: 1737400500295,
+        guessingStartTimeInMs: 1737400499241,
+        guessingTimeLengthInMs: 10000,
+        currentPlayerWhoPickedPoints: 0,
+      })
+    );
   });
 
   app.get("/getSimilarity", (c) => {

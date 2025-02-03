@@ -92,6 +92,7 @@ async function runGuessingSongQueue(
 
     abortLobbyTimeoutSignalAndRemoveIt(lobby);
     resetGuessingState(lobby.stateProperties);
+    setPlayerWhoPickedSongToStateProperties(lobby, currentIndex);
     lobby.data.currentTimeoutAbortController = new AbortController();
 
     await waitFor(
@@ -111,7 +112,16 @@ async function runGuessingSongQueue(
             .map((player) => ({
               publicId: getPlayerByPrivateId(lobby, player.privateId)!.publicId,
               points: player.points,
-            })),
+            }))
+            .concat([
+              {
+                publicId: getPlayerByPrivateId(
+                  lobby,
+                  lobby.stateProperties.playerWhoPickedTheSong!.privateId
+                )!.publicId,
+                points: lobby.stateProperties.playerWhoPickedTheSong!.points,
+              },
+            ]),
         })
       )
     );
@@ -167,4 +177,18 @@ function transformSongNameToHidden(str: string): SongWithNameHidden["name"] {
 function resetGuessingState(stateProperties: GuessingGameState) {
   stateProperties.playersWhoGuessed = [];
   stateProperties.startTime = Date.now();
+  delete stateProperties.playerWhoPickedTheSong;
+}
+
+function setPlayerWhoPickedSongToStateProperties(lobby: Lobby, currentSongIndex: number) {
+  const song = lobby.data.songQueue[currentSongIndex];
+  const playerWhoPickedSong = lobby.players.find(
+    (player) => player.publicId === song.fromPlayerByPublicId
+  );
+  if (playerWhoPickedSong) {
+    (lobby.stateProperties as GuessingGameState).playerWhoPickedTheSong = {
+      points: 0,
+      privateId: playerWhoPickedSong?.privateId,
+    };
+  }
 }

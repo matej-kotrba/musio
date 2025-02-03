@@ -6,7 +6,7 @@ import {
 } from "shared";
 import type { Lobby } from "../game/lobby";
 import { getPlayerByPrivateId, type PlayerServer } from "../game/player";
-import { getReceivedPoints as getPointsToReceive } from "../game/game-utils";
+import { getReceivedPoints } from "../game/game-utils";
 import { getLobbiesService } from "../game/create";
 import { stringSimilarity } from "string-similarity-js";
 import { handleChatMessage } from "./all";
@@ -60,25 +60,37 @@ function areStringSimilarByThreshold(str1: string, str2: string, threshold: numb
 }
 
 function handleGuessWhenSame(lobby: Lobby<"guessing">, player: PlayerServer, messageId: string) {
-  const pointsToReceive = getPointsToReceive(
-    lobby.stateProperties.playersWhoGuessed.length,
-    Date.now(),
-    lobby.stateProperties.startTime,
-    lobby.stateProperties.initialTimeRemaining * 1000
-  );
+  const pointsToReceive = getReceivedPoints({
+    guessedPlayersLength: lobby.stateProperties.playersWhoGuessed.length,
+    guessTimeInMs: Date.now(),
+    guessingStartTimeInMs: lobby.stateProperties.startTime,
+    guessingTimeLengthInMs: lobby.stateProperties.initialTimeRemaining * 1000,
+    currentPlayerWhoPickedPoints: lobby.stateProperties.playerWhoPickedTheSong!.points,
+  });
 
   lobby.stateProperties.playersWhoGuessed.push({
     privateId: player.privateId,
-    points: pointsToReceive,
+    points: pointsToReceive.forGuesser,
   });
+  lobby.stateProperties.playerWhoPickedTheSong!.points += pointsToReceive.forPlayerWhoPicked;
 
   getLobbiesService().lobbies.broadcast(
     lobby.id,
     toPayloadToClient(
       player.publicId,
-      createNewMessageToClient(lobby.id, "CHANGE_POINTS", {
-        newPoints: pointsToReceive,
-      })
+      createNewMessageToClient(lobby.id, "CHANGE_POINTS", [
+        {
+          publicId: player.publicId,
+          newPoints: pointsToReceive.forGuesser,
+        },
+        {
+          publicId: getPlayerByPrivateId(
+            lobby,
+            lobby.stateProperties.playerWhoPickedTheSong!.privateId
+          )!.publicId,
+          newPoints: pointsToReceive.forPlayerWhoPicked,
+        },
+      ])
     )
   );
 
