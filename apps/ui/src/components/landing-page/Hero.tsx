@@ -3,8 +3,8 @@ import { Button } from "../ui/button";
 
 export default function Hero() {
   return (
-    <section class="py-20 px-4 sm:px-6 lg:px-8 relative z-10">
-      <div class="container mx-auto flex flex-col lg:flex-row items-center">
+    <section class="py-20 relative z-[1]">
+      <div class="flex flex-col lg:flex-row items-center">
         <div class="lg:w-1/2 lg:pr-10">
           <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
             Guess the Song, <br />
