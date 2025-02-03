@@ -24,16 +24,19 @@ export default function HowToPlay() {
   return (
     <section
       ref={sectionRef!}
-      class="isolate"
+      class="isolate py-24"
       style={{ "--x": `${getCoords().x}px`, "--y": `${getCoords().y}px` }}
     >
-      <h2 class="text-foreground text-left text-transparent mb-2">
+      {/* <h2 class="text-foreground text-left text-transparent mb-2">
         <span class="text-6xl mr-2" style={{ "-webkit-text-stroke": "1px hsl(var(--foreground))" }}>
           01
         </span>
         <span class="text-4xl text-foreground">How to play</span>
+      </h2> */}
+      <h2 class="text-foreground font-bold text-5xl text-center mb-4">
+        How to play <span class="text-primary">Musio</span>?
       </h2>
-      <div class={`grid grid-cols-3 gap-8`}>
+      <div class={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12`}>
         <HowToPlayStep icon="fluent:people-20-filled" title="Host or join">
           Pick one of vast pallette endearing animal avatars, choose your name and head into lobby
           via hosting it or joining existing one.
@@ -75,15 +78,27 @@ function HowToPlayStep(props: HowToPlayStepProps) {
   return (
     <div
       class={clsx(
-        `${styles["how-to-play__container"]} relative rounded-sm w-full p-6 text-foreground aspect-[3/2] bg-background-DEAFULT shadow-md`,
+        `${styles["how-to-play__container"]} relative group bg-background-DEAFULT p-8 rounded-xl shadow-lg`,
         props.class
       )}
     >
-      <div>
+      <div class="mb-6 flex justify-center">
+        <div class="p-3 bg-background-dark rounded-full transition-colors duration-300">
+          <Icon
+            icon={props.icon}
+            class="text-4xl grid place-content-center group-hover:text-primary duration-300 transition-colors"
+          />
+        </div>
+      </div>
+      <h3 class="text-2xl font-semibold mb-4 text-center group-hover:text-primary transition-colors duration-300">
+        {props.title}
+      </h3>
+      <p class="text-gray-300 text-center">{props.children}</p>
+      {/* <div>
         <Icon icon={props.icon} class="text-4xl text-primary mb-2" />
         <div class={`relative font-bold text-xl mb-2`}>{props.title}</div>
         <div class="text-balance">{props.children}</div>
-      </div>
+      </div> */}
     </div>
   );
 }

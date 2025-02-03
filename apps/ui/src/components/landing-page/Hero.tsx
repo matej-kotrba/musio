@@ -15,8 +15,8 @@ export default function Hero() {
             friends, discover new tunes, and create lasting memories.
           </p>
           <div class="flex gap-2">
-            <Button class="text-lg px-8 py-3">Host a game</Button>
-            <Button variant={"secondary"} class="text-lg px-8 py-3">
+            <Button class="text-lg px-8 py-6">Host a game</Button>
+            <Button variant={"secondary"} class="text-lg px-8 py-6">
               Join
             </Button>
           </div>

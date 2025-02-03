@@ -1,7 +1,9 @@
 Todos:
 [x] - Next round button
 [x] - Finish Homepage
-[] - Give points to player whose song it was
+[x] - Give points to player whose song it was
+[] - adjust homepage how to play section ui
+[] - fix timer bug when out of focus in browser
 [] - Display number of songs in queue
 [] - Add loading state when joining to lobby
 [] - Make leaderboards when not hitting the goal as temporary or somehow make it obvious that its not final
