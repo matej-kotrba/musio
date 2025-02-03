@@ -1,7 +1,8 @@
 .landing::before {
   content: "";
   position: absolute;
-  inset: 0;
+  width: 100vw;
+  height: 100vh;
   background-color: transparent;
   opacity: 1;
   background-image: radial-gradient(

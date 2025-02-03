@@ -1,4 +1,5 @@
 import BackgroundEffect from "~/components/landing-page/background-effect/BackgroundEffect";
+import Footer from "~/components/landing-page/Footer";
 import Hero from "~/components/landing-page/Hero";
 import HowToPlay from "~/components/landing-page/how-to-play/HowToPlay";
 
@@ -8,9 +9,11 @@ export default function Home() {
       <BackgroundEffect />
       <main class="container mx-auto px-4 sm:px-6 lg:px-8">
         <Hero />
+        <div class="mt-32"></div>
         <HowToPlay />
       </main>
-      <div class="mt-[1500px]"></div>
+      <div class="mt-16"></div>
+      <Footer />
     </div>
   );
 }

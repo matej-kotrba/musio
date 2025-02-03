@@ -1,3 +1,4 @@
+import { Icon } from "@iconify-icon/solid";
 import styles from "./HowToPlay.module.css";
 import clsx from "clsx";
 import { createSignal, createEffect, onCleanup, JSX } from "solid-js";
@@ -32,28 +33,31 @@ export default function HowToPlay() {
         </span>
         <span class="text-4xl text-foreground">How to play</span>
       </h2>
-      <div class={`grid grid-cols-4 gap-2`}>
-        <HowToPlayStep stepIndex={1} title="Host or join">
+      <div class={`grid grid-cols-3 gap-8`}>
+        <HowToPlayStep icon="fluent:people-20-filled" title="Host or join">
           Pick one of vast pallette endearing animal avatars, choose your name and head into lobby
           via hosting it or joining existing one.
         </HowToPlayStep>
-        <HowToPlayStep stepIndex={2} title="Picking phase">
+        <HowToPlayStep icon="majesticons:music" title="Picking phase">
           First part of the game is picking a song for others to guess, you are able to listen to
           your selection and change its name before submitting it.
         </HowToPlayStep>
-        <HowToPlayStep stepIndex={3} title="Guessing phase">
+        <HowToPlayStep icon="octicon:goal-16" title="Guessing phase">
           Next ahead is guessing phase, here selected songs are about to take turns for everyone
           (except the one who chose it) to guess, doing so will grant them points necessary to win,
-          speed is the key here!
+          speed is the key aspect here!
         </HowToPlayStep>
-        <HowToPlayStep stepIndex={4} title="Leaderboards">
+        <HowToPlayStep icon="ic:round-leaderboard" title="Leaderboards">
           After guessing phase you'll be able to see overall leaderboards, either some of the
           players hit the points goal and final leaderboards are shown or next round will take
           place.
         </HowToPlayStep>
-        <HowToPlayStep stepIndex={5} title="Repeat">
+        <HowToPlayStep icon="material-symbols:repeat-rounded" title="Repeat">
           If no-one hit the points goal, next round starts, repeating all the previous steps until
           on of the animals becomes the ULTIMATE MUSIER!
+        </HowToPlayStep>
+        <HowToPlayStep icon="mynaui:confetti-solid" title="The goal">
+          Your main goal is to have fun, enjoy the game and have a great time with your friends!
         </HowToPlayStep>
       </div>
     </section>
@@ -61,8 +65,8 @@ export default function HowToPlay() {
 }
 
 type HowToPlayStepProps = {
-  stepIndex: number;
   title: string;
+  icon: string;
   children: JSX.Element;
   class?: string;
 };
@@ -71,17 +75,13 @@ function HowToPlayStep(props: HowToPlayStepProps) {
   return (
     <div
       class={clsx(
-        `${styles["how-to-play__container"]} relative rounded-sm w-full p-4 text-foreground aspect-[3/2] bg-background-DEAFULT shadow-md`,
+        `${styles["how-to-play__container"]} relative rounded-sm w-full p-6 text-foreground aspect-[3/2] bg-background-DEAFULT shadow-md`,
         props.class
       )}
     >
       <div>
-        <div
-          class={`relative font-bold text-xl mb-2 before:content-[''] before:w-3/4 before:absolute before:top-full before:left-1/2 before:-translate-x-1/2
-          before:h-[2px] before:bg-gradient-to-r before:from-transparent before:via-primary before:to-transparent`}
-        >
-          {props.stepIndex}. {props.title}
-        </div>
+        <Icon icon={props.icon} class="text-4xl text-primary mb-2" />
+        <div class={`relative font-bold text-xl mb-2`}>{props.title}</div>
         <div class="text-balance">{props.children}</div>
       </div>
     </div>

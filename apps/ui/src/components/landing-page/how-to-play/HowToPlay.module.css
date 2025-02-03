@@ -1,13 +1,13 @@
 .how-to-play__container::before {
   content: "";
   position: absolute;
-  inset: -2px;
+  inset: -4px;
   border-radius: inherit;
   background-attachment: fixed;
   background-image: radial-gradient(
       circle at var(--x, 0) var(--y, 0),
       hsl(var(--primary)),
-      transparent 6rem
+      transparent 8rem
     ),
     linear-gradient(to right, hsl(var(--secondary)), hsl(var(--secondary)));
   z-index: -1;
@@ -23,7 +23,7 @@
   background-image: radial-gradient(
     circle at var(--x, 0) var(--y, 0),
     hsl(var(--primary) / 0.75),
-    transparent 8rem
+    transparent 10rem
   );
   opacity: 0.05;
   pointer-events: none;
