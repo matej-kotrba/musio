@@ -16,6 +16,7 @@ export type GameStore = {
     correctSongName: string;
     pointsPerPlayers: { publicId: string; points: number }[];
   };
+  delaySongProgress?: { currentIndex: number; songsLength: number };
 };
 
 const getGameStoreActions = (store: GameStore, setStore: SetStoreFunction<GameStore>) => {

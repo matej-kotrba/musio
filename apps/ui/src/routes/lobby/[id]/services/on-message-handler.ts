@@ -78,6 +78,7 @@ export const handleOnWsMessage = () => {
 
       case "IN_BETWEEN_SONGS_DELAY": {
         const payload = data.message.payload;
+
         setGameStore("currentSongToGuess", undefined);
         setGameStore("previousSongData", {
           correctSongName: payload.correctSongName,
@@ -85,6 +86,10 @@ export const handleOnWsMessage = () => {
         });
         setGameStore("gameState", {
           initialDelay: payload.delay / 1000,
+        });
+        setGameStore("delaySongProgress", {
+          currentIndex: payload.songsInQueue.currentIndex,
+          songsLength: payload.songsInQueue.songsLength,
         });
 
         break;

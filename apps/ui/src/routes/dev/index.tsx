@@ -5,6 +5,7 @@ import { TransitionGroup } from "solid-transition-group";
 import { GuessingGameLeaderboardsFallback } from "~/components/game/phases/guessing/components/GuessingPhase";
 import { LeaderboardsEmphasized } from "~/components/game/phases/leaderboards/components/leaderboards";
 import SongPicker from "~/components/game/phases/picking/components/song-picker/SongPicker";
+import Timer from "~/components/game/phases/picking/components/timer/Timer";
 import PlayerDisplay, { getAllIcons, PlayerToDisplay } from "~/components/game/Player";
 
 const dummy_players: PlayerToDisplay[] = [

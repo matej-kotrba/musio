@@ -86,7 +86,7 @@ function HowToPlayStep(props: HowToPlayStepProps) {
         <div class="p-3 bg-background-dark rounded-full transition-colors duration-300">
           <Icon
             icon={props.icon}
-            class="text-4xl grid place-content-center group-hover:text-primary duration-300 transition-colors"
+            class="size-10 text-4xl grid place-content-center group-hover:text-primary duration-300 transition-colors"
           />
         </div>
       </div>
