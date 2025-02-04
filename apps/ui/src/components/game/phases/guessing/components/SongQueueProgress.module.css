@@ -1,0 +1,31 @@
+.progress {
+  --scale-ratio: 0;
+}
+
+.progress::before,
+.progress::after {
+  content: "";
+  width: calc(100% - 32px);
+  height: 0.8rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* background-image: linear-gradient(
+    to right,
+    hsl(var(--primary)) var(--gradient-stop),
+    hsl(var(--background-accent)) var(--gradient-stop)
+  ); */
+  z-index: -99;
+}
+
+.progress::before {
+  background-color: hsl(var(--background-accent));
+}
+
+.progress::after {
+  background-color: hsl(var(--primary));
+  transform: translate(-50%, -50%), scaleX(var(--scale-ratio));
+  transform-origin: left;
+  transition: 0.4s ease;
+}

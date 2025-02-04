@@ -3,6 +3,7 @@ import { createEffect, createSignal, For } from "solid-js";
 import { createStore } from "solid-js/store";
 import { TransitionGroup } from "solid-transition-group";
 import { GuessingGameLeaderboardsFallback } from "~/components/game/phases/guessing/components/GuessingPhase";
+import SongQueueProgress from "~/components/game/phases/guessing/components/SongQueueProgress";
 import { LeaderboardsEmphasized } from "~/components/game/phases/leaderboards/components/leaderboards";
 import SongPicker from "~/components/game/phases/picking/components/song-picker/SongPicker";
 import Timer from "~/components/game/phases/picking/components/timer/Timer";
@@ -60,8 +61,16 @@ const dummy_players: PlayerToDisplay[] = [
 ];
 
 export default function Dev() {
+  const [step, setStep] = createSignal<number>(0);
+
+  function increment() {
+    setStep((old) => old + 1);
+  }
+
   return (
-    <div class="w-72 mx-auto flex flex-col gap-2">
+    <div class="w-72 mx-auto flex flex-col gap-2 mt-2">
+      <button onClick={increment}>Increment</button>
+      <SongQueueProgress stepIndex={step()} maxSteps={4} />
       {/* <GuessingGameLeaderboardsFallback
         prevSong={{ name: "Monody", artist: "TheFatRat" }}
         playersOrderedByPointsGained={dummy_players.toSorted((a, b) => {
