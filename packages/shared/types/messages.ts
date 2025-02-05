@@ -25,7 +25,7 @@ export type WS_MessageMapServer = {
     delay: number;
     correctSongName: string;
     pointsPerPlayer: { publicId: string; points: number }[];
-    songsInQueue: { currentIndex: number; songsLength: number };
+    songsInQueue: { currentIndex: number; songsInQueueByPlayerPublicIds: string[] };
   };
   CHAT_MESSAGE_CONFIRM: {
     isOk: boolean;

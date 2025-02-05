@@ -4,7 +4,6 @@ import WordToGuess from "~/components/game/WordToGuess";
 import Timer from "../../picking/components/timer/Timer";
 import { useGameStore } from "~/routes/lobby/[id]/stores/game-store";
 import { getGamePhaseIfValid } from "~/utils/game/common";
-import { PlayerToDisplay } from "~/components/game/Player";
 import { Motion } from "solid-motionone";
 import SongQueueProgress from "./SongQueueProgress";
 
@@ -30,14 +29,14 @@ function GuessingGamePhaseInner(props: GuessingGamePhaseInnerProps) {
     props.gameState.currentInitialTimeRemaining / props.gameState.initialTimeRemaining
   );
   const [previousSong, setPreviousSong] = createSignal<Maybe<SongWithNameHidden>>(
-    {
-      artist: "TheFatRat",
-      fromPlayerByPublicId: "",
-      imageUrl100x100: "",
-      name: [],
-      trackUrl: "",
-    }
-    // gameStore.currentSongToGuess
+    // {
+    //   artist: "TheFatRat",
+    //   fromPlayerByPublicId: "",
+    //   imageUrl100x100: "",
+    //   name: [],
+    //   trackUrl: "",
+    // }
+    gameStore.currentSongToGuess
   );
 
   const getPreviousSong: () => Maybe<Pick<Song, "name" | "artist">> = () =>
@@ -152,6 +151,8 @@ type GuessingGameLeaderboardsProps = {
 };
 
 export function GuessingGameLeaderboardsFallback(props: GuessingGameLeaderboardsProps) {
+  const [gameStore, { queries }] = useGameStore();
+  const { getPlayerByPublicId } = queries;
   // let ref!: HTMLDivElement;
   // const [heightTopOffsetCSS, setHeightTopOffsetCSS] = createSignal<string>("");
 
@@ -199,7 +200,21 @@ export function GuessingGameLeaderboardsFallback(props: GuessingGameLeaderboards
           </For>
         </div>
       </Show>
-      <SongQueueProgress maxSteps={4} stepIndex={2} animateFromIndex={1} stepDescription={[]} />
+      <div class="mt-4"></div>
+      <Show when={gameStore.delaySongProgress}>
+        {(songProgress) => {
+          return (
+            <SongQueueProgress
+              maxSteps={songProgress().songsInQueueByPlayerPublicIds.length}
+              stepIndex={songProgress().currentIndex}
+              animateFromIndex={songProgress().currentIndex - 1}
+              stepDescription={songProgress().songsInQueueByPlayerPublicIds.map((publicId) => {
+                return `${getPlayerByPublicId(publicId)?.name ?? "Unknown player"}'s song`;
+              })}
+            />
+          );
+        }}
+      </Show>
     </div>
   );
 }

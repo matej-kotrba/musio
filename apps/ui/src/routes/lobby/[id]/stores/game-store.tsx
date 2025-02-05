@@ -16,7 +16,7 @@ export type GameStore = {
     correctSongName: string;
     pointsPerPlayers: { publicId: string; points: number }[];
   };
-  delaySongProgress?: { currentIndex: number; songsLength: number };
+  delaySongProgress?: { currentIndex: number; songsInQueueByPlayerPublicIds: string[] };
 };
 
 const getGameStoreActions = (store: GameStore, setStore: SetStoreFunction<GameStore>) => {
@@ -52,18 +52,21 @@ export function getNewGameStore(): GetNewGameStoreReturnType {
     players: [],
     chatMessages: [],
     gameState: {
-      state: "guessing",
-      isGuessingPaused: true,
-      initialDelay: 50000,
-      playersWhoGuessed: [],
-      startTime: 10000000,
-      initialTimeRemaining: 50000,
-      currentInitialTimeRemaining: 500000,
+      state: "lobby",
     },
-    previousSongData: {
-      correctSongName: "Monody",
-      pointsPerPlayers: [],
-    },
+    // gameState: {
+    //   state: "guessing",
+    //   isGuessingPaused: true,
+    //   initialDelay: 50000,
+    //   playersWhoGuessed: [],
+    //   startTime: 10000000,
+    //   initialTimeRemaining: 50000,
+    //   currentInitialTimeRemaining: 500000,
+    // },
+    // previousSongData: {
+    //   correctSongName: "Monody",
+    //   pointsPerPlayers: [],
+    // },
 
     didPick: false,
   });

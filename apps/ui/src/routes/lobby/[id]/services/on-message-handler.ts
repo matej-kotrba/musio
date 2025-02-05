@@ -89,7 +89,7 @@ export const handleOnWsMessage = () => {
         });
         setGameStore("delaySongProgress", {
           currentIndex: payload.songsInQueue.currentIndex,
-          songsLength: payload.songsInQueue.songsLength,
+          songsInQueueByPlayerPublicIds: payload.songsInQueue.songsInQueueByPlayerPublicIds,
         });
 
         break;

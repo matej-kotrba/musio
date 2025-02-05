@@ -107,7 +107,12 @@ async function runGuessingSongQueue(
         createNewMessageToClient(lobby.id, "IN_BETWEEN_SONGS_DELAY", {
           delay: DELAY_BETWEEN_SONGS_IN_MS,
           correctSongName: lobby.data.songQueue[currentIndex].name,
-          songsInQueue: { currentIndex: currentIndex, songsLength: lobby.data.pickedSongs.length },
+          songsInQueue: {
+            currentIndex: currentIndex,
+            songsInQueueByPlayerPublicIds: lobby.data.pickedSongs.map(
+              (song) => song.fromPlayerByPublicId
+            ),
+          },
           pointsPerPlayer: lobby.stateProperties.playersWhoGuessed
             .filter((player) => !!getPlayerByPrivateId(lobby, player.privateId))
             .map((player) => ({

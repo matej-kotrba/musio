@@ -153,7 +153,7 @@ export default function Lobby() {
 
   return (
     <WsConnectionProvider wsConnection={wsActions}>
-      {/* <ProfileSelection onProfileSelected={handleProfileSelected} /> */}
+      <ProfileSelection onProfileSelected={handleProfileSelected} />
       <div
         class="relative"
         style={{
