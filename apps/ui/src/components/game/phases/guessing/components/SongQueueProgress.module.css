@@ -5,7 +5,7 @@
 .progress::before,
 .progress::after {
   content: "";
-  width: calc(100% - 32px);
+  width: calc(100% - 4px);
   height: 0.8rem;
   position: absolute;
   top: 50%;
@@ -24,8 +24,8 @@
 }
 
 .progress::after {
-  background-color: hsl(var(--primary));
-  transform: translate(-50%, -50%), scaleX(var(--scale-ratio));
+  background-color: hsl(var(--primary-accent));
+  transform: translate(-50%, -50%) scaleX(min(var(--scale-ratio), 1));
   transform-origin: left;
-  transition: 0.4s ease;
+  transition: 0.6s ease;
 }

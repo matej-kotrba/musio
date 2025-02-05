@@ -70,7 +70,16 @@ export default function Dev() {
   return (
     <div class="w-72 mx-auto flex flex-col gap-2 mt-2">
       <button onClick={increment}>Increment</button>
-      <SongQueueProgress stepIndex={step()} maxSteps={4} />
+      <SongQueueProgress
+        stepIndex={step()}
+        maxSteps={4}
+        stepDescription={[
+          "Dr House's song",
+          "Dr House's song",
+          "Dr House's song",
+          "Dr House's song",
+        ]}
+      />
       {/* <GuessingGameLeaderboardsFallback
         prevSong={{ name: "Monody", artist: "TheFatRat" }}
         playersOrderedByPointsGained={dummy_players.toSorted((a, b) => {
