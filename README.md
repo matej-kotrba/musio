@@ -7,6 +7,7 @@ Todos:
 [] - Add loading state when joining to lobby
 [] - Make leaderboards when not hitting the goal as temporary or somehow make it obvious that its not final
 and then show the current leaderboard whenever the game actually ends, then reset the player points
+[] - try to refactor how GuessingPhase works, the fallback especially
 
 [] - currently points are being summed on client, maybe send from server the total points and not only the gained ones
 

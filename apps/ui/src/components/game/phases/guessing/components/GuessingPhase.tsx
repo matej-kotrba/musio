@@ -6,6 +6,7 @@ import { useGameStore } from "~/routes/lobby/[id]/stores/game-store";
 import { getGamePhaseIfValid } from "~/utils/game/common";
 import { PlayerToDisplay } from "~/components/game/Player";
 import { Motion } from "solid-motionone";
+import SongQueueProgress from "./SongQueueProgress";
 
 export default function GuessingGamePhase() {
   const [gameStore] = useGameStore();
@@ -29,7 +30,14 @@ function GuessingGamePhaseInner(props: GuessingGamePhaseInnerProps) {
     props.gameState.currentInitialTimeRemaining / props.gameState.initialTimeRemaining
   );
   const [previousSong, setPreviousSong] = createSignal<Maybe<SongWithNameHidden>>(
-    gameStore.currentSongToGuess
+    {
+      artist: "TheFatRat",
+      fromPlayerByPublicId: "",
+      imageUrl100x100: "",
+      name: [],
+      trackUrl: "",
+    }
+    // gameStore.currentSongToGuess
   );
 
   const getPreviousSong: () => Maybe<Pick<Song, "name" | "artist">> = () =>
@@ -191,6 +199,7 @@ export function GuessingGameLeaderboardsFallback(props: GuessingGameLeaderboards
           </For>
         </div>
       </Show>
+      <SongQueueProgress maxSteps={4} stepIndex={2} animateFromIndex={1} stepDescription={[]} />
     </div>
   );
 }

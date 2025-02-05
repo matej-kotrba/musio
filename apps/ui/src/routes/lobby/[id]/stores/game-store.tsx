@@ -51,7 +51,19 @@ export function getNewGameStore(): GetNewGameStoreReturnType {
     lobbyId: "",
     players: [],
     chatMessages: [],
-    gameState: { state: "lobby" },
+    gameState: {
+      state: "guessing",
+      isGuessingPaused: true,
+      initialDelay: 50000,
+      playersWhoGuessed: [],
+      startTime: 10000000,
+      initialTimeRemaining: 50000,
+      currentInitialTimeRemaining: 500000,
+    },
+    previousSongData: {
+      correctSongName: "Monody",
+      pointsPerPlayers: [],
+    },
 
     didPick: false,
   });
