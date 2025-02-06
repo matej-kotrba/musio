@@ -201,13 +201,16 @@ export function GuessingGameLeaderboardsFallback(props: GuessingGameLeaderboards
         </div>
       </Show>
       <div class="mt-4"></div>
+      <p>Current song index: {gameStore.delaySongProgress?.currentIndex}</p>
       <Show when={gameStore.delaySongProgress}>
         {(songProgress) => {
           return (
             <SongQueueProgress
               maxSteps={songProgress().songsInQueueByPlayerPublicIds.length}
               stepIndex={songProgress().currentIndex}
-              animateFromIndex={songProgress().currentIndex - 1}
+              animateFromIndex={
+                songProgress().currentIndex - 1 >= 0 ? songProgress().currentIndex - 1 : 0
+              }
               stepDescription={songProgress().songsInQueueByPlayerPublicIds.map((publicId) => {
                 return `${getPlayerByPublicId(publicId)?.name ?? "Unknown player"}'s song`;
               })}

@@ -119,7 +119,10 @@ async function runGuessingSongQueue(
               publicId: getPlayerByPrivateId(lobby, player.privateId)!.publicId,
               points: player.points,
             }))
-            .concat([
+            .concat(getPlayerByPrivateId(
+                  lobby,
+                  lobby.stateProperties.playerWhoPickedTheSong!.privateId
+                ) ? [
               {
                 publicId: getPlayerByPrivateId(
                   lobby,
@@ -127,7 +130,7 @@ async function runGuessingSongQueue(
                 )!.publicId,
                 points: lobby.stateProperties.playerWhoPickedTheSong!.points,
               },
-            ]),
+            ] : []),
         })
       )
     );

@@ -1,5 +1,5 @@
 import { Player } from "shared";
-import { createEffect, createSignal, For } from "solid-js";
+import { createEffect, createSignal, For, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 import { TransitionGroup } from "solid-transition-group";
 import { GuessingGameLeaderboardsFallback } from "~/components/game/phases/guessing/components/GuessingPhase";
@@ -70,16 +70,23 @@ export default function Dev() {
   return (
     <div class="w-72 mx-auto flex flex-col gap-2 mt-2">
       <button onClick={increment}>Increment</button>
-      <SongQueueProgress
-        stepIndex={step()}
-        maxSteps={4}
-        stepDescription={[
-          "Dr House's song",
-          "Dr House's song",
-          "Dr House's song",
-          "Dr House's song",
-        ]}
-      />
+      <Show when={step()}>
+        {(s) => {
+          return (
+            <SongQueueProgress
+              stepIndex={3}
+              animateFromIndex={3 - 1 >= 0 ? 3 - 1 : 0}
+              maxSteps={4}
+              stepDescription={[
+                "Dr House's song",
+                "Dr House's song",
+                "Dr House's song",
+                "Dr House's song",
+              ]}
+            />
+          );
+        }}
+      </Show>
       {/* <GuessingGameLeaderboardsFallback
         prevSong={{ name: "Monody", artist: "TheFatRat" }}
         playersOrderedByPointsGained={dummy_players.toSorted((a, b) => {
