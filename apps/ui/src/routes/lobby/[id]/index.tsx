@@ -6,6 +6,7 @@ import {
   onCleanup,
   createUniqueId,
   createEffect,
+  createResource,
 } from "solid-js";
 import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
 import { useParams, useNavigate } from "@solidjs/router";
@@ -95,14 +96,25 @@ const dummySongName = ["R", null, null, null, " ", null, null, "t", null, null, 
 
 const dummySongImage = "/2000x2000bb.jpg";
 
+type WsConnectionResourceParams = Maybe<{ lobbyId: string; data: ProfileData }>;
+
 export default function Lobby() {
   const [{ connect, disconnect }, wsActions] = useWebsocket(handleOnWsMessage());
   const [gameStore, { actions, queries }] = useGameStore();
   const { getThisPlayer } = queries;
   const { setGameStore } = actions;
-
   const params = useParams();
   const navigate = useNavigate();
+
+  const [wsConnectionResourceParams, setWsConnectionResourceParams] =
+    createSignal<WsConnectionResourceParams>(undefined);
+
+  const connectFetchHandler = async (params: WsConnectionResourceParams) => {
+    if (!params) return null;
+    return connect(params.lobbyId, params.data);
+  };
+
+  const [data] = createResource(wsConnectionResourceParams, connectFetchHandler);
 
   // const ctx = useContext(WsConnectionContext);
 
@@ -120,7 +132,7 @@ export default function Lobby() {
     }
 
     setGameStore("lobbyId", newLobbyId);
-    await connect(newLobbyId, data);
+    setWsConnectionResourceParams({ data, lobbyId: newLobbyId });
   }
 
   const handleChatMessage = (content: string) => {

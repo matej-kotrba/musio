@@ -22,15 +22,14 @@ import { handleLeaderboardsEvent } from "../events/leaderboards";
 export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWebSocket) {
   app.get(
     "/ws",
-    upgradeWebSocket((c) => {
+    upgradeWebSocket(async (c) => {
       return {
-        onOpen: (event, ws) => {
-          console.log("adasdasdasd");
+        onOpen: async (event, ws) => {
           const lobbyId = c.req.query("lobbyId");
           const name = c.req.query("name");
           const icon = c.req.query("icon");
           const lobbies = getLobbiesService().lobbies;
-
+          
           if (
             !playerNameValidator.safeParse(name).success ||
             !playerIconNameValidator.safeParse(icon).success
