@@ -27,53 +27,51 @@ export default function Hero() {
               class="grid grid-cols-2 gap-6 text-xl"
               style={{ "grid-template-rows": "repeat(2, auto 1em 1fr)" }}
             >
-              <div
-                class="grid items-center justify-center bg-background-DEAFULT rounded-lg p-6 gap-0"
-                style={{ "grid-template-rows": "subgrid", "grid-row": "span 3" }}
-              >
-                <Icon
-                  icon="fluent:people-community-32-filled"
-                  class="text-6xl text-primary size-16 mx-auto"
-                />
-                <h3 class="font-semibold text-center">Play with friends</h3>
-                <p class="self-start text-base text-center text-foreground/80 text-balance">
-                  Create or join a lobby
-                </p>
-              </div>
-              <div
-                class="grid items-center justify-center bg-background-DEAFULT rounded-lg p-6 gap-0"
-                style={{ "grid-template-rows": "subgrid", "grid-row": "span 3" }}
-              >
-                <Icon icon="majesticons:music" class="text-6xl text-primary size-16 mx-auto" />
-                <h3 class="font-semibold text-center">Pick a song</h3>
-                <p class="self-start text-base text-center text-foreground/80 text-balance">
-                  Chosen songs will then be guessed
-                </p>
-              </div>
-              <div
-                class="grid items-center justify-center bg-background-DEAFULT rounded-lg p-6 gap-0"
-                style={{ "grid-template-rows": "subgrid", "grid-row": "span 3" }}
-              >
-                <Icon icon="octicon:goal-16" class="text-6xl text-primary size-16 mx-auto" />
-                <h3 class="font-semibold text-center">Guess others songs</h3>
-                <p class="self-start text-base text-center text-foreground/80 text-balance">
-                  Earn points based on speed
-                </p>
-              </div>
-              <div
-                class="grid items-center justify-center bg-background-DEAFULT rounded-lg p-6 gap-0"
-                style={{ "grid-template-rows": "subgrid", "grid-row": "span 3" }}
-              >
-                <Icon icon="ic:round-leaderboard" class="text-6xl text-primary size-16 mx-auto" />
-                <h3 class="font-semibold text-center">Be the best "Musier"</h3>
-                <p class="self-start text-base text-center text-foreground/80 text-balance">
-                  Be the first to reach the victory points
-                </p>
-              </div>
+              <HeroTile
+                title="Play with friends"
+                description="Create or join a lobby"
+                icon="fluent:people-community-32-filled"
+              />
+              <HeroTile
+                title="Pick a song"
+                description="Chosen songs will then be guessed"
+                icon="majesticons:music"
+              />
+              <HeroTile
+                title="Guess others songs"
+                description="Earn points based on speed"
+                icon="octicon:goal-16"
+              />
+              <HeroTile
+                title='Be the best "Musier"'
+                description="Be the first to reach the victory points"
+                icon="ic:round-leaderboard"
+              />
             </div>
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+type HeroTileProps = {
+  title: string;
+  description: string;
+  icon: string;
+};
+
+function HeroTile(props: HeroTileProps) {
+  return (
+    <div
+      class="grid items-center justify-center bg-background-DEAFULT rounded-lg p-6 gap-0"
+      style={{ "grid-template-rows": "subgrid", "grid-row": "span 3" }}
+    >
+      <Icon icon={props.icon} class="text-6xl text-primary size-16 mx-auto" />
+      <h3 class="font-semibold text-center">{props.title}</h3>
+      <p class="self-start text-base text-center text-foreground/80 text-balance">
+        {props.description}
+      </p>
+    </div>
   );
 }
