@@ -1,5 +1,6 @@
 import { Icon } from "@iconify-icon/solid";
 import { Button } from "../ui/button";
+import { Motion } from "solid-motionone";
 
 export default function Hero() {
   return (
@@ -59,11 +60,18 @@ type HeroTileProps = {
   title: string;
   description: string;
   icon: string;
+  appearFrom: {};
 };
 
 function HeroTile(props: HeroTileProps) {
   return (
-    <div
+    <Motion.div
+      initial={{ opacity: 0, scale: 0 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{
+        duration: 0.4,
+        easing: "ease-out",
+      }}
       class="grid items-center justify-center bg-background-DEAFULT rounded-lg p-6 gap-0"
       style={{ "grid-template-rows": "subgrid", "grid-row": "span 3" }}
     >
@@ -72,6 +80,6 @@ function HeroTile(props: HeroTileProps) {
       <p class="self-start text-base text-center text-foreground/80 text-balance">
         {props.description}
       </p>
-    </div>
+    </Motion.div>
   );
 }
