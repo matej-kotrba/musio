@@ -33,3 +33,32 @@
 .how-to-play__container:hover::after {
   opacity: 0.1;
 }
+
+@property --cover-ratio {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+
+/* Revealing effect */
+.how-to-play__container-revealing-effect {
+  /* mask-image: linear-gradient(to right bottom, black, transparent); */
+  /* background-color: hsl(var(--background)); */
+  background-image: linear-gradient(
+    to left top,
+    hsl(var(--background)) calc(var(--cover-ratio)),
+    transparent calc(var(--cover-ratio) + 20%)
+      /* hsl(var(--background) / max(var(--cover-ratio), 0)) 30%,
+    hsl(var(--background) / min(max(calc(var(--cover-ratio) + 0.5), 0), 1)) 70% */
+  );
+}
+
+.how-to-play__container-revealing-effect[animate="true"] {
+  animation: anim 6s forwards;
+}
+
+@keyframes anim {
+  to {
+    --cover-ratio: -50%;
+  }
+}
