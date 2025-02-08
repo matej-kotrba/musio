@@ -22,31 +22,32 @@ export default function Hero() {
             </Button>
           </div>
         </div>
-        <div class="lg:w-1/2 mt-10 lg:mt-0">
+        <div class="@container w-full lg:w-1/2 mt-10 lg:mt-0">
           <div class="bg-secondary rounded-lg shadow-2xl p-8">
-            <div
-              class="grid grid-cols-2 gap-6 text-xl"
-              style={{ "grid-template-rows": "repeat(2, auto 1em 1fr)" }}
-            >
+            <div class="flex flex-col @md:grid grid-cols-2 gap-6 text-xl grid-rows-[repeat(2,auto_1em_1fr)]">
               <HeroTile
                 title="Play with friends"
                 description="Create or join a lobby"
                 icon="fluent:people-community-32-filled"
+                appearFrom={{ x: -1, y: -1 }}
               />
               <HeroTile
                 title="Pick a song"
                 description="Chosen songs will then be guessed"
                 icon="majesticons:music"
+                appearFrom={{ x: 1, y: -1 }}
               />
               <HeroTile
                 title="Guess others songs"
                 description="Earn points based on speed"
                 icon="octicon:goal-16"
+                appearFrom={{ x: -1, y: 1 }}
               />
               <HeroTile
                 title='Be the best "Musier"'
                 description="Be the first to reach the victory points"
                 icon="ic:round-leaderboard"
+                appearFrom={{ x: 1, y: 1 }}
               />
             </div>
           </div>
@@ -60,14 +61,17 @@ type HeroTileProps = {
   title: string;
   description: string;
   icon: string;
-  appearFrom: {};
+  appearFrom: {
+    x: -1 | 1;
+    y: -1 | 1;
+  };
 };
 
 function HeroTile(props: HeroTileProps) {
   return (
     <Motion.div
-      initial={{ opacity: 0, scale: 0 }}
-      animate={{ opacity: 1, scale: 1 }}
+      initial={{ opacity: 0, scale: 1, x: 50 * props.appearFrom.x, y: 50 * props.appearFrom.y }}
+      animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
       transition={{
         duration: 0.4,
         easing: "ease-out",
