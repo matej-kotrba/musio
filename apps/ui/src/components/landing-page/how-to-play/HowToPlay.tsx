@@ -85,6 +85,7 @@ function HowToPlayStep(props: HowToPlayStepProps) {
       )}
     >
       <Motion.div
+        data-animate="true"
         class={`${styles["how-to-play__container-revealing-effect"]} absolute inset-0 rounded-xl`}
         style={{ "animation-delay": `${props.animationDelay}s` }}
       ></Motion.div>

@@ -53,7 +53,7 @@
   );
 }
 
-.how-to-play__container-revealing-effect[animate="true"] {
+.how-to-play__container-revealing-effect[data-animate="true"] {
   animation: anim 6s forwards;
 }
 
