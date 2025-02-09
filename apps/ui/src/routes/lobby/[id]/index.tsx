@@ -24,6 +24,8 @@ import LobbyPhase from "~/components/game/phases/lobby/components/LobbyPhase";
 import LeaderboardsGamePhase from "~/components/game/phases/leaderboards/components/LeaderboardsPhase";
 import Chat from "~/components/game/chat/Chat";
 import { ChatMessage, createNewMessageToServer, toPayloadToServer } from "shared";
+import Loader from "~/components/common/loader/Loader";
+import { Motion, Presence } from "solid-motionone";
 
 const dummy_players: PlayerToDisplay[] = [
   {
@@ -166,48 +168,72 @@ export default function Lobby() {
   return (
     <WsConnectionProvider wsConnection={wsActions}>
       <ProfileSelection onProfileSelected={handleProfileSelected} />
-      <div
-        class="relative"
-        style={{
-          "--custom-height": `calc(100vh - ${NAV_HEIGHT} - ${LOBBY_LAYOUT_HEIGHT} * 2 - 2rem)`,
-          height: `calc(var(--custom-height) + ${LOBBY_LAYOUT_HEIGHT} * 2)`,
-        }}
+      <Show
+        when={data.state === "ready"}
+        fallback={<ConnectingFallback shouldDisplayLoader={!!profileData()} />}
       >
-        <div class="grid grid-cols-[auto,1fr,auto] gap-4 py-4 overflow-hidden">
-          {/* Player sidebar */}
-          <PlayerList shouldShow={!!profileData()} />
-          {/* ___ */}
-          <Switch>
-            <Match when={gameStore.gameState.state === "lobby"}>
-              <LobbyPhase />
-            </Match>
-            <Match when={gameStore.gameState.state === "picking"}>
-              <PickingPhase />
-            </Match>
-            <Match when={gameStore.gameState.state === "guessing"}>
-              <GuessingGamePhase />
-            </Match>
-            <Match when={gameStore.gameState.state === "leaderboard"}>
-              <LeaderboardsGamePhase />
-            </Match>
-          </Switch>
-          <aside
-            class="h-full max-h-full w-80"
-            style={{
-              height: "var(--custom-height)",
-            }}
-          >
-            <Show when={!!profileData()} fallback={<p>Selecting...</p>}>
-              <Chat
-                messages={gameStore.chatMessages}
-                onChatMessage={handleChatMessage}
-                disabled={isSongToGuessFromThisPlayer()}
-              />
-            </Show>
-          </aside>
+        <div
+          class="relative"
+          style={{
+            "--custom-height": `calc(100vh - ${NAV_HEIGHT} - ${LOBBY_LAYOUT_HEIGHT} * 2 - 2rem)`,
+            height: `calc(var(--custom-height) + ${LOBBY_LAYOUT_HEIGHT} * 2)`,
+          }}
+        >
+          <div class="grid grid-cols-[auto,1fr,auto] gap-4 py-4 overflow-hidden">
+            {/* Player sidebar */}
+            <PlayerList shouldShow={!!profileData()} />
+            {/* ___ */}
+            <Switch>
+              <Match when={gameStore.gameState.state === "lobby"}>
+                <LobbyPhase />
+              </Match>
+              <Match when={gameStore.gameState.state === "picking"}>
+                <PickingPhase />
+              </Match>
+              <Match when={gameStore.gameState.state === "guessing"}>
+                <GuessingGamePhase />
+              </Match>
+              <Match when={gameStore.gameState.state === "leaderboard"}>
+                <LeaderboardsGamePhase />
+              </Match>
+            </Switch>
+            <aside
+              class="h-full max-h-full w-80"
+              style={{
+                height: "var(--custom-height)",
+              }}
+            >
+              <Show when={!!profileData()} fallback={<p>Selecting...</p>}>
+                <Chat
+                  messages={gameStore.chatMessages}
+                  onChatMessage={handleChatMessage}
+                  disabled={isSongToGuessFromThisPlayer()}
+                />
+              </Show>
+            </aside>
+          </div>
         </div>
-      </div>
+      </Show>
     </WsConnectionProvider>
+  );
+}
+
+type ConnectingFallbackProps = {
+  shouldDisplayLoader: boolean;
+};
+
+function ConnectingFallback(props: ConnectingFallbackProps) {
+  return (
+    <Show when={props.shouldDisplayLoader}>
+      <Motion.div
+        class="fixed inset-0 grid place-content-center bg-black/40 z-[100]"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <Loader />
+      </Motion.div>
+    </Show>
   );
 }
 
