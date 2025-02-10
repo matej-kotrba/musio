@@ -1,4 +1,4 @@
-import type { ChatMessage, GameState, SongWithNameHidden } from "shared";
+import type { ChatMessage, GameOptions, GameState, SongWithNameHidden } from "shared";
 import type { PlayerToDisplay } from "~/components/game/Player";
 import { createContext, JSX, useContext } from "solid-js";
 import { createStore, SetStoreFunction } from "solid-js/store";
@@ -9,6 +9,7 @@ export type GameStore = {
   chatMessages: ChatMessage[];
   thisPlayerIds?: { public: string; private: string };
   gameState: GameState;
+  gameOptions: GameOptions;
 
   didPick: boolean;
   currentSongToGuess?: SongWithNameHidden;
@@ -53,6 +54,10 @@ export function getNewGameStore(): GetNewGameStoreReturnType {
     chatMessages: [],
     gameState: {
       state: "lobby",
+      type: "INITIAL",
+    },
+    gameOptions: {
+      toPointsLimit: 0,
     },
     // gameState: {
     //   state: "guessing",

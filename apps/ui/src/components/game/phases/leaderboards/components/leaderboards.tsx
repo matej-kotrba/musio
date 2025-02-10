@@ -1,7 +1,7 @@
 import { Icon } from "@iconify-icon/solid";
 import clsx from "clsx";
 import { Player } from "shared";
-import { Index, Show } from "solid-js";
+import { For, Index, Show } from "solid-js";
 import { Motion } from "solid-motionone";
 
 type LeaderboardsProps = {
@@ -105,6 +105,14 @@ function PlayerOnTopThree(props: PlayerComponentProps) {
           {props.player.name}
         </p>
       </Motion.div>
+    </div>
+  );
+}
+
+export function LeaderboardsSimple(props: LeaderboardsProps) {
+  return (
+    <div class="flex flex-col gap-1">
+      <For each={props.players}>{(player) => <PlayerBelowTopThree player={player} />}</For>
     </div>
   );
 }

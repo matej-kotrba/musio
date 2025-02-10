@@ -51,3 +51,7 @@ export type GameStateMap = {
 export type GameState = GameStateMap[keyof GameStateMap];
 
 export type GameStateType = GameState["state"];
+
+export type GameOptions = {
+  toPointsLimit: number;
+};

@@ -63,7 +63,7 @@ export function createNewLobby(lobbies: LobbiesMap) {
       currentSongIndex: 0,
     },
     options: {
-      toPointsLimit: 10,
+      toPointsLimit: 20,
     },
   } satisfies Lobby;
 

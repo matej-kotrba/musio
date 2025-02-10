@@ -1,5 +1,5 @@
 import type { messageConfig } from "../messages";
-import type { GameState, Song, SongWithNameHidden } from "./lobby";
+import type { GameOptions, GameState, SongWithNameHidden } from "./lobby";
 import type { PlayerFromServer } from "./player";
 
 // Player ids are never specified as they are passed with the ws messageToClient already
@@ -8,6 +8,7 @@ export type WS_MessageMapServer = {
     allPlayers: PlayerFromServer[];
     thisPlayerPublicId: string;
     thisPlayerPrivateId: string;
+    gameOptions: GameOptions;
   };
   PLAYER_JOIN: PlayerFromServer;
   CHANGE_GAME_STATE: {

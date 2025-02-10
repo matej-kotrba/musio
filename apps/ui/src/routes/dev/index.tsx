@@ -4,7 +4,10 @@ import { createStore } from "solid-js/store";
 import { TransitionGroup } from "solid-transition-group";
 import { GuessingGameLeaderboardsFallback } from "~/components/game/phases/guessing/components/GuessingPhase";
 import SongQueueProgress from "~/components/game/phases/guessing/components/SongQueueProgress";
-import { LeaderboardsEmphasized } from "~/components/game/phases/leaderboards/components/leaderboards";
+import {
+  LeaderboardsEmphasized,
+  LeaderboardsSimple,
+} from "~/components/game/phases/leaderboards/components/leaderboards";
 import SongPicker from "~/components/game/phases/picking/components/song-picker/SongPicker";
 import Timer from "~/components/game/phases/picking/components/timer/Timer";
 import PlayerDisplay, { getAllIcons, PlayerToDisplay } from "~/components/game/Player";
@@ -69,8 +72,9 @@ export default function Dev() {
 
   return (
     <div class="w-72 mx-auto flex flex-col gap-2 mt-2">
-      <button onClick={increment}>Increment</button>
-      <Show when={step()}>
+      <LeaderboardsSimple players={dummy_players} />
+      {/* <button onClick={increment}>Increment</button> */}
+      {/* <Show when={step()}>
         {(s) => {
           return (
             <SongQueueProgress
@@ -86,7 +90,7 @@ export default function Dev() {
             />
           );
         }}
-      </Show>
+      </Show> */}
       {/* <GuessingGameLeaderboardsFallback
         prevSong={{ name: "Monody", artist: "TheFatRat" }}
         playersOrderedByPointsGained={dummy_players.toSorted((a, b) => {

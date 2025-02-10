@@ -29,7 +29,7 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
           const name = c.req.query("name");
           const icon = c.req.query("icon");
           const lobbies = getLobbiesService().lobbies;
-          
+
           if (
             !playerNameValidator.safeParse(name).success ||
             !playerIconNameValidator.safeParse(icon).success
@@ -73,6 +73,7 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
                 })),
                 thisPlayerPrivateId: newPlayer.privateId,
                 thisPlayerPublicId: newPlayer.publicId,
+                gameOptions: lobby!.options,
               })
             )
           );

@@ -1,6 +1,7 @@
 import {
   createNewMessageToClient,
   toPayloadToClient,
+  type GameOptions,
   type GameState,
   type GameStateMap,
   type GameStateType,
@@ -28,9 +29,7 @@ export type Lobby<T extends GameState["state"] | undefined = undefined> = {
       songQueueGenerator?: Generator;
       currentSongIndex: number;
     };
-    options: {
-      toPointsLimit: number;
-    };
+    options: GameOptions;
   };
 }[T extends undefined ? GameStateType : T];
 

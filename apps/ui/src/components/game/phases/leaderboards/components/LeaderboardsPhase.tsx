@@ -1,10 +1,10 @@
 import { Icon } from "@iconify-icon/solid";
 import { Show } from "solid-js";
-import { LeaderboardsEmphasized } from "./leaderboards";
+import { LeaderboardsEmphasized, LeaderboardsSimple } from "./leaderboards";
 import { Button } from "~/components/ui/button";
 import { useGameStore } from "~/routes/lobby/[id]/stores/game-store";
 import { useWsConnection } from "~/contexts/wsConnection";
-import { toPayloadToServer, createNewMessageToServer } from "shared";
+import { toPayloadToServer, createNewMessageToServer, Player } from "shared";
 
 export default function LeaderboardsGamePhase() {
   const [gameStore, { queries }] = useGameStore();
@@ -22,6 +22,12 @@ export default function LeaderboardsGamePhase() {
     );
   }
 
+  function hasAnyPlayerHitGameLimit(players: Player[]) {
+    return players.some((player) => player.points >= gameStore.gameOptions.toPointsLimit);
+  }
+
+  const playersSortedByPoints = () => gameStore.players.toSorted((a, b) => b.points - a.points);
+
   return (
     <>
       <div class="px-2 mt-8">
@@ -31,7 +37,11 @@ export default function LeaderboardsGamePhase() {
             <Icon icon="mingcute:repeat-fill" class="text-xl" />
           </Button>
         </Show>
-        <LeaderboardsEmphasized players={gameStore.players} />
+        {hasAnyPlayerHitGameLimit(gameStore.players) ? (
+          <LeaderboardsEmphasized players={playersSortedByPoints()} />
+        ) : (
+          <LeaderboardsSimple players={playersSortedByPoints()} />
+        )}
       </div>
     </>
   );
