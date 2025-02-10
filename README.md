@@ -13,6 +13,7 @@ that does not animate the transition for some reason
 [] - Make leaderboards when not hitting the goal as temporary or somehow make it obvious that its not final
 and then show the current leaderboard whenever the game actually ends, then reset the player points
 [] - try to refactor how GuessingPhase works, the fallback especially
+[] - on leaderboards players are still not ordered by points
 
 [] - now new lobby is created when hitting the rest endpoint, just check if the lobby exist there and create it
 only on join

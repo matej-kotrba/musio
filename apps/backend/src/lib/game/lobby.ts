@@ -28,6 +28,9 @@ export type Lobby<T extends GameState["state"] | undefined = undefined> = {
       songQueueGenerator?: Generator;
       currentSongIndex: number;
     };
+    options: {
+      toPointsLimit: number;
+    };
   };
 }[T extends undefined ? GameStateType : T];
 

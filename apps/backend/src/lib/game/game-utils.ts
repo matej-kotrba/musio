@@ -11,6 +11,10 @@ export function isHost(playerId: string, lobby: Lobby) {
   return lobby.leaderPlayerId === playerId;
 }
 
+export function hasAnyPlayerHitPointsLimit(lobby: Lobby): boolean {
+  return lobby.players.some((player) => player.points >= lobby.options.toPointsLimit);
+}
+
 export function getReceivedPoints({
   guessedPlayersLength,
   guessTimeInMs,

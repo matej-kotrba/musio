@@ -1,4 +1,10 @@
-import { type FromMessageOnServerByStateType, type PickingGameState } from "shared";
+import {
+  createNewMessageToClient,
+  toPayloadToClient,
+  type FromMessageOnServerByStateType,
+  type PickingGameState,
+  type PlayerFromServer,
+} from "shared";
 import { isHost } from "../game/game-utils";
 import { changeToLobbyState, getInitialPickingGameState, type Lobby } from "../game/lobby";
 import { getLobbiesService, type LobbiesMap } from "../game/create";
@@ -15,7 +21,8 @@ export function handleLobbyEvent(
     case "START_GAME":
       if (!isHost(data.privateId, lobby)) return;
 
-      if (lobby.stateProperties.type === "INITIAL") resetPlayerPoints(lobby);
+      console.log("🚀 ~ type:", lobby.stateProperties.type);
+      if (lobby.stateProperties.type === "INITIAL") resetPlayerPoints(lobbies, lobby);
 
       const initialData = getInitialPickingGameState();
       changeToLobbyState(lobby, lobbies, initialData);
@@ -26,9 +33,20 @@ export function handleLobbyEvent(
   }
 }
 
-function resetPlayerPoints(lobby: Lobby) {
-  lobby.players.map((player) => ({ ...player, points: 0 }));
+function resetPlayerPoints(lobbies: LobbiesMap, lobby: Lobby) {
+  lobby.players.forEach((player) => {
+    player.points = 0;
+  });
 }
+
+// function notifyPlayersOfResettingPoints(lobbies: LobbiesMap, lobby: Lobby) {
+//   lobbies.broadcast(lobby.id, toPayloadToClient(
+//         "server",
+//         createNewMessageToClient(lobby.id, "CHANGE_POINTS", {
+//           properties: lobby.stateProperties,
+//         })
+//       ))
+// }
 
 function setAbortControllerForPickingPhase(
   lobbies: LobbiesMap,

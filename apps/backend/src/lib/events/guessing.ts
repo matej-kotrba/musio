@@ -68,11 +68,20 @@ function handleGuessWhenSame(lobby: Lobby<"guessing">, player: PlayerServer, mes
     currentPlayerWhoPickedPoints: lobby.stateProperties.playerWhoPickedTheSong!.points,
   });
 
+  // Assign points to current guess stats
   lobby.stateProperties.playersWhoGuessed.push({
     privateId: player.privateId,
     points: pointsToReceive.forGuesser,
   });
   lobby.stateProperties.playerWhoPickedTheSong!.points += pointsToReceive.forPlayerWhoPicked;
+
+  // Assign points to player on server
+  player.points += pointsToReceive.forGuesser;
+  const playerWhoPickedSong = getPlayerByPrivateId(
+    lobby,
+    lobby.stateProperties.playerWhoPickedTheSong!.privateId
+  );
+  if (playerWhoPickedSong) playerWhoPickedSong.points += pointsToReceive.forPlayerWhoPicked;
 
   getLobbiesService().lobbies.broadcast(
     lobby.id,
@@ -81,15 +90,16 @@ function handleGuessWhenSame(lobby: Lobby<"guessing">, player: PlayerServer, mes
       createNewMessageToClient(lobby.id, "CHANGE_POINTS", [
         {
           publicId: player.publicId,
-          newPoints: pointsToReceive.forGuesser,
+          newPoints: player.points,
         },
-        {
-          publicId: getPlayerByPrivateId(
-            lobby,
-            lobby.stateProperties.playerWhoPickedTheSong!.privateId
-          )!.publicId,
-          newPoints: pointsToReceive.forPlayerWhoPicked,
-        },
+        ...(playerWhoPickedSong
+          ? [
+              {
+                publicId: playerWhoPickedSong.publicId,
+                newPoints: playerWhoPickedSong.points,
+              },
+            ]
+          : []),
       ])
     )
   );

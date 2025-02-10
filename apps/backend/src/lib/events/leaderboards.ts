@@ -1,14 +1,7 @@
-import { type FromMessageOnServerByStateType } from "shared";
-import { isHost } from "../game/game-utils";
-import {
-  changeToLobbyState,
-  getInitialLobbyState,
-  getInitialPickingGameState,
-  type Lobby,
-} from "../game/lobby";
+import { type FromMessageOnServerByStateType, type LobbyGameState } from "shared";
+import { hasAnyPlayerHitPointsLimit, isHost } from "../game/game-utils";
+import { changeToLobbyState, getInitialLobbyState, type Lobby } from "../game/lobby";
 import { getLobbiesService } from "../game/create";
-import { setTimeout } from "timers/promises";
-import { changeToGuessingGameLobbyState } from "./picking";
 
 export function handleLeaderboardsEvent(
   lobby: Lobby<"leaderboard">,
@@ -20,7 +13,12 @@ export function handleLeaderboardsEvent(
     case "BACK_TO_LOBBY":
       if (!isHost(data.privateId, lobby)) return;
 
-      const initialData = getInitialLobbyState();
+      const changeToLobbyType: LobbyGameState["type"] = hasAnyPlayerHitPointsLimit(lobby)
+        ? "INITIAL"
+        : "IN_BETWEEN_ROUNDS";
+      const initialData = getInitialLobbyState(changeToLobbyType);
+      console.log("🚀 ~ changeToLobbyType:", changeToLobbyType);
+
       changeToLobbyState(lobby, lobbies, initialData);
 
       break;

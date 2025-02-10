@@ -3,6 +3,7 @@ import type { Lobby } from "./lobby";
 import { getRandomId } from "../common/utils";
 import type { Song } from "shared";
 import type { PlayerServer } from "./player";
+import { DEFAULT_POINTS_LIMIT } from "../common/constants";
 
 export class LobbyMap<K extends string, V extends Lobby> extends Map<K, V> {
   publish(lobbyId: K, senderId: string, message: string) {
@@ -53,12 +54,16 @@ export function createNewLobby(lobbies: LobbiesMap) {
     id,
     stateProperties: {
       state: "lobby",
+      type: "INITIAL",
     },
     players: [],
     data: {
       pickedSongs: [],
       songQueue: [],
       currentSongIndex: 0,
+    },
+    options: {
+      toPointsLimit: 10,
     },
   } satisfies Lobby;
 

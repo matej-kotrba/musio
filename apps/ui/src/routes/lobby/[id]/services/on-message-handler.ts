@@ -161,7 +161,8 @@ export const handleOnWsMessage = () => {
             (player) => player.publicId === publicId,
             produce((player) => {
               player.previousPoints = player.points;
-              player.points = player.points + newPoints;
+              player.points = newPoints;
+              // player.points = player.points + newPoints;
             })
           );
         });
