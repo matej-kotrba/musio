@@ -37,16 +37,25 @@ function resetPlayerPoints(lobbies: LobbiesMap, lobby: Lobby) {
   lobby.players.forEach((player) => {
     player.points = 0;
   });
+  notifyPlayersOfResettingPoints(lobbies, lobby);
 }
 
-// function notifyPlayersOfResettingPoints(lobbies: LobbiesMap, lobby: Lobby) {
-//   lobbies.broadcast(lobby.id, toPayloadToClient(
-//         "server",
-//         createNewMessageToClient(lobby.id, "CHANGE_POINTS", {
-//           properties: lobby.stateProperties,
-//         })
-//       ))
-// }
+function notifyPlayersOfResettingPoints(lobbies: LobbiesMap, lobby: Lobby) {
+  lobbies.broadcast(
+    lobby.id,
+    toPayloadToClient(
+      "server",
+      createNewMessageToClient(
+        lobby.id,
+        "CHANGE_POINTS",
+        lobby.players.map((player) => ({
+          newPoints: 0,
+          publicId: player.publicId,
+        }))
+      )
+    )
+  );
+}
 
 function setAbortControllerForPickingPhase(
   lobbies: LobbiesMap,
