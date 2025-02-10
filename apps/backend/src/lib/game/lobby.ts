@@ -6,6 +6,7 @@ import {
   type GameStateType,
   type GuessingGameState,
   type LeaderboardGameState,
+  type LobbyGameState,
   type PickingGameState,
   type Song,
 } from "shared";
@@ -69,8 +70,10 @@ export function changeToLobbyState(
   callback?.();
 }
 
-export const getInitialLobbyState: () => InitialGamePhaseData<GameState> = () => ({
-  gameState: { state: "lobby" },
+export const getInitialLobbyState: (
+  lobbyStateType: LobbyGameState["type"]
+) => InitialGamePhaseData<GameState> = (lobbyStateType) => ({
+  gameState: { state: "lobby", type: lobbyStateType },
   lobbyData: {
     pickedSongs: [],
     songQueue: [],

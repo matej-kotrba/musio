@@ -10,6 +10,7 @@ export type SongWithNameHidden = Omit<Song, "name"> & { name: (string | null)[][
 
 export type LobbyGameState = {
   state: "lobby";
+  type: "INITIAL" | "IN_BETWEEN_ROUNDS";
 };
 
 export type PickingGameState = {

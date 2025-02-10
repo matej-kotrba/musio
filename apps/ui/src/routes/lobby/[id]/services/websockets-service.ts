@@ -5,8 +5,6 @@ export default function useWebsocket(onMessageHandler: (event: MessageEvent<stri
   const [ws, setWs] = createSignal<Maybe<WebSocket>>(undefined);
 
   async function connect(lobbyId: string, data: ProfileData) {
-    await new Promise(res => setTimeout(() => {res("")}, 5000))
-
     const newWs = new WebSocket(
       `ws://localhost:5173/ws?lobbyId=${lobbyId}&name=${data.name}&icon=${data.icon}`
     );
