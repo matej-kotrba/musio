@@ -3,6 +3,7 @@ import {
   gameLimitSchema,
   toPayloadToClient,
   type FromMessageOnServerByStateType,
+  type GameOptions,
   type PickingGameState,
   type PlayerFromServer,
 } from "shared";
@@ -36,6 +37,7 @@ export function handleLobbyEvent(
       if (!gameLimitSchema.safeParse(data.message.payload.newLimit).success) return;
 
       lobby.options.toPointsLimit = data.message.payload.newLimit;
+      notifyPlayersOfGameOptionsChange(lobbies, lobby, lobby.options);
 
       break;
   }
@@ -80,4 +82,18 @@ function setAbortControllerForPickingPhase(
     .catch((e) => {});
 }
 
-function notifyPlayersOfGameOptionsChange() {}
+function notifyPlayersOfGameOptionsChange(
+  lobbies: LobbiesMap,
+  lobby: Lobby,
+  gameOptions: Partial<GameOptions>
+) {
+  lobbies.broadcast(
+    lobby.id,
+    toPayloadToClient(
+      "server",
+      createNewMessageToClient(lobby.id, "CHANGE_GAME_OPTIONS", {
+        gameLimit: gameOptions.toPointsLimit,
+      })
+    )
+  );
+}
