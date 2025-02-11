@@ -111,7 +111,7 @@ function PlayerOnTopThree(props: PlayerComponentProps) {
 
 export function LeaderboardsSimple(props: LeaderboardsProps) {
   return (
-    <div class="flex flex-col gap-1">
+    <div class="flex flex-col gap-1 w-full max-w-72 mx-auto">
       <For each={props.players}>{(player) => <PlayerBelowTopThree player={player} />}</For>
     </div>
   );
