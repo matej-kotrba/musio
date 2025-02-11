@@ -12,13 +12,14 @@ import {
 import { MIN_GAME_LIMIT_VALUE, DEFAULT_GAME_LIMIT_VALUE, MAX_GAME_LIMIT_VALUE } from "shared";
 import { Button } from "~/components/ui/button";
 
-type OnSaveData = {
+export type OnSaveData = {
   gameLimit: number;
 };
 
 type Props = {
   children: JSX.Element;
   gameLimit: number;
+  onSettingsSave?: (data: OnSaveData) => void;
 };
 
 export default function LobbySettings(props: Props) {
@@ -31,11 +32,10 @@ export default function LobbySettings(props: Props) {
       (MAX_GAME_LIMIT_VALUE - MIN_GAME_LIMIT_VALUE)) *
     100;
 
-  function onSaveButtonClick(): OnSaveData {
+  function onSaveButtonClick() {
     setIsOpen(false);
-    return {
-      gameLimit: gameLimitSliderValue(),
-    };
+
+    props.onSettingsSave?.({ gameLimit: gameLimitSliderValue() });
   }
 
   function handleOpenChange(isOpening: boolean) {
@@ -46,7 +46,7 @@ export default function LobbySettings(props: Props) {
   }
 
   return (
-    <Dialog open={true || isOpen()} onOpenChange={handleOpenChange}>
+    <Dialog open={isOpen()} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Lobby settings</DialogTitle>

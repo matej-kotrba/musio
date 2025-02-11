@@ -1,5 +1,5 @@
 import { Icon } from "@iconify-icon/solid";
-import { toPayloadToServer, createNewMessageToServer } from "shared";
+import { toPayloadToServer, createNewMessageToServer, gameLimitSchema } from "shared";
 import { createEffect, Show } from "solid-js";
 import { Button } from "~/components/ui/button";
 import { TextField, TextFieldRoot } from "~/components/ui/textfield";
@@ -7,11 +7,12 @@ import { TooltipTrigger, TooltipContent, Tooltip } from "~/components/ui/tooltip
 import { useWsConnection } from "~/contexts/wsConnection";
 import { useCopyToClipboard } from "~/hooks";
 import { useGameStore } from "~/routes/lobby/[id]/stores/game-store";
-import LobbySettings from "./Settings";
+import LobbySettings, { OnSaveData } from "./Settings";
 
 export default function LobbyPhase() {
-  const [gameStore, { queries }] = useGameStore();
-  const { getLobbyHost } = queries;
+  const [gameStore, { queries, actions }] = useGameStore();
+  const { getLobbyHost, getThisPlayer } = queries;
+  const { setGameStore } = actions;
   const ws = useWsConnection();
 
   const copyToClipboard = useCopyToClipboard();
@@ -27,9 +28,28 @@ export default function LobbyPhase() {
     );
   };
 
+  function handleLobbySettingsSave(data: OnSaveData) {
+    if (!gameStore.thisPlayerIds?.private || getLobbyHost()?.publicId !== getThisPlayer()?.publicId)
+      return;
+    if (gameLimitSchema.safeParse(data.gameLimit).success) {
+      setGameStore("gameOptions", "toPointsLimit", data.gameLimit);
+      ws.send?.(
+        toPayloadToServer(
+          gameStore.thisPlayerIds.private,
+          createNewMessageToServer(gameStore.lobbyId, "CHANGE_GAME_LIMIT", {
+            newLimit: data.gameLimit,
+          })
+        )
+      );
+    }
+  }
+
   return (
     <section class="grid place-content-center relative">
-      <LobbySettings gameLimit={gameStore.gameOptions.toPointsLimit}>
+      <LobbySettings
+        gameLimit={gameStore.gameOptions.toPointsLimit}
+        onSettingsSave={handleLobbySettingsSave}
+      >
         <div class="absolute top-0 right-0">
           <Icon icon="ic:round-settings" class="text-2xl text-foreground duration-100" />
         </div>

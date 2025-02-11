@@ -1,5 +1,6 @@
 import {
   createNewMessageToClient,
+  gameLimitSchema,
   toPayloadToClient,
   type FromMessageOnServerByStateType,
   type PickingGameState,
@@ -21,13 +22,20 @@ export function handleLobbyEvent(
     case "START_GAME":
       if (!isHost(data.privateId, lobby)) return;
 
-      console.log("🚀 ~ type:", lobby.stateProperties.type);
       if (lobby.stateProperties.type === "INITIAL") resetPlayerPoints(lobbies, lobby);
 
       const initialData = getInitialPickingGameState();
       changeToLobbyState(lobby, lobbies, initialData);
 
       setAbortControllerForPickingPhase(lobbies, lobby, initialData.gameState);
+
+      break;
+    case "CHANGE_GAME_LIMIT":
+      if (!isHost(data.privateId, lobby)) return;
+      if (lobby.stateProperties.type !== "INITIAL") return;
+      if (!gameLimitSchema.safeParse(data.message.payload.newLimit).success) return;
+
+      lobby.options.toPointsLimit = data.message.payload.newLimit;
 
       break;
   }
@@ -71,3 +79,5 @@ function setAbortControllerForPickingPhase(
     .then(() => changeToGuessingGameLobbyState(lobby, lobbies))
     .catch((e) => {});
 }
+
+function notifyPlayersOfGameOptionsChange() {}

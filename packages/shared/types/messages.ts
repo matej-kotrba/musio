@@ -44,8 +44,16 @@ export type WS_MessageMapServer = {
 
 export type GuessChatMessageType = "near" | "guessed" | false;
 
+type MessageConfig = typeof messageConfig;
+
+type EventToState = {
+  [Key in keyof MessageConfig as keyof MessageConfig[Key]]: Key;
+};
+
 export type WS_MessageMapClient = {
-  [State in keyof typeof messageConfig as keyof (typeof messageConfig)[State]]: (typeof messageConfig)[State][keyof (typeof messageConfig)[State]];
+  [State in keyof EventToState]: State extends keyof MessageConfig[EventToState[State]]
+    ? MessageConfig[EventToState[State]][State]
+    : never;
 };
 
 export type WS_MESSAGE = WS_MessageMapServer | WS_MessageMapClient;
