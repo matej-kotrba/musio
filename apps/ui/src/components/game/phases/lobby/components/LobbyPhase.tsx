@@ -7,6 +7,7 @@ import { TooltipTrigger, TooltipContent, Tooltip } from "~/components/ui/tooltip
 import { useWsConnection } from "~/contexts/wsConnection";
 import { useCopyToClipboard } from "~/hooks";
 import { useGameStore } from "~/routes/lobby/[id]/stores/game-store";
+import LobbySettings from "./Settings";
 
 export default function LobbyPhase() {
   const [gameStore, { queries }] = useGameStore();
@@ -27,7 +28,12 @@ export default function LobbyPhase() {
   };
 
   return (
-    <section class="grid place-content-center">
+    <section class="grid place-content-center relative">
+      <LobbySettings gameLimit={gameStore.gameOptions.toPointsLimit}>
+        <div class="absolute top-0 right-0">
+          <Icon icon="ic:round-settings" class="text-2xl text-foreground duration-100" />
+        </div>
+      </LobbySettings>
       <p class="text-foreground/70">
         Currently <span class="font-bold text-foreground">{gameStore.players.length}</span> players
         in lobby

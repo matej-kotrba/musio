@@ -11,7 +11,10 @@ import {
 } from "~/components/ui/dialog";
 import { MIN_GAME_LIMIT_VALUE, DEFAULT_GAME_LIMIT_VALUE, MAX_GAME_LIMIT_VALUE } from "shared";
 import { Button } from "~/components/ui/button";
-import { Icon } from "@iconify-icon/solid";
+
+type OnSaveData = {
+  gameLimit: number;
+};
 
 type Props = {
   children: JSX.Element;
@@ -20,24 +23,30 @@ type Props = {
 
 export default function LobbySettings(props: Props) {
   const [isOpen, setIsOpen] = createSignal<boolean>(false);
-  const [sliderValue, setSliderValue] = createSignal<number>(DEFAULT_GAME_LIMIT_VALUE);
+  const [gameLimitSliderValue, setGameLimitSliderValue] =
+    createSignal<number>(DEFAULT_GAME_LIMIT_VALUE);
 
   const getLeftOffsetPercentage = () =>
-    ((sliderValue() - MIN_GAME_LIMIT_VALUE) / (MAX_GAME_LIMIT_VALUE - MIN_GAME_LIMIT_VALUE)) * 100;
+    ((gameLimitSliderValue() - MIN_GAME_LIMIT_VALUE) /
+      (MAX_GAME_LIMIT_VALUE - MIN_GAME_LIMIT_VALUE)) *
+    100;
 
-  function onSaveButtonClick() {
+  function onSaveButtonClick(): OnSaveData {
     setIsOpen(false);
+    return {
+      gameLimit: gameLimitSliderValue(),
+    };
   }
 
   function handleOpenChange(isOpening: boolean) {
     if (isOpening === true) {
-      setSliderValue(props.gameLimit);
+      setGameLimitSliderValue(props.gameLimit);
     }
     setIsOpen(isOpening);
   }
 
   return (
-    <Dialog open={isOpen()} onOpenChange={handleOpenChange}>
+    <Dialog open={true || isOpen()} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Lobby settings</DialogTitle>
@@ -48,22 +57,23 @@ export default function LobbySettings(props: Props) {
               </label>
               <div
                 class={`${styles.slider__current_value} relative`}
-                data-value={sliderValue()}
+                data-value={gameLimitSliderValue()}
                 style={{ "--left-offset-percentage": `${getLeftOffsetPercentage()}%` }}
               >
                 <input
                   type="range"
                   name="points-limit"
-                  class={`${styles.slider} w-full block bg-secondary rounded-full h-1 mt-4 shadow-sm`}
+                  class={`${styles.slider} w-full block bg-secondary rounded-full h-1 shadow-sm`}
                   min={MIN_GAME_LIMIT_VALUE}
                   max={MAX_GAME_LIMIT_VALUE}
-                  value={sliderValue()}
-                  onInput={(e) => setSliderValue(parseInt(e.currentTarget.value))}
+                  value={gameLimitSliderValue()}
+                  onInput={(e) => setGameLimitSliderValue(parseInt(e.currentTarget.value))}
                 />
               </div>
-              <div class="flex justify-between text-foreground font-semibold">
-                <span>{MIN_GAME_LIMIT_VALUE}</span>
-                <span>{MAX_GAME_LIMIT_VALUE}</span>
+              <div class="grid grid-cols-3 text-foreground font-semibold mt-1">
+                <span class="text-left">{MIN_GAME_LIMIT_VALUE}</span>
+                <span class="text-muted-foreground text-center">{gameLimitSliderValue()}</span>
+                <span class="text-right">{MAX_GAME_LIMIT_VALUE}</span>
               </div>
             </div>
             <DialogFooter>
@@ -74,10 +84,7 @@ export default function LobbySettings(props: Props) {
           </DialogDescription>
         </DialogHeader>
       </DialogContent>
-      <DialogTrigger as="button">
-        {props.children}
-        {/* <Icon icon="ic:round-settings" class="text-2xl text-foreground duration-100" /> */}
-      </DialogTrigger>
+      <DialogTrigger as="button">{props.children}</DialogTrigger>
     </Dialog>
   );
 }

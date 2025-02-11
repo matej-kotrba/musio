@@ -46,7 +46,7 @@
 .slider[type="range"]:focus {
   outline: none;
 }
-
+/* 
 .slider__current_value::before {
   content: attr(data-value);
   color: hsl(var(--muted-foreground));
@@ -56,4 +56,4 @@
   left: var(--left-offset-percentage);
   transform: translateX(-50%);
   pointer-events: none;
-}
+} */

@@ -55,7 +55,6 @@ const dummy_players: PlayerToDisplay[] = [
 export default function Dev() {
   return (
     <div class="w-72 mx-auto flex flex-col gap-2 mt-2">
-      <LobbySettings gameLimit={120}>click</LobbySettings>
       {/* <button onClick={increment}>Increment</button> */}
       {/* <Show when={step()}>
         {(s) => {
