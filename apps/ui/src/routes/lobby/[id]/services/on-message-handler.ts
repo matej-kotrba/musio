@@ -5,7 +5,7 @@ import { produce } from "solid-js/store";
 
 export const handleOnWsMessage = () => {
   const [gameStore, { actions }] = useGameStore();
-  const { setGameStore, resetPlayerChecks } = actions;
+  const { setGameStore, resetPlayerChecks, resetGameData } = actions;
 
   return (event: MessageEvent<string>) => {
     const data = fromMessageOnClient(event.data);
@@ -32,6 +32,7 @@ export const handleOnWsMessage = () => {
 
         break;
       }
+
       case "PLAYER_JOIN": {
         const payload = data.message.payload;
         setGameStore("players", gameStore.players.length, playerServerToPlayer(payload));
@@ -43,6 +44,8 @@ export const handleOnWsMessage = () => {
         const payload = data.message.payload;
         setGameStore("gameState", payload.properties);
         resetPlayerChecks();
+
+        if (payload.properties.state === "lobby") resetGameData();
 
         break;
       }

@@ -201,7 +201,6 @@ export function GuessingGameLeaderboardsFallback(props: GuessingGameLeaderboards
         </div>
       </Show>
       <div class="mt-4"></div>
-      <p>Current song index: {gameStore.delaySongProgress?.currentIndex}</p>
       <Show when={gameStore.delaySongProgress}>
         {(songProgress) => {
           return (

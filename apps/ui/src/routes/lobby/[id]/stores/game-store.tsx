@@ -27,6 +27,9 @@ const getGameStoreActions = (store: GameStore, setStore: SetStoreFunction<GameSt
       setStore("players", () => true, "isChecked", false);
       setStore("didPick", false);
     },
+    resetGameData() {
+      setStore("previousSongData", undefined);
+    },
   } as const;
 };
 
