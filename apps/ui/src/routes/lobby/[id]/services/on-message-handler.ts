@@ -47,6 +47,15 @@ export const handleOnWsMessage = () => {
         break;
       }
 
+      case "CHANGE_GAME_OPTIONS": {
+        const payload = data.message.payload;
+        if (!!payload.gameLimit) {
+          setGameStore("gameOptions", "toPointsLimit", payload.gameLimit);
+        }
+
+        break;
+      }
+
       case "PLAYER_PICKED_SONG": {
         setGameStore("players", (player) => player.publicId === data.publicId, "isChecked", true);
         // setGameStore("players", (old) =>

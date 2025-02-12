@@ -32,6 +32,11 @@ export default function LobbySettings(props: Props) {
       (MAX_GAME_LIMIT_VALUE - MIN_GAME_LIMIT_VALUE)) *
     100;
 
+  createEffect(() => {
+    console.log("NEW GAME LIMIT", props.gameLimit);
+    setGameLimitSliderValue(props.gameLimit);
+  });
+
   function onSaveButtonClick() {
     setIsOpen(false);
 

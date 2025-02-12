@@ -46,14 +46,16 @@ export default function LobbyPhase() {
 
   return (
     <section class="grid place-content-center relative">
-      <LobbySettings
-        gameLimit={gameStore.gameOptions.toPointsLimit}
-        onSettingsSave={handleLobbySettingsSave}
-      >
-        <div class="absolute top-0 right-0">
-          <Icon icon="ic:round-settings" class="text-2xl text-foreground duration-100" />
-        </div>
-      </LobbySettings>
+      <Show when={getThisPlayer()?.isHost}>
+        <LobbySettings
+          gameLimit={gameStore.gameOptions.toPointsLimit}
+          onSettingsSave={handleLobbySettingsSave}
+        >
+          <div class="absolute top-0 right-0">
+            <Icon icon="ic:round-settings" class="text-2xl text-foreground duration-100" />
+          </div>
+        </LobbySettings>
+      </Show>
       <p class="text-foreground/70">
         Currently <span class="font-bold text-foreground">{gameStore.players.length}</span> players
         in lobby
