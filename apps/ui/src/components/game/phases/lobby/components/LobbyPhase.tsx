@@ -1,5 +1,10 @@
 import { Icon } from "@iconify-icon/solid";
-import { toPayloadToServer, createNewMessageToServer, gameLimitSchema } from "shared";
+import {
+  toPayloadToServer,
+  createNewMessageToServer,
+  gameLimitSchema,
+  LobbyGameState,
+} from "shared";
 import { createEffect, Show } from "solid-js";
 import { Button } from "~/components/ui/button";
 import { TextField, TextFieldRoot } from "~/components/ui/textfield";
@@ -8,14 +13,11 @@ import { useWsConnection } from "~/contexts/wsConnection";
 import { useCopyToClipboard } from "~/hooks";
 import { useGameStore } from "~/routes/lobby/[id]/stores/game-store";
 import LobbySettings, { OnSaveData } from "./Settings";
+import Loader from "~/components/common/loader/Loader";
 
 export default function LobbyPhase() {
-  const [gameStore, { queries, actions }] = useGameStore();
-  const { getLobbyHost, getThisPlayer } = queries;
-  const { setGameStore } = actions;
+  const [gameStore] = useGameStore();
   const ws = useWsConnection();
-
-  const copyToClipboard = useCopyToClipboard();
 
   const onNextRoundStartButtonClick = () => {
     if (!gameStore.thisPlayerIds?.private) return;
@@ -27,6 +29,42 @@ export default function LobbyPhase() {
       )
     );
   };
+
+  return (
+    <Show
+      when={(gameStore.gameState as LobbyGameState).type === "INITIAL"}
+      fallback={<LobbyInBetweenRounds onNextRoundStartButtonClick={onNextRoundStartButtonClick} />}
+    >
+      <LobbyInitial onNextRoundStartButtonClick={onNextRoundStartButtonClick} />
+    </Show>
+  );
+}
+
+type LobbyTypesProps = {
+  onNextRoundStartButtonClick: () => void;
+};
+
+function LobbyInBetweenRounds(props: LobbyTypesProps) {
+  return (
+    <section class="grid place-content-center relative">
+      <div class="flex flex-col gap-2 items-center">
+        <Loader />
+        <span>Waiting for host to start next round</span>
+        <Button class="w-full" on:click={props.onNextRoundStartButtonClick}>
+          Next round
+        </Button>
+      </div>
+    </section>
+  );
+}
+
+function LobbyInitial(props: LobbyTypesProps) {
+  const [gameStore, { queries, actions }] = useGameStore();
+  const { getLobbyHost, getThisPlayer } = queries;
+  const { setGameStore } = actions;
+  const ws = useWsConnection();
+
+  const copyToClipboard = useCopyToClipboard();
 
   function handleLobbySettingsSave(data: OnSaveData) {
     if (!gameStore.thisPlayerIds?.private || getLobbyHost()?.publicId !== getThisPlayer()?.publicId)
@@ -70,7 +108,7 @@ export default function LobbyPhase() {
           variant={"default"}
           class="mb-2"
           disabled={gameStore.players.length === 0}
-          on:click={onNextRoundStartButtonClick}
+          on:click={props.onNextRoundStartButtonClick}
         >
           Start next round
         </Button>

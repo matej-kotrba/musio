@@ -13,10 +13,10 @@ that does not animate the transition for some reason
 and then show the current leaderboard whenever the game actually ends, then reset the player points
 [x] - on leaderboards players are still not ordered by points
 [x] - make sure that game options are only available for host, show them only for him
-[] - show song requester when playing the song + in the delay
-[] - try to refactor how GuessingPhase works, the fallback especially
+[x] - show song requester when playing the song + in the delay
 [] - create new lobby component for displaying it when points limit was not reached, so basically for the
 temporary round lobby
+[] - try to refactor how GuessingPhase works, the fallback especially
 [] - fix game options slider value being written on top of slider thumb
 [] - change host when host leaves
 

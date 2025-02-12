@@ -39,9 +39,15 @@ function GuessingGamePhaseInner(props: GuessingGamePhaseInnerProps) {
     gameStore.currentSongToGuess
   );
 
-  const getPreviousSong: () => Maybe<Pick<Song, "name" | "artist">> = () =>
+  const getPreviousSong: () => Maybe<
+    Pick<Song, "artist"> & { playerName: string; songName: string }
+  > = () =>
     gameStore.previousSongData && previousSong()
-      ? { name: gameStore.previousSongData.correctSongName, artist: previousSong()!.artist }
+      ? {
+          songName: gameStore.previousSongData.correctSongName,
+          artist: previousSong()!.artist,
+          playerName: getPlayerByPublicId(previousSong()!.fromPlayerByPublicId)?.name || "Unknown",
+        }
       : undefined;
 
   const getPlayerWhoRequestedCurrentSong = () => {
@@ -116,7 +122,7 @@ function GuessingGamePhaseInner(props: GuessingGamePhaseInnerProps) {
           }
         >
           <section class="flex flex-col items-center">
-            <p class="text-xl mb-6">
+            <p class="text-xl mb-8">
               <span class="text-foreground/35">Guess the song from</span>{" "}
               <span class="font-semibold text-foreground/80">
                 {getPlayerWhoRequestedCurrentSong()?.name ?? "Unknown"}
@@ -146,7 +152,7 @@ function GuessingGamePhaseInner(props: GuessingGamePhaseInnerProps) {
 type PlayerOrderedByPointsGained = { name: string; icon: Player["icon"]; pointsGained: number };
 
 type GuessingGameLeaderboardsProps = {
-  prevSong: Maybe<Pick<Song, "name" | "artist">>;
+  prevSong: Maybe<Pick<Song, "artist"> & { songName: string; playerName: string }>;
   playersOrderedByPointsGained: PlayerOrderedByPointsGained[];
 };
 
@@ -171,9 +177,13 @@ export function GuessingGameLeaderboardsFallback(props: GuessingGameLeaderboards
       <Show when={props.prevSong}>
         <div class="text-foreground/80 text-center">
           <span>Last song: </span>
-          <span class="font-bold text-foreground">{props.prevSong?.name}</span>
+          <span class="font-bold text-foreground">{props.prevSong?.songName}</span>
           <span> by </span>
           <span class="font-bold text-foreground">{props.prevSong?.artist}</span>
+        </div>
+        <div class="text-foreground/80 text-center">
+          <span>Requested by: </span>
+          <span class="text-foreground font-bold">{props.prevSong?.playerName}</span>
         </div>
         <div class="flex flex-col gap-1 mt-2">
           <For each={props.playersOrderedByPointsGained}>
