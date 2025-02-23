@@ -15,8 +15,6 @@ export default function SongQueueProgress(props: Props) {
   const [lastHoveredIndex, setLastHoveredIndex] = createSignal<Maybe<number>>(undefined);
   let containerRef!: HTMLDivElement;
 
-  console.log("PROPS", props.stepIndex, props.animateFromIndex, props.maxSteps);
-
   function changeLastHoveredIndex(newIndex: number) {
     setLastHoveredIndex(newIndex);
   }
@@ -29,6 +27,7 @@ export default function SongQueueProgress(props: Props) {
   }
 
   createEffect(() => {
+    props.stepIndex;
     setTimeout(() => setCurrentIndex(props.stepIndex));
   });
 

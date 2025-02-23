@@ -1,3 +1,5 @@
+import { createSignal, Show } from "solid-js";
+import SongQueueProgress from "~/components/game/phases/guessing/components/SongQueueProgress";
 import LobbySettings from "~/components/game/phases/lobby/components/Settings";
 import { getAllIcons, PlayerToDisplay } from "~/components/game/Player";
 
@@ -53,26 +55,34 @@ const dummy_players: PlayerToDisplay[] = [
 ];
 
 export default function Dev() {
+  const [step, setStep] = createSignal<number>(0);
+  const [stepRoot, setStepRoot] = createSignal<number>(0);
+
+  const incrementRoot = () => {
+    setStepRoot((old) => old + 1);
+  };
+
+  const increment = () => {
+    setStep((old) => old + 1);
+  };
+
   return (
     <div class="w-72 mx-auto flex flex-col gap-2 mt-2">
-      {/* <button onClick={increment}>Increment</button> */}
-      {/* <Show when={step()}>
-        {(s) => {
-          return (
-            <SongQueueProgress
-              stepIndex={3}
-              animateFromIndex={3 - 1 >= 0 ? 3 - 1 : 0}
-              maxSteps={4}
-              stepDescription={[
-                "Dr House's song",
-                "Dr House's song",
-                "Dr House's song",
-                "Dr House's song",
-              ]}
-            />
-          );
-        }}
-      </Show> */}
+      <button onClick={incrementRoot}>Increment root</button>
+      <button onClick={increment}>Increment</button>
+      <Show when={stepRoot() % 2 === 1} keyed>
+        <SongQueueProgress
+          stepIndex={step()}
+          animateFromIndex={step() - 1}
+          maxSteps={4}
+          stepDescription={[
+            "Dr House's song",
+            "Dr House's song",
+            "Dr House's song",
+            "Dr House's song",
+          ]}
+        />
+      </Show>
       {/* <GuessingGameLeaderboardsFallback
         prevSong={{ name: "Monody", artist: "TheFatRat" }}
         playersOrderedByPointsGained={dummy_players.toSorted((a, b) => {
