@@ -1,13 +1,21 @@
+.slider[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
 /* Thumb styling */
 .slider[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
+  cursor: pointer;
+
+  background: hsl(var(--foreground));
 
   width: 8px;
   height: 8px;
-  background: hsl(var(--foreground));
   border: none;
   border-radius: 50%;
+  transform: translateY(-25%);
 
   transition: 100ms;
 }
@@ -26,7 +34,7 @@
 .slider[type="range"]:hover::-webkit-slider-thumb {
   width: 16px;
   height: 16px;
-  transform: translateY(-25%);
+  transform: translateY(calc(-25% - 2px));
 }
 
 .slider[type="range"]:hover::-moz-range-thumb {
@@ -39,7 +47,9 @@
 }
 
 .slider[type="range"]::-webkit-slider-runnable-track {
-  height: 8px;
+  cursor: pointer;
+  background-color: hsl(var(--secondary));
+  height: 4px;
 }
 
 /* Focus styles */
