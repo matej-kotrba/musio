@@ -26,5 +26,6 @@ temporary round lobby
 only on join
 [x] - currently points are being summed on client, maybe send from server the total points and not only the gained ones
 [] - remove all the ws calls from regular code and move it to some actions layer for ws communication
+[] - when user requests new lobby but does not join it, it should get deleted
 
 [] - fix timer bug when out of focus in browser -> Can't do much about it
