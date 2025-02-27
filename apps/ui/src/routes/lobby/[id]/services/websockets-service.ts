@@ -1,4 +1,4 @@
-import { createEffect, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
 import { ProfileData } from "~/components/game/profile/ProfileSelection";
 
 export default function useWebsocket(onMessageHandler: (event: MessageEvent<string>) => void) {
@@ -12,7 +12,7 @@ export default function useWebsocket(onMessageHandler: (event: MessageEvent<stri
     return new Promise((res) => {
       newWs.addEventListener("open", () => {
         setWs(newWs);
-        res("");
+        res("done");
       });
       newWs.onmessage = onMessageHandler;
     });

@@ -108,6 +108,7 @@ export default function Lobby() {
   const params = useParams();
   const navigate = useNavigate();
 
+  const [profileData, setProfileData] = createSignal<ProfileData | null>(null);
   const [wsConnectionResourceParams, setWsConnectionResourceParams] =
     createSignal<WsConnectionResourceParams>(undefined);
 
@@ -118,13 +119,15 @@ export default function Lobby() {
 
   const [data] = createResource(wsConnectionResourceParams, connectFetchHandler);
 
-  // const ctx = useContext(WsConnectionContext);
-
-  const [profileData, setProfileData] = createSignal<ProfileData | null>(null);
+  createEffect(() => {
+    if (!gameStore.lobbyId) return;
+    // On connection update cookie for lobbyId so it can be reused when reloading page...
+    document.cookie = `lobbyId=John Doe`;
+  });
 
   const getLobbyIdFromParams = () => params.id;
-
-  onCleanup(() => disconnect());
+  const isSongToGuessFromThisPlayer = () =>
+    gameStore.currentSongToGuess?.fromPlayerByPublicId === gameStore.thisPlayerIds?.public;
 
   async function handleProfileSelected(data: ProfileData) {
     setProfileData(data);
@@ -162,8 +165,7 @@ export default function Lobby() {
     );
   };
 
-  const isSongToGuessFromThisPlayer = () =>
-    gameStore.currentSongToGuess?.fromPlayerByPublicId === gameStore.thisPlayerIds?.public;
+  onCleanup(() => disconnect());
 
   return (
     <WsConnectionProvider wsConnection={wsActions}>
