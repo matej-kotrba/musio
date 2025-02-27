@@ -11,7 +11,7 @@ import { handleAllEvent } from "../events/all";
 import { handleGuessingEvent } from "../events/guessing";
 import { handleLobbyEvent } from "../events/lobby";
 import { handlePickingEvent } from "../events/picking";
-import { getLobbiesService, createNewPlayer } from "../game/create";
+import { getLobbiesService, createNewPlayer, createNewLobby } from "../game/create";
 import { isHost } from "../game/game-utils";
 import { isLobbyState } from "../game/lobby";
 import { removePlayerFromLobby } from "../game/player";
@@ -39,13 +39,10 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
             return;
           }
 
-          if (!lobbyId || !lobbies.has(lobbyId)) {
-            console.log("Not sufficient lobbyId provided");
-            ws.close();
-            return;
-          }
+          let lobby = lobbies.get(lobbyId!);
 
-          const lobby = lobbies.get(lobbyId);
+          if (!lobby) lobby = createNewLobby(lobbies);
+
           const newPlayer = createNewPlayer(ws, getRandomId(), getRandomId(), name!, icon!);
 
           if (lobby?.players.length === 0) {
@@ -79,7 +76,7 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
           );
 
           lobbies.publish(
-            lobbyId,
+            lobby.id,
             newPlayer.privateId,
             toPayloadToClient(
               "server",
