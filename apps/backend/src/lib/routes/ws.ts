@@ -62,10 +62,7 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
               "server",
               createNewMessageToClient(lobby!.id, "PLAYER_INIT", {
                 allPlayers: lobby!.players.map((player) => ({
-                  publicId: player.publicId,
-                  name: player.name,
-                  icon: player.icon,
-                  points: player.points,
+                  ...player,
                   isHost: isHost(player.privateId, lobby!),
                 })),
                 thisPlayerPrivateId: newPlayer.privateId,
@@ -81,10 +78,7 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
             toPayloadToClient(
               "server",
               createNewMessageToClient(lobby!.id, "PLAYER_JOIN", {
-                publicId: newPlayer.publicId,
-                name: newPlayer.name,
-                icon: newPlayer.icon,
-                points: newPlayer.points,
+                ...newPlayer,
                 isHost: isHost(newPlayer.privateId, lobby!),
               })
             )

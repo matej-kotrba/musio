@@ -1,4 +1,3 @@
-import { Icon } from "@iconify-icon/solid";
 import styles from "./SongPicker.module.css";
 import { clientOnly } from "@solidjs/start";
 import { ItunesSearchResponse, ItunesSong } from "shared";
@@ -14,7 +13,6 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { Button } from "~/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
 import { Motion } from "solid-motionone";
 
 const ClientOnlyAudioController = clientOnly(
@@ -372,7 +370,7 @@ export default function SongPicker(props: Props) {
       </Dialog>
       <div class="w-80 mx-auto pt-4 p-1 relative overflow-hidden">
         <div class="h-40">
-          <Show when={selectedSong()}>
+          <Show when={selectedSong()} keyed>
             <Motion.p
               title={selectedSong()!.trackName}
               class={`text-center text-ellipsis overflow-hidden font-semibold whitespace-nowrap mb-2`}
@@ -382,6 +380,7 @@ export default function SongPicker(props: Props) {
             >
               {selectedSong()!.trackName}
             </Motion.p>
+
             <div class="flex flex-col">
               <div class={`${styles.effect} relative`}>
                 <Motion.img
@@ -396,6 +395,8 @@ export default function SongPicker(props: Props) {
                 />
               </div>
             </div>
+          </Show>
+          <Show when={selectedSong()}>
             <ClientOnlyAudioController
               audioUrl={selectedSong()!.previewUrl}
               fallback={<div class="w-full h-8" />}
@@ -430,7 +431,7 @@ export default function SongPicker(props: Props) {
                   return (
                     <button
                       type="button"
-                      class={`${styles.song} h-[var(--item-height)] isolate relative flex items-center gap-2 p-2 hover:bg-background-DEAFULT duration-150 focus-within:outline-none focus-within:bg-background-DEAFULT`}
+                      class={`${styles.song} h-[var(--item-height)] isolate relative flex items-center gap-2 p-2 hover:bg-background-DEAFULT duration-150 outline-none focus-within:outline-none focus-within:bg-background-DEAFULT`}
                       data-selected={song().trackId === selectedSong()?.trackId}
                       on:click={() => handlePickSong(song())}
                       title={song().trackName}

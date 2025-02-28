@@ -85,6 +85,7 @@ export function createNewPlayer(
     publicId,
     name,
     icon,
+    status: "connected",
     points: points ?? 0,
   };
 }

@@ -3,13 +3,15 @@ export type Icon = {
   name: string;
 };
 
+export type PlayerStatus = "connected" | "disconnected";
+
 export type Player = {
   publicId: string;
   name: string;
   icon: Icon;
   points: number;
   isHost: boolean;
-
+  status: PlayerStatus;
   isChecked?: boolean;
 };
 
