@@ -33,7 +33,6 @@ export default function LobbySettings(props: Props) {
     100;
 
   createEffect(() => {
-    console.log("NEW GAME LIMIT", props.gameLimit);
     setGameLimitSliderValue(props.gameLimit);
   });
 

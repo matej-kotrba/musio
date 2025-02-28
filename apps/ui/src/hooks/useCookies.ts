@@ -38,7 +38,6 @@ export default function useCookie() {
       deleteCookie(key);
     }
 
-    console.log(path && `path=${path};`);
     document.cookie = [
       `${key}=${value}`,
       expires ? `expires=${expires}` : "",

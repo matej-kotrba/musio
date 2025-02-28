@@ -14,7 +14,7 @@ import { handlePickingEvent } from "../events/picking";
 import { getLobbiesService, createNewPlayer, createNewLobby } from "../game/create";
 import { isHost } from "../game/game-utils";
 import { isLobbyState } from "../game/lobby";
-import { removePlayerFromLobby } from "../game/player";
+import { getPlayerByWs, removePlayerFromLobby } from "../game/player";
 import type { Hono } from "hono";
 import type { UpgradeWebSocket } from "hono/ws";
 import { handleLeaderboardsEvent } from "../events/leaderboards";
@@ -122,17 +122,31 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
 
           if (!lobby) return;
 
-          const removedPlayer = removePlayerFromLobby(lobby, ws);
+          const playerToDisconnect = getPlayerByWs(lobby, ws);
+
+          if (!playerToDisconnect) return;
 
           lobbies.broadcast(
             lobbyId!,
             toPayloadToClient(
-              "server",
-              createNewMessageToClient(lobbyId!, "PLAYER_REMOVED_FROM_LOBBY", {
-                publicId: removedPlayer!.publicId,
+              playerToDisconnect.publicId,
+              createNewMessageToClient(lobbyId!, "PLAYER_STATUS_CHANGE", {
+                newStatus: "disconnected",
               })
             )
           );
+
+          // const removedPlayer = removePlayerFromLobby(lobby, ws);
+
+          // lobbies.broadcast(
+          //   lobbyId!,
+          //   toPayloadToClient(
+          //     "server",
+          //     createNewMessageToClient(lobbyId!, "PLAYER_REMOVED_FROM_LOBBY", {
+          //       publicId: removedPlayer!.publicId,
+          //     })
+          //   )
+          // );
         },
       };
     })

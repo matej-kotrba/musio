@@ -1,6 +1,6 @@
 import type { messageConfig } from "../messages";
 import type { GameOptions, GameState, SongWithNameHidden } from "./lobby";
-import type { PlayerFromServer } from "./player";
+import type { PlayerFromServer, PlayerStatus } from "./player";
 
 // Player ids are never specified as they are passed with the ws messageToClient already
 export type WS_MessageMapServer = {
@@ -20,6 +20,9 @@ export type WS_MessageMapServer = {
   PLAYER_PICKED_SONG: {};
   PLAYER_REMOVED_FROM_LOBBY: {
     publicId: string;
+  };
+  PLAYER_STATUS_CHANGE: {
+    newStatus: PlayerStatus;
   };
   NEW_SONG_TO_GUESS: {
     song: SongWithNameHidden;
