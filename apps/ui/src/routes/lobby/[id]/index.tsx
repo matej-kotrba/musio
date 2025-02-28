@@ -7,6 +7,7 @@ import {
   createUniqueId,
   createEffect,
   createResource,
+  onMount,
 } from "solid-js";
 import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
 import { useParams, useNavigate } from "@solidjs/router";
@@ -25,7 +26,9 @@ import LeaderboardsGamePhase from "~/components/game/phases/leaderboards/compone
 import Chat from "~/components/game/chat/Chat";
 import { ChatMessage, createNewMessageToServer, toPayloadToServer } from "shared";
 import Loader from "~/components/common/loader/Loader";
-import { Motion, Presence } from "solid-motionone";
+import { Motion } from "solid-motionone";
+import { useCookies } from "~/hooks";
+import { isServer } from "solid-js/web";
 
 const dummy_players: PlayerToDisplay[] = [
   {
@@ -105,6 +108,7 @@ export default function Lobby() {
   const [gameStore, { actions, queries }] = useGameStore();
   const { getThisPlayer } = queries;
   const { setGameStore } = actions;
+  const { get: getCookie, set: setCookie } = useCookies();
   const params = useParams();
   const navigate = useNavigate();
 
@@ -122,7 +126,7 @@ export default function Lobby() {
   createEffect(() => {
     if (!gameStore.lobbyId) return;
     // On connection update cookie for lobbyId so it can be reused when reloading page...
-    document.cookie = `lobbyId=John Doe`;
+    setCookie("lobbyId", { value: gameStore.lobbyId, path: "/" });
   });
 
   const getLobbyIdFromParams = () => params.id;
@@ -164,6 +168,16 @@ export default function Lobby() {
       )
     );
   };
+
+  onMount(() => {
+    window.addEventListener("beforeunload", (e) => {
+      e.preventDefault();
+      e.returnValue = "";
+
+      const expires = new Date(Date.now() + 60 * 60 * 1000).toUTCString();
+      setCookie("lobbyId", { value: gameStore.lobbyId, expires, path: "/" });
+    });
+  });
 
   onCleanup(() => disconnect());
 

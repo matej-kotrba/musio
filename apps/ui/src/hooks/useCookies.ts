@@ -1,12 +1,9 @@
-import { createEffect, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
+import { isServer } from "solid-js/web";
 
-const splittedCookieKeys = ["expires", "path"] as const;
-
-type Props = {};
-
-export default function useCookie(props: Props) {
+export default function useCookie() {
   const [cookies, setCookies] = createSignal<string[]>(
-    document.cookie.split(";").map((c) => c.trim())
+    isServer ? [] : document.cookie.split(";").map((c) => c.trim())
   );
 
   const convertCookieToObject = (cookie: string[], key: string) => {
@@ -35,19 +32,25 @@ export default function useCookie(props: Props) {
     key: string,
     { value, expires, path }: { value: string; expires?: string; path?: string }
   ) => {
-    const startIndex = cookies().indexOf(`${key}=`);
+    const cookies = document.cookie.split(";");
+    const startIndex = cookies.findIndex((c) => c.includes(`${key}=`));
     if (startIndex !== -1) {
       deleteCookie(key);
     }
 
-    document.cookie =
-      `${key}=${value};` + (expires && `expires=${expires};`) + (path && `path=${path};`);
+    console.log(path && `path=${path};`);
+    document.cookie = [
+      `${key}=${value}`,
+      expires ? `expires=${expires}` : "",
+      path ? `path=${path}` : "",
+    ].join(";");
 
     setCookies((old) => [...old, `${key}=${value}`]);
   };
 
   const deleteCookie = (...keys: string[]) => {
-    cookies().forEach((c, index) => {
+    const cookies = document.cookie.split(";");
+    cookies.forEach((c, index) => {
       let cookieName = c.split("=")[0];
       if (keys.includes(cookieName)) {
         // Sets expiration to the past so browser clears the cookie
@@ -58,5 +61,11 @@ export default function useCookie(props: Props) {
         });
       }
     });
+  };
+
+  return {
+    get,
+    set,
+    deleteCookie,
   };
 }
