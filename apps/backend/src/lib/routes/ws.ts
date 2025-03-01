@@ -152,5 +152,3 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
     })
   );
 }
-
-function handleOnOpen() {}
