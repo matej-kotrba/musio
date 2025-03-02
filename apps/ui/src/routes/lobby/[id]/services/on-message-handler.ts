@@ -41,6 +41,18 @@ export const handleOnWsMessage = () => {
         break;
       }
 
+      case "PLAYER_STATUS_CHANGE": {
+        const payload = data.message.payload;
+        setGameStore(
+          "players",
+          (player) => player.publicId === data.publicId,
+          "status",
+          payload.newStatus
+        );
+
+        break;
+      }
+
       case "CHANGE_GAME_STATE": {
         const payload = data.message.payload;
         setGameStore("gameState", payload.properties);

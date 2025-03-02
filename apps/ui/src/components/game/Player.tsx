@@ -1,6 +1,6 @@
 import { Icon } from "@iconify-icon/solid";
 import { Icon as IconType, Player } from "shared/index.types";
-import { createEffect, Show } from "solid-js";
+import { Show } from "solid-js";
 import { Motion } from "solid-motionone";
 
 const icons = import.meta.glob("/public/avatars/*", { query: "?url" });
@@ -31,15 +31,25 @@ export default function PlayerDisplay(props: Props) {
     return (props.player.points / props.maxPoints) * 100;
   }
 
-  createEffect(() => {
-    console.log("previousPoints", props.previousPoints);
-  });
-
   return (
     <>
-      <div class="relative flex gap-2 snap-start">
+      <div
+        classList={{
+          "relative flex gap-2 snap-start": true,
+          "opacity-50": props.player.status === "disconnected",
+        }}
+      >
         <div class="relative w-28">
           <img src={props.player.icon.url} alt="" class="rounded-lg" />
+          <Show when={props.player.status === "disconnected"}>
+            <div class="absolute left-1 top-1">
+              <Icon
+                icon={"lucide:unplug"}
+                class="text-xl text-foreground"
+                style={{ filter: "drop-shadow(0 0 2px black)" }}
+              />
+            </div>
+          </Show>
           <Show when={props.isLeading}>
             <div class="absolute right-1 top-1 rotate-45">
               <Icon

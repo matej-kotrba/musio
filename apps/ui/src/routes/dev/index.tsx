@@ -1,8 +1,9 @@
+import { Player } from "shared";
 import { createSignal, Show } from "solid-js";
 import SongQueueProgress from "~/components/game/phases/guessing/components/SongQueueProgress";
 import LobbySettings from "~/components/game/phases/lobby/components/Settings";
 import SongPicker from "~/components/game/phases/picking/components/song-picker/SongPicker";
-import { getAllIcons, PlayerToDisplay } from "~/components/game/Player";
+import PlayerDisplay, { getAllIcons, PlayerToDisplay } from "~/components/game/Player";
 
 // const dummy_players: PlayerToDisplay[] = [
 //   {
@@ -55,6 +56,16 @@ import { getAllIcons, PlayerToDisplay } from "~/components/game/Player";
 //   },
 // ];
 
+const dummy_player: PlayerToDisplay = {
+  name: "Player 1",
+  icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
+  isHost: true,
+  points: 95,
+  publicId: "a",
+  previousPoints: 85,
+  status: "disconnected",
+};
+
 export default function Dev() {
   // const [step, setStep] = createSignal<number>(0);
   // const [stepRoot, setStepRoot] = createSignal<number>(0);
@@ -69,7 +80,8 @@ export default function Dev() {
 
   return (
     <div class="w-72 mx-auto flex flex-col gap-2 mt-2">
-      <SongPicker onSongSelect={() => {}} />
+      <PlayerDisplay player={dummy_player} maxPoints={100} />
+      {/* <SongPicker onSongSelect={() => {}} /> */}
       {/* <button onClick={incrementRoot}>Increment root</button>
       <button onClick={increment}>Increment</button>
       <Show when={stepRoot() % 2 === 1} keyed>
