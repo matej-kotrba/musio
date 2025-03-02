@@ -35,7 +35,7 @@ export function getPlayerByWs(lobby: Lobby, playerWs: WSContext<unknown>) {
   return playerIndex === -1 ? undefined : lobby.players[playerIndex];
 }
 
-export function getPlayerByPrivateId(lobby: Lobby, privateId: string) {
+export function getPlayerByPrivateId(lobby: Lobby, privateId?: string) {
   return lobby.players.find((player) => player.privateId === privateId);
 }
 

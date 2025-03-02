@@ -9,6 +9,7 @@ export type WS_MessageMapServer = {
     thisPlayerPublicId: string;
     thisPlayerPrivateId: string;
     gameOptions: GameOptions;
+    gameStateData?: GameState;
   };
   PLAYER_JOIN: PlayerFromServer;
   CHANGE_GAME_STATE: {

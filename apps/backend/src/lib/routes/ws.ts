@@ -6,7 +6,7 @@ import {
   fromMessageOnServer,
   type FromMessageOnServerByStateType,
 } from "shared";
-import { getRandomId } from "../common/utils";
+import { getRandomId, parseCookie } from "../common/utils";
 import { handleAllEvent } from "../events/all";
 import { handleGuessingEvent } from "../events/guessing";
 import { handleLobbyEvent } from "../events/lobby";
@@ -14,7 +14,7 @@ import { handlePickingEvent } from "../events/picking";
 import { getLobbiesService, createNewPlayer, createNewLobby } from "../game/create";
 import { isHost } from "../game/game-utils";
 import { isLobbyState } from "../game/lobby";
-import { getPlayerByWs, removePlayerFromLobby } from "../game/player";
+import { getPlayerByPrivateId, getPlayerByWs, removePlayerFromLobby } from "../game/player";
 import type { Hono } from "hono";
 import type { UpgradeWebSocket } from "hono/ws";
 import { handleLeaderboardsEvent } from "../events/leaderboards";
@@ -25,10 +25,15 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
     upgradeWebSocket(async (c) => {
       return {
         onOpen: async (event, ws) => {
+          const cookie = c.req.header().cookie ?? "";
+          const [cookiePrivateId] = parseCookie(cookie, "privateId");
+
           const lobbyId = c.req.query("lobbyId");
           const name = c.req.query("name");
           const icon = c.req.query("icon");
           const lobbies = getLobbiesService().lobbies;
+
+          console.log("cookiePrivateId", cookiePrivateId);
 
           if (
             !playerNameValidator.safeParse(name).success ||
@@ -43,46 +48,79 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
 
           if (!lobby) lobby = createNewLobby(lobbies);
 
-          const newPlayer = createNewPlayer(ws, getRandomId(), getRandomId(), name!, icon!);
+          const reconnectedPlayer = getPlayerByPrivateId(lobby, cookiePrivateId as string);
 
-          if (lobby?.players.length === 0) {
-            lobby.leaderPlayerId = newPlayer.privateId;
+          if (!reconnectedPlayer) {
+            const newPlayer = createNewPlayer(ws, getRandomId(), getRandomId(), name!, icon!);
+
+            if (lobby?.players.length === 0) {
+              lobby.leaderPlayerId = newPlayer.privateId;
+            }
+
+            lobby!.players.push(newPlayer);
+
+            //TODO: REMOVE THIS LINE
+            // if (lobby) {
+            //   lobby.stateProperties = getInitialPickingGameState();
+            // }
+
+            console.log("[ws] open - ", newPlayer.name);
+            ws.send(
+              toPayloadToClient(
+                "server",
+                createNewMessageToClient(lobby!.id, "PLAYER_INIT", {
+                  allPlayers: lobby!.players.map((player) => ({
+                    ...player,
+                    isHost: isHost(player.privateId, lobby!),
+                  })),
+                  thisPlayerPrivateId: newPlayer.privateId,
+                  thisPlayerPublicId: newPlayer.publicId,
+                  gameOptions: lobby!.options,
+                })
+              )
+            );
+
+            lobbies.publish(
+              lobby.id,
+              newPlayer.privateId,
+              toPayloadToClient(
+                "server",
+                createNewMessageToClient(lobby!.id, "PLAYER_JOIN", {
+                  ...newPlayer,
+                  isHost: isHost(newPlayer.privateId, lobby!),
+                })
+              )
+            );
+          } else {
+            reconnectedPlayer.ws = ws;
+
+            console.log("[ws] open - ", reconnectedPlayer.name);
+            ws.send(
+              toPayloadToClient(
+                "server",
+                createNewMessageToClient(lobby!.id, "PLAYER_INIT", {
+                  allPlayers: lobby!.players.map((player) => ({
+                    ...player,
+                    isHost: isHost(player.privateId, lobby!),
+                  })),
+                  thisPlayerPrivateId: reconnectedPlayer.privateId,
+                  thisPlayerPublicId: reconnectedPlayer.publicId,
+                  gameOptions: lobby!.options,
+                  gameStateData: lobby!.stateProperties,
+                })
+              )
+            );
+
+            lobbies.broadcast(
+              lobbyId!,
+              toPayloadToClient(
+                reconnectedPlayer.publicId,
+                createNewMessageToClient(lobbyId!, "PLAYER_STATUS_CHANGE", {
+                  newStatus: "connected",
+                })
+              )
+            );
           }
-
-          lobby!.players.push(newPlayer);
-
-          //TODO: REMOVE THIS LINE
-          // if (lobby) {
-          //   lobby.stateProperties = getInitialPickingGameState();
-          // }
-
-          console.log("[ws] open - ", newPlayer.name);
-          ws.send(
-            toPayloadToClient(
-              "server",
-              createNewMessageToClient(lobby!.id, "PLAYER_INIT", {
-                allPlayers: lobby!.players.map((player) => ({
-                  ...player,
-                  isHost: isHost(player.privateId, lobby!),
-                })),
-                thisPlayerPrivateId: newPlayer.privateId,
-                thisPlayerPublicId: newPlayer.publicId,
-                gameOptions: lobby!.options,
-              })
-            )
-          );
-
-          lobbies.publish(
-            lobby.id,
-            newPlayer.privateId,
-            toPayloadToClient(
-              "server",
-              createNewMessageToClient(lobby!.id, "PLAYER_JOIN", {
-                ...newPlayer,
-                isHost: isHost(newPlayer.privateId, lobby!),
-              })
-            )
-          );
         },
         onMessage: (event, ws) => {
           console.log("[ws] message");
@@ -135,6 +173,8 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
               })
             )
           );
+
+          //TODO: Delete if empty
 
           // const removedPlayer = removePlayerFromLobby(lobby, ws);
 

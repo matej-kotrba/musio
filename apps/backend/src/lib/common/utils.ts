@@ -18,6 +18,23 @@ export function isDev() {
 
 // Random utils
 // ****
+export function parseCookie(cookie: string, ...keys: string[]) {
+  const result: (string | null)[] = [];
+  const splitted = cookie.split(";");
+  $outer: for (const key of keys) {
+    for (const part of splitted) {
+      if (part.includes(`${key}=`)) {
+        result.push(part.split("=")[1]);
+        continue $outer;
+      }
+    }
+
+    result.push(null);
+  }
+
+  return result;
+}
+
 export function shuffleArray<T extends unknown[]>(arr: T) {
   const newArr = [...arr];
 

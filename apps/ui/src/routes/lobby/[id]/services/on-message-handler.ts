@@ -22,6 +22,7 @@ export const handleOnWsMessage = () => {
           public: payload.thisPlayerPublicId,
         });
         setGameStore("gameOptions", payload.gameOptions);
+        if (payload.gameStateData) setGameStore("gameState", payload.gameStateData);
 
         // ctx.setConnection((old) => {
         //   return {

@@ -38,7 +38,7 @@ const getGameStoreQueries = (store: GameStore) => {
     getLobbyHost: () => store.players.find((player) => player.isHost),
     getThisPlayer: () =>
       store.players.find((player) => player.publicId === store.thisPlayerIds?.public),
-    getPlayerByPublicId: (publicId: string) =>
+    getPlayerByPublicId: (publicId?: string) =>
       store.players.find((player) => player.publicId === publicId),
   } as const;
 };
