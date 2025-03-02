@@ -16,7 +16,8 @@ import LobbySettings, { OnSaveData } from "./Settings";
 import Loader from "~/components/common/loader/Loader";
 
 export default function LobbyPhase() {
-  const [gameStore] = useGameStore();
+  const [gameStore, { queries }] = useGameStore();
+  const { getPlayerByPublicId } = queries;
   const ws = useWsConnection();
 
   const onNextRoundStartButtonClick = () => {
@@ -45,14 +46,19 @@ type LobbyTypesProps = {
 };
 
 function LobbyInBetweenRounds(props: LobbyTypesProps) {
+  const [gameStore, { queries }] = useGameStore();
+  const { getLobbyHost } = queries;
+
   return (
     <section class="grid place-content-center relative">
       <div class="flex flex-col gap-2 items-center">
         <Loader />
         <span>Waiting for host to start next round</span>
-        <Button class="w-full" on:click={props.onNextRoundStartButtonClick}>
-          Next round
-        </Button>
+        <Show when={getLobbyHost()?.publicId === gameStore.thisPlayerIds?.public}>
+          <Button class="w-full" on:click={props.onNextRoundStartButtonClick}>
+            Next round
+          </Button>
+        </Show>
       </div>
     </section>
   );
