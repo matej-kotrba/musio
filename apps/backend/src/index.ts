@@ -5,8 +5,10 @@ import setupDevEndpoints from "./lib/routes/dev";
 import setupWsEndpoints from "./lib/routes/ws";
 import setupRestEndpoints from "./lib/routes/rest";
 import { isDev } from "./lib/common/utils";
+import { cors } from "hono/cors";
 
 const app = new Hono();
+app.use("*", cors({ origin: "*" }));
 const port = 5173;
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
 

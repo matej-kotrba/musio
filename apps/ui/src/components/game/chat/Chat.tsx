@@ -165,7 +165,7 @@ function MessageComponent(props: { message: ChatMessage }) {
       data-guessed={props.message.guessRelation === "guessed"}
       data-optimistic={props.message.isOptimistic}
     >
-      <span class="font-semibold opacity-75 text-ellipsis overflow-x-hidden whitespace-nowrap block">
+      <span class="font-semibold text-sm opacity-75 text-ellipsis overflow-x-hidden whitespace-nowrap block">
         {props.message.senderName}
       </span>
       <p class="hyphens-auto">{props.message.content}</p>

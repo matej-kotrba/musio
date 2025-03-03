@@ -29,8 +29,8 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
           const [cookiePrivateId] = parseCookie(cookie, "privateId");
 
           const lobbyId = c.req.query("lobbyId");
-          const name = c.req.query("name");
-          const icon = c.req.query("icon");
+          const name = c.req.query("name") || "Hello";
+          const icon = c.req.query("icon") || "seal";
           const lobbies = getLobbiesService().lobbies;
 
           console.log("cookiePrivateId", cookiePrivateId);
