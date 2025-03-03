@@ -8,6 +8,8 @@ export default defineConfig({
         "/ws": {
           target: "ws://localhost:5173",
           ws: true,
+          // changeOrigin: true,
+          // secure: false
           rewriteWsOrigin: true,
           // Uncomment if needed for debugging
           // configure: (proxy, _options) => {
@@ -22,6 +24,9 @@ export default defineConfig({
           //   });
           //   proxy.on("upgrade", (req, socket, head) => {
           //     console.log("WebSocket Upgrade:", req.url);
+          //   });
+          //   proxy.on("open", () => {
+          //     console.log("WebSocket OPEN");
           //   });
           // },
         },
