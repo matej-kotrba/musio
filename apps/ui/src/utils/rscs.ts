@@ -6,7 +6,9 @@ import { constructURL, getServerURL } from "shared";
 // TODO: Add error handling
 export const getLobbyURL = async (lobbyId?: string) => {
   const serverResponse = await fetch(constructURL(getServerURL(), `getLobbyId?lobbyId=${lobbyId}`));
-  return (await serverResponse.json()) as string;
+  const data = (await serverResponse.json()) as string;
+
+  return data;
 };
 
 // // Removes lobby from lobbies map if the lobby is empty

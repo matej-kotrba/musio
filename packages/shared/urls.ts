@@ -1,5 +1,5 @@
 export const getServerURL = () => {
-  return process.env.NODE_ENV === "production" ? "https://example.com" : "http://localhost:5173";
+  return process.env.NODE_ENV === "production" ? "http://localhost:5173" : "http://localhost:5173";
 };
 
 export const getUiURL = () => {
