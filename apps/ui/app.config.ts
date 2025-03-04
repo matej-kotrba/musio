@@ -4,6 +4,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   vite: {
     server: {
+      cors: true,
       proxy: {
         "/ws": {
           target: "ws://localhost:5173",
