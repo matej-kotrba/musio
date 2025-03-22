@@ -5,33 +5,15 @@ export default function useWebsocket(onMessageHandler: (event: MessageEvent<stri
   const [ws, setWs] = createSignal<Maybe<WebSocket>>(undefined);
 
   async function connect(lobbyId: string, data: ProfileData) {
-    await new Promise((res) => setTimeout(() => res(""), 2000))
     const newWs = new WebSocket(
       `ws://localhost:5173/ws?lobbyId=${lobbyId}&name=${data.name}&icon=${data.icon}`
     );
     return new Promise((res) => {
       newWs.addEventListener("open", () => {
-        console.log("aoisdaioshduioahsd");
         setWs(newWs);
         res("done");
       });
-      // Add listeners for all events
-      newWs.onopen = (event) => {
-        console.log("WebSocket connection opened:", event);
-      };
-      newWs.onerror = (event) => {
-        console.error("WebSocket error:", event);
-      };
-      newWs.onclose = (event) => {
-        console.log("WebSocket closed:", event.code, event.reason);
-      };
-      // Check the readyState
-      console.log("Initial WebSocket state:", newWs.readyState);
-      // 0 = CONNECTING, 1 = OPEN, 2 = CLOSING, 3 = CLOSED
-      // Set a timeout to check the state after a moment
-      setTimeout(() => {
-        console.log("WebSocket state after timeout:", newWs.readyState);
-      }, 2000);
+     
       newWs.onmessage = onMessageHandler;
     });
   }

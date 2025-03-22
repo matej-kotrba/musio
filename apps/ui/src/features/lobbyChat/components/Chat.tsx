@@ -124,8 +124,7 @@ export default function Chat(props: ChatProps) {
   let chatRef!: HTMLDivElement;
 
   createEffect(() => {
-    props.messages;
-    console.log("MOVE");
+    props.messages.length;
 
     chatRef.scrollTo({ top: chatRef.scrollHeight });
   });

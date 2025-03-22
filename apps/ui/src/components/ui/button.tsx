@@ -13,13 +13,11 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-primary text-background-accent shadow hover:bg-primary/80",
-        destructive:
-          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+        destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
           "border border-primary bg-background shadow-sm hover:bg-background-highlight hover:text-accent-foreground",
-        secondary:
-          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+        secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+        ghost: "hover:bg-secondary hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
@@ -44,11 +42,7 @@ type buttonProps<T extends ValidComponent = "button"> = ButtonRootProps<T> &
 export const Button = <T extends ValidComponent = "button">(
   props: PolymorphicProps<T, buttonProps<T>>
 ) => {
-  const [local, rest] = splitProps(props as buttonProps, [
-    "class",
-    "variant",
-    "size",
-  ]);
+  const [local, rest] = splitProps(props as buttonProps, ["class", "variant", "size"]);
 
   return (
     <ButtonPrimitive

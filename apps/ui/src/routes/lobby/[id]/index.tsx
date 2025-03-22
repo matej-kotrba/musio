@@ -24,7 +24,7 @@ import GuessingGamePhase from "~/components/game/phases/guessing/components/Gues
 import LobbyPhase from "~/components/game/phases/lobby/components/LobbyPhase";
 import LeaderboardsGamePhase from "~/components/game/phases/leaderboards/components/LeaderboardsPhase";
 import Chat from "~/features/lobbyChat/components/Chat";
-import { ChatMessage, createNewMessageToServer, toPayloadToServer } from "shared";
+import { ChatMessage, createNewMessageToServer, LOBBY_ID_COOKIE, toPayloadToServer } from "shared";
 import Loader from "~/components/common/loader/Loader";
 import { Motion } from "solid-motionone";
 import { useCookies } from "~/hooks";
@@ -53,7 +53,7 @@ export default function Lobby() {
   createEffect(() => {
     if (!gameStore.lobbyId || !gameStore.thisPlayerIds) return;
     // On connection update cookie for lobbyId so it can be reused when reloading page...
-    setCookie("lobbyId", { value: gameStore.lobbyId, path: "/" });
+    setCookie(LOBBY_ID_COOKIE, { value: gameStore.lobbyId, path: "/" });
     setCookie("privateId", { value: gameStore.thisPlayerIds?.private, path: "/" });
   });
 
@@ -71,11 +71,11 @@ export default function Lobby() {
 
   onMount(() => {
     window.addEventListener("beforeunload", (e) => {
-      e.preventDefault();
-      e.returnValue = "";
+      // e.preventDefault();
+      // e.returnValue = "";
 
       const expires = new Date(Date.now() + 60 * 60 * 1000).toUTCString();
-      setCookie("lobbyId", { value: gameStore.lobbyId, expires, path: "/" });
+      setCookie(LOBBY_ID_COOKIE, { value: gameStore.lobbyId, expires, path: "/" });
     });
   });
 

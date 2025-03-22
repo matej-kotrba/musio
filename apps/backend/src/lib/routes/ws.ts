@@ -5,6 +5,7 @@ import {
   createNewMessageToClient,
   fromMessageOnServer,
   type FromMessageOnServerByStateType,
+  PRIVATE_ID_COOKIE,
 } from "shared";
 import { getRandomId, parseCookie } from "../common/utils";
 import { handleAllEvent } from "../events/all";
@@ -26,7 +27,7 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
       return {
         onOpen: async (event, ws) => {
           const cookie = c.req.header().cookie ?? "";
-          const [cookiePrivateId] = parseCookie(cookie, "privateId");
+          const [cookiePrivateId] = parseCookie(cookie, PRIVATE_ID_COOKIE);
 
           const lobbyId = c.req.query("lobbyId");
           const name = c.req.query("name") || "Hello";

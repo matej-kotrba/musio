@@ -1,9 +1,15 @@
 import styles from "./Nav.module.css";
-import { A } from "@solidjs/router";
+import { A, useLocation } from "@solidjs/router";
 import { NAV_HEIGHT } from "~/utils/constants";
 import Link from "./ui/Link";
+import { Show } from "solid-js";
+import LeaveLobby from "~/features/leaveLobby/LeaveLobby";
 
 export default function Nav() {
+  const location = useLocation();
+
+  const shouldDisplayGeneralLinks = () => !location.pathname.includes("/lobby/");
+
   return (
     <header
       style={{ height: NAV_HEIGHT }}
@@ -13,37 +19,16 @@ export default function Nav() {
         <A href="/" class="text-2xl font-bold text-primary">
           Musio
         </A>
-        <nav class={`hidden md:flex space-x-4`}>
-          <Link href="/host" class="text-foreground hover:text-primary transition-colors">
-            Host
-          </Link>
-          <Link href="/join" class="text-foreground hover:text-primary transition-colors">
-            Join
-          </Link>
-          {/* <A href="#" class="text-foreground hover:text-primary transition-colors">
-            Host
-          </A>
-          <A href="#" class="text-foreground hover:text-primary transition-colors">
-            Join
-          </A> */}
-          {/* <img src={"/svgs/logo.svg"} alt="" class="w-16" />
-        <div class="flex gap-4">
-        <A
-        href="/"
-        title="Host"
-        class={`${styles.link} font-bold text-2xl relative hover:bg-background-accent p-2 rounded-md duration-100`}
-        >
-        Host
-        </A>
-        <A
-        href="/"
-        title="Join"
-        class={`${styles.link} font-bold text-2xl relative hover:bg-background-accent p-2 rounded-md duration-100`}
-        >
-        Join
-        </A>
-        </div> */}
-        </nav>
+        <Show when={shouldDisplayGeneralLinks()} fallback={<LeaveLobby />}>
+          <nav class={`hidden md:flex space-x-4`}>
+            <Link href="/host" class="text-foreground hover:text-primary transition-colors">
+              Host
+            </Link>
+            <Link href="/join" class="text-foreground hover:text-primary transition-colors">
+              Join
+            </Link>
+          </nav>
+        </Show>
       </div>
     </header>
   );
