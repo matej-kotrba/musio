@@ -52,6 +52,7 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
 
           if (!reconnectedPlayer) {
             const newPlayer = createNewPlayer(ws, getRandomId(), getRandomId(), name!, icon!);
+            newPlayer.points = Math.random() * 100;
 
             if (lobby?.players.length === 0) {
               lobby.leaderPlayerId = newPlayer.privateId;
@@ -94,7 +95,7 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
           } else {
             reconnectedPlayer.ws = ws;
 
-            console.log("[ws] open - ", reconnectedPlayer.name);
+            console.log("[ws] reconnected open - ", reconnectedPlayer.name);
             ws.send(
               toPayloadToClient(
                 "server",

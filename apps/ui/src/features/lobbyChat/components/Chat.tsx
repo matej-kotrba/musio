@@ -1,5 +1,5 @@
 import styles from "./Chat.module.css";
-import { createEffect } from "solid-js";
+import { createEffect, For } from "solid-js";
 import ChatInput from "./ChatInput";
 import type { ChatMessage } from "shared";
 
@@ -125,6 +125,7 @@ export default function Chat(props: ChatProps) {
 
   createEffect(() => {
     props.messages;
+    console.log("MOVE");
 
     chatRef.scrollTo({ top: chatRef.scrollHeight });
   });
@@ -140,9 +141,7 @@ export default function Chat(props: ChatProps) {
         class={`${styles.messages__mask} flex flex-col gap-2 overflow-y-auto pr-2`}
       >
         <div class="flex-1"></div>
-        {props.messages.map((message) => {
-          return <MessageComponent message={message} />;
-        })}
+        <For each={props.messages}>{(message) => <MessageComponent message={message} />}</For>
       </div>
       <ChatInput onSubmit={createNewMessage} disabled={props.disabled} />
     </div>

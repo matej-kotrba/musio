@@ -4,11 +4,7 @@ import PlayerDisplay from "~/components/game/Player";
 import { useGameStore } from "~/routes/lobby/[id]/stores/game-store";
 import { TransitionGroup } from "solid-transition-group";
 
-type Props = {
-  shouldShow: boolean;
-};
-
-export default function PlayerList(props: Props) {
+export default function PlayerList() {
   const [gameStore] = useGameStore();
 
   return (
@@ -19,22 +15,20 @@ export default function PlayerList(props: Props) {
         "scroll-snap-type": "y mandatory",
       }}
     >
-      <Show when={props.shouldShow} fallback={<p>Selecting...</p>}>
-        <TransitionGroup name="player-sidebar">
-          <For each={gameStore.players.toSorted((a, b) => b.points - a.points)}>
-            {(player, index) => (
-              <div class="player-sidebar duration-200">
-                <PlayerDisplay
-                  maxPoints={100}
-                  player={player}
-                  isLeading={!index()}
-                  previousPoints={player.previousPoints}
-                />
-              </div>
-            )}
-          </For>
-        </TransitionGroup>
-      </Show>
+      <TransitionGroup name="player-sidebar">
+        <For each={gameStore.players.toSorted((a, b) => b.points - a.points)}>
+          {(player, index) => (
+            <div class="player-sidebar duration-200">
+              <PlayerDisplay
+                maxPoints={100}
+                player={player}
+                isLeading={!index()}
+                previousPoints={player.previousPoints}
+              />
+            </div>
+          )}
+        </For>
+      </TransitionGroup>
     </aside>
   );
 }
