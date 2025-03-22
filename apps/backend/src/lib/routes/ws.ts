@@ -28,7 +28,11 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
       return {
         onOpen: async (event, ws) => {
           const cookie = c.req.header().cookie ?? "";
-          const [cookiePrivateId, cookieLobbyId] = parseCookie(cookie, PRIVATE_ID_COOKIE, LOBBY_ID_COOKIE);
+          const [cookiePrivateId, cookieLobbyId] = parseCookie(
+            cookie,
+            PRIVATE_ID_COOKIE,
+            LOBBY_ID_COOKIE
+          );
 
           const lobbyId = c.req.query("lobbyId");
           const name = c.req.query("name") || "Hello";
@@ -44,13 +48,13 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
 
           if (!reconnectedPlayer) {
             if (
-            !playerNameValidator.safeParse(name).success ||
-            !playerIconNameValidator.safeParse(icon).success
-          ) {
-            console.log("Invalid name or icon provided");
-            ws.close();
-            return;
-          }
+              !playerNameValidator.safeParse(name).success ||
+              !playerIconNameValidator.safeParse(icon).success
+            ) {
+              console.log("Invalid name or icon provided");
+              ws.close();
+              return;
+            }
 
             const newPlayer = createNewPlayer(ws, getRandomId(), getRandomId(), name!, icon!);
             newPlayer.points = Math.random() * 100;
@@ -159,22 +163,34 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
           const lobbyId = c.req.query("lobbyId");
           const lobbies = getLobbiesService().lobbies;
           const lobby = lobbies.get(lobbyId!);
-
           if (!lobby) return;
 
           const playerToDisconnect = getPlayerByWs(lobby, ws);
-
           if (!playerToDisconnect) return;
 
-          lobbies.broadcast(
-            lobbyId!,
-            toPayloadToClient(
-              playerToDisconnect.publicId,
-              createNewMessageToClient(lobbyId!, "PLAYER_STATUS_CHANGE", {
-                newStatus: "disconnected",
-              })
-            )
-          );
+          if (lobby.stateProperties.state === "lobby" && lobby.stateProperties.type === "INITIAL") {
+            removePlayerFromLobby(lobby, playerToDisconnect.privateId);
+
+            lobbies.broadcast(
+              lobbyId!,
+              toPayloadToClient(
+                playerToDisconnect.publicId,
+                createNewMessageToClient(lobbyId!, "PLAYER_REMOVED_FROM_LOBBY", {
+                  publicId: playerToDisconnect.publicId,
+                })
+              )
+            );
+          } else {
+            lobbies.broadcast(
+              lobbyId!,
+              toPayloadToClient(
+                playerToDisconnect.publicId,
+                createNewMessageToClient(lobbyId!, "PLAYER_STATUS_CHANGE", {
+                  newStatus: "disconnected",
+                })
+              )
+            );
+          }
 
           //TODO: Delete if empty
 
