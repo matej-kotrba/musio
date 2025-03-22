@@ -6,6 +6,7 @@ import {
   fromMessageOnServer,
   type FromMessageOnServerByStateType,
   PRIVATE_ID_COOKIE,
+  LOBBY_ID_COOKIE,
 } from "shared";
 import { getRandomId, parseCookie } from "../common/utils";
 import { handleAllEvent } from "../events/all";
@@ -27,16 +28,22 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
       return {
         onOpen: async (event, ws) => {
           const cookie = c.req.header().cookie ?? "";
-          const [cookiePrivateId] = parseCookie(cookie, PRIVATE_ID_COOKIE);
+          const [cookiePrivateId, cookieLobbyId] = parseCookie(cookie, PRIVATE_ID_COOKIE, LOBBY_ID_COOKIE);
 
           const lobbyId = c.req.query("lobbyId");
           const name = c.req.query("name") || "Hello";
           const icon = c.req.query("icon") || "seal";
           const lobbies = getLobbiesService().lobbies;
 
-          console.log("cookiePrivateId", cookiePrivateId);
+          console.log("cookies", cookiePrivateId, cookieLobbyId);
 
-          if (
+          let lobby = lobbies.get(lobbyId!);
+          if (!lobby) lobby = createNewLobby(lobbies);
+
+          const reconnectedPlayer = getPlayerByPrivateId(lobby, cookiePrivateId as string);
+
+          if (!reconnectedPlayer) {
+            if (
             !playerNameValidator.safeParse(name).success ||
             !playerIconNameValidator.safeParse(icon).success
           ) {
@@ -45,13 +52,6 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
             return;
           }
 
-          let lobby = lobbies.get(lobbyId!);
-
-          if (!lobby) lobby = createNewLobby(lobbies);
-
-          const reconnectedPlayer = getPlayerByPrivateId(lobby, cookiePrivateId as string);
-
-          if (!reconnectedPlayer) {
             const newPlayer = createNewPlayer(ws, getRandomId(), getRandomId(), name!, icon!);
             newPlayer.points = Math.random() * 100;
 

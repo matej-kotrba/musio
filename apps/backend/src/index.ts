@@ -8,7 +8,7 @@ import { isDev } from "./lib/common/utils";
 import { cors } from "hono/cors";
 
 const app = new Hono();
-app.use("*", cors({ origin: "*" }));
+app.use("*", cors({ origin: "http://localhost:3000", credentials: true }));
 const port = 5173;
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
 

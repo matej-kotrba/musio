@@ -24,7 +24,13 @@ import GuessingGamePhase from "~/components/game/phases/guessing/components/Gues
 import LobbyPhase from "~/components/game/phases/lobby/components/LobbyPhase";
 import LeaderboardsGamePhase from "~/components/game/phases/leaderboards/components/LeaderboardsPhase";
 import Chat from "~/features/lobbyChat/components/Chat";
-import { ChatMessage, createNewMessageToServer, LOBBY_ID_COOKIE, toPayloadToServer } from "shared";
+import {
+  ChatMessage,
+  createNewMessageToServer,
+  LOBBY_ID_COOKIE,
+  PRIVATE_ID_COOKIE,
+  toPayloadToServer,
+} from "shared";
 import Loader from "~/components/common/loader/Loader";
 import { Motion } from "solid-motionone";
 import { useCookies } from "~/hooks";
@@ -36,7 +42,7 @@ export default function Lobby() {
   const [{ connect, disconnect }, wsActions] = useWebsocket(handleOnWsMessage());
   const [gameStore, { actions }] = useGameStore();
   const { setGameStore } = actions;
-  const { set: setCookie } = useCookies();
+  const { get: getCookie, set: setCookie } = useCookies();
   const params = useParams();
   const navigate = useNavigate();
 
@@ -51,8 +57,10 @@ export default function Lobby() {
   const [data] = createResource(wsConnectionResourceParams, connectFetchHandler);
 
   createEffect(() => {
-    if (!gameStore.lobbyId || !gameStore.thisPlayerIds) return;
+    console.log("GAMESTORE", gameStore.thisPlayerIds?.private);
+    if (!gameStore.lobbyId || !gameStore.thisPlayerIds?.private) return;
     // On connection update cookie for lobbyId so it can be reused when reloading page...
+    console.log("SETTING");
     setCookie(LOBBY_ID_COOKIE, { value: gameStore.lobbyId, path: "/" });
     setCookie("privateId", { value: gameStore.thisPlayerIds?.private, path: "/" });
   });
@@ -69,17 +77,35 @@ export default function Lobby() {
     setWsConnectionResourceParams({ data, lobbyId: newLobbyId });
   }
 
-  onMount(() => {
-    window.addEventListener("beforeunload", (e) => {
-      // e.preventDefault();
-      // e.returnValue = "";
+  const eventListenerAbortController = new AbortController();
 
-      const expires = new Date(Date.now() + 60 * 60 * 1000).toUTCString();
-      setCookie(LOBBY_ID_COOKIE, { value: gameStore.lobbyId, expires, path: "/" });
-    });
+  onMount(() => {
+    if (
+      getCookie(LOBBY_ID_COOKIE).value === getLobbyIdFromParams() &&
+      getCookie(PRIVATE_ID_COOKIE).value
+    ) {
+      fetch("http://localhost:5173/isValidPlayerInLobby", {
+        credentials: "include",
+      });
+      // handleProfileSelected({ name: "", icon: "seal" });
+    }
+
+    window.addEventListener(
+      "beforeunload",
+      (e) => {
+        // e.preventDefault();
+        // e.returnValue = "";
+        // const expires = new Date(Date.now() + 60 * 60 * 1000).toUTCString();
+        // setCookie(LOBBY_ID_COOKIE, { value: gameStore.lobbyId, expires, path: "/" });
+      },
+      { signal: eventListenerAbortController.signal }
+    );
   });
 
-  onCleanup(() => disconnect());
+  onCleanup(() => {
+    disconnect();
+    eventListenerAbortController.abort();
+  });
 
   return (
     <WsConnectionProvider wsConnection={wsActions}>

@@ -23,7 +23,6 @@ type Props = {
   player: Player;
   maxPoints: number;
   previousPoints?: number;
-  isLeading?: boolean;
 };
 
 export default function PlayerDisplay(props: Props) {
@@ -50,7 +49,7 @@ export default function PlayerDisplay(props: Props) {
               />
             </div>
           </Show>
-          <Show when={props.isLeading}>
+          <Show when={props.player.isHost}>
             <div class="absolute right-1 top-1 rotate-45">
               <Icon
                 icon={"solar:crown-bold"}

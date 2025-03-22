@@ -20,9 +20,8 @@ export default function PlayerList() {
           {(player, index) => (
             <div class="player-sidebar duration-200">
               <PlayerDisplay
-                maxPoints={100}
+                maxPoints={gameStore.gameOptions.toPointsLimit}
                 player={player}
-                isLeading={!index()}
                 previousPoints={player.previousPoints}
               />
             </div>
