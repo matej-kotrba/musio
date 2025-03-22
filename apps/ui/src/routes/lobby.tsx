@@ -1,6 +1,6 @@
 import { JSXElement } from "solid-js";
 import { GlobalsContextProvider } from "~/contexts/globals";
-import { GameStoreProvider, getNewGameStore } from "./lobby/[id]/stores/game-store";
+import { GameStoreProvider, getNewGameStore } from "./lobby/stores/game-store";
 
 type Props = {
   children: JSXElement;

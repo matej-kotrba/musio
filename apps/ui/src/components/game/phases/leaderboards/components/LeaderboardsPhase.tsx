@@ -2,7 +2,7 @@ import { Icon } from "@iconify-icon/solid";
 import { Show } from "solid-js";
 import { LeaderboardsEmphasized, LeaderboardsSimple } from "./leaderboards";
 import { Button } from "~/components/ui/button";
-import { useGameStore } from "~/routes/lobby/[id]/stores/game-store";
+import { useGameStore } from "~/routes/lobby/stores/game-store";
 import { useWsConnection } from "~/contexts/wsConnection";
 import { toPayloadToServer, createNewMessageToServer, Player } from "shared";
 

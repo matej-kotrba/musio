@@ -57,7 +57,6 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
             }
 
             const newPlayer = createNewPlayer(ws, getRandomId(), getRandomId(), name!, icon!);
-            newPlayer.points = Math.random() * 100;
 
             if (lobby?.players.length === 0) {
               lobby.leaderPlayerId = newPlayer.privateId;

@@ -11,7 +11,7 @@ import { TextField, TextFieldRoot } from "~/components/ui/textfield";
 import { TooltipTrigger, TooltipContent, Tooltip } from "~/components/ui/tooltip";
 import { useWsConnection } from "~/contexts/wsConnection";
 import { useCopyToClipboard } from "~/hooks";
-import { useGameStore } from "~/routes/lobby/[id]/stores/game-store";
+import { useGameStore } from "~/routes/lobby/stores/game-store";
 import LobbySettings, { OnSaveData } from "./Settings";
 import Loader from "~/components/common/loader/Loader";
 

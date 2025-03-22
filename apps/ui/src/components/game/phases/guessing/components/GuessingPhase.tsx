@@ -2,7 +2,7 @@ import { SongWithNameHidden, Song, GuessingGameState, Player } from "shared";
 import { createSignal, createEffect, Show, For } from "solid-js";
 import WordToGuess from "~/components/game/WordToGuess";
 import Timer from "../../picking/components/timer/Timer";
-import { useGameStore } from "~/routes/lobby/[id]/stores/game-store";
+import { useGameStore } from "~/routes/lobby/stores/game-store";
 import { getGamePhaseIfValid } from "~/utils/game/common";
 import { Motion } from "solid-motionone";
 import SongQueueProgress from "./SongQueueProgress";

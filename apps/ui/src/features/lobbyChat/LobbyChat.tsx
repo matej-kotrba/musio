@@ -1,7 +1,7 @@
 import { createNewMessageToServer, toPayloadToServer, type ChatMessage } from "shared";
 import { createUniqueId } from "solid-js";
 import { useWsConnection } from "~/contexts/wsConnection";
-import { useGameStore } from "~/routes/lobby/[id]/stores/game-store";
+import { useGameStore } from "~/routes/lobby/stores/game-store";
 import Chat from "./components/Chat";
 
 export default function LobbyChat() {

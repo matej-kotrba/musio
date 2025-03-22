@@ -10,7 +10,7 @@ import { Show } from "solid-js";
 import TextBouncy from "~/components/ui/fancy/text-bouncy";
 import SongPicker from "./song-picker/SongPicker";
 import Timer from "./timer/Timer";
-import { useGameStore } from "~/routes/lobby/[id]/stores/game-store";
+import { useGameStore } from "~/routes/lobby/stores/game-store";
 import { useWsConnection } from "~/contexts/wsConnection";
 import { getGamePhaseIfValid } from "~/utils/game/common";
 

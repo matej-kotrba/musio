@@ -1,7 +1,7 @@
 import { For, Show } from "solid-js";
 import styles from "./index.module.css";
 import PlayerDisplay from "~/components/game/Player";
-import { useGameStore } from "~/routes/lobby/[id]/stores/game-store";
+import { useGameStore } from "~/routes/lobby/stores/game-store";
 import { TransitionGroup } from "solid-transition-group";
 
 export default function PlayerList() {
