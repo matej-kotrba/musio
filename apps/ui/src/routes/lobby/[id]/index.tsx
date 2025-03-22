@@ -26,7 +26,9 @@ import LeaderboardsGamePhase from "~/components/game/phases/leaderboards/compone
 import Chat from "~/features/lobbyChat/components/Chat";
 import {
   ChatMessage,
+  constructURL,
   createNewMessageToServer,
+  getServerURL,
   LOBBY_ID_COOKIE,
   PRIVATE_ID_COOKIE,
   toPayloadToServer,
@@ -46,6 +48,7 @@ export default function Lobby() {
   const params = useParams();
   const navigate = useNavigate();
 
+  const [shouldDisplayProfileSelection, setShouldDisplayProfileSelection] = createSignal(false);
   const [wsConnectionResourceParams, setWsConnectionResourceParams] =
     createSignal<WsConnectionResourceParams>(undefined);
 
@@ -79,20 +82,28 @@ export default function Lobby() {
 
   const eventListenerAbortController = new AbortController();
 
-  onMount(() => {
+  onMount(async () => {
     if (
       getCookie(LOBBY_ID_COOKIE).value === getLobbyIdFromParams() &&
       getCookie(PRIVATE_ID_COOKIE).value
     ) {
-      fetch("http://localhost:5173/isValidPlayerInLobby", {
+      const { status } = await fetch(constructURL(getServerURL(), "isValidPlayerInLobby"), {
         credentials: "include",
       });
-      // handleProfileSelected({ name: "", icon: "seal" });
+
+      if (status !== 200) {
+        setShouldDisplayProfileSelection(true);
+        return;
+      }
+      handleProfileSelected({ name: "", icon: "seal" });
+    } else {
+      setShouldDisplayProfileSelection(true);
     }
 
     window.addEventListener(
       "beforeunload",
       (e) => {
+        // TODO:
         // e.preventDefault();
         // e.returnValue = "";
         // const expires = new Date(Date.now() + 60 * 60 * 1000).toUTCString();
@@ -109,7 +120,9 @@ export default function Lobby() {
 
   return (
     <WsConnectionProvider wsConnection={wsActions}>
-      <ProfileSelection onProfileSelected={handleProfileSelected} />
+      <Show when={shouldDisplayProfileSelection()}>
+        <ProfileSelection onProfileSelected={handleProfileSelected} />
+      </Show>
       <Suspense fallback={<ConnectingFallback />}>
         <Show when={data()}>
           <div
