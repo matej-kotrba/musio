@@ -16,6 +16,7 @@ module.exports = {
       colors: {
         foreground: {
           DEFAULT: "hsl(var(--foreground) / <alpha-value>)",
+          muted: "hsl(var(--foreground-muted) / <alpha-value>)",
           dark: "hsl(var(--foreground-dark) / <alpha-value>)",
         },
         background: {
