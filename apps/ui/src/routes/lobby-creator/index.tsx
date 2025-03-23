@@ -1,7 +1,7 @@
 import { Icon } from "@iconify-icon/solid";
 import { Button } from "~/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { TextField, TextFieldLabel, TextFieldRoot } from "~/components/ui/textfield";
+import { TextField, TextFieldRoot } from "~/components/ui/textfield";
 import { NAV_HEIGHT } from "~/utils/constants";
 
 export default function LobbyCreator() {
@@ -18,15 +18,32 @@ export default function LobbyCreator() {
               class="text-2xl text-primary size-8 grid place-content-center"
             />
           </div>
-          <h1 class="mt-4 text-3xl font-bold">Music Guessing Game</h1>
+          <h1 class="mt-4 text-3xl font-bold">Game Creator</h1>
           <p class="mt-2 text-foreground-muted">Create a game lobby or join an existing one</p>
         </div>
 
-        <Tabs defaultValue="join" class="w-full">
+        <Tabs defaultValue="create" class="w-full">
           <TabsList class="grid w-full grid-cols-2">
-            <TabsTrigger value="join">Join Game</TabsTrigger>
             <TabsTrigger value="create">Create Game</TabsTrigger>
+            <TabsTrigger value="join">Join Game</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="create">
+            <div class="p-6 border shadow-md rounded-lg">
+              <div class="pb-6 space-y-1">
+                <h3 class="text-2xl font-semibold">Create a Game</h3>
+                <p class="text-sm text-foreground-muted">
+                  Start a new game lobby for friends to join
+                </p>
+              </div>
+              <div>
+                <Button class="w-full">
+                  Create Game
+                  <Icon icon={"lucide:arrow-right"} class="ml-2 h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
 
           <TabsContent value="join">
             <div class="p-6 border shadow-md rounded-lg">
@@ -49,26 +66,6 @@ export default function LobbyCreator() {
                 <Button class="w-full">
                   Join Game
                   <Icon icon={"lucide:arrow-right"} class="ml-2" />
-                </Button>
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="create">
-            <div class="p-6 border shadow-md rounded-lg">
-              <div class="pb-6 space-y-1">
-                <h3 class="text-2xl font-semibold">Create a Game</h3>
-                <p class="text-sm text-foreground-muted">
-                  Start a new game lobby for friends to join
-                </p>
-              </div>
-              <div class="space-y-4">
-                <input type="range" />
-              </div>
-              <div>
-                <Button class="w-full">
-                  Create Game
-                  <Icon icon={"lucide:arrow-right"} class="ml-2 h-4 w-4" />
                 </Button>
               </div>
             </div>
