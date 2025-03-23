@@ -22,6 +22,15 @@ export default function setupRestEndpoints(app: Hono) {
     return c.json(lobbies.get(lobbyId)!.id);
   });
 
+  app.get("/isLobbyId", (c) => {
+    const lobbyId = c.req.query("lobbyId")
+    const lobbies = getLobbiesService().lobbies
+
+    if (!lobbyId || !lobbies.has(lobbyId)) throw new HTTPException(404, {message: "Lobby with this ID does not exist"})
+
+    return c.json({message: "Success"})
+  })
+
   app.get("/isValidPlayerInLobby", (c) => {
     const cookies = c.req.header().cookie
     const [lobbyId, privateId] = parseCookie(cookies, LOBBY_ID_COOKIE, PRIVATE_ID_COOKIE)

@@ -1,10 +1,58 @@
 import { Icon } from "@iconify-icon/solid";
+import { action, useNavigate, useSearchParams } from "@solidjs/router";
+import { constructURL, getServerURL } from "shared";
+import { createResource } from "solid-js";
+import toast from "solid-toast";
 import { Button } from "~/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { TextField, TextFieldRoot } from "~/components/ui/textfield";
 import { NAV_HEIGHT } from "~/utils/constants";
 
+const actionQueryParam = "action";
+const actionQueryParamValues = { create: "create", join: "join" } as const;
+type ActionQueryParamsValue = keyof typeof actionQueryParamValues;
+
 export default function LobbyCreator() {
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  function handleCreateGame() {
+    navigate("/lobby", { replace: true });
+  }
+
+  const [lobbyIdCheckData, { refetch }] = createResource(async (_, info) => {
+    const lobbyId = info.refetching;
+    if (!lobbyId) return;
+
+    const { status } = await fetch(constructURL(getServerURL(), "isLobbyId"));
+    if (status === 200) {
+      navigate(`/lobby/${lobbyId}`);
+    } else {
+      toast.error("This code does not seem correct 😭");
+    }
+  });
+
+  async function handleJoinGame() {
+    refetch("ahoj");
+  }
+
+  const getDefaultTabValue: () => ActionQueryParamsValue = () => {
+    if (isValidActionType(searchParams[actionQueryParam])) return searchParams[actionQueryParam];
+    else return "create";
+  };
+
+  function handleTabChange(actionType: string) {
+    if (!isValidActionType(actionType)) return;
+
+    setSearchParams({ [actionQueryParam]: actionType });
+  }
+
+  function isValidActionType(actionType: unknown): actionType is ActionQueryParamsValue {
+    if (typeof actionType !== "string") return false;
+
+    return !!actionQueryParamValues[actionType as ActionQueryParamsValue];
+  }
+
   return (
     <div
       style={{ height: `calc(100vh - ${NAV_HEIGHT})` }}
@@ -22,7 +70,7 @@ export default function LobbyCreator() {
           <p class="mt-2 text-foreground-muted">Create a game lobby or join an existing one</p>
         </div>
 
-        <Tabs defaultValue="create" class="w-full">
+        <Tabs defaultValue={getDefaultTabValue()} class="w-full" onChange={handleTabChange}>
           <TabsList class="grid w-full grid-cols-2">
             <TabsTrigger value="create">Create Game</TabsTrigger>
             <TabsTrigger value="join">Join Game</TabsTrigger>
@@ -37,7 +85,7 @@ export default function LobbyCreator() {
                 </p>
               </div>
               <div>
-                <Button class="w-full">
+                <Button class="w-full" onClick={handleCreateGame}>
                   Create Game
                   <Icon icon={"lucide:arrow-right"} class="ml-2 h-4 w-4" />
                 </Button>
@@ -63,7 +111,7 @@ export default function LobbyCreator() {
                 </TextFieldRoot>
               </div>
               <div>
-                <Button class="w-full">
+                <Button class="w-full" onClick={handleJoinGame}>
                   Join Game
                   <Icon icon={"lucide:arrow-right"} class="ml-2" />
                 </Button>
