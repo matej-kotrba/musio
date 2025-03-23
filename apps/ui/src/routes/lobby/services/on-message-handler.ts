@@ -24,13 +24,6 @@ export const handleOnWsMessage = () => {
         setGameStore("gameOptions", payload.gameOptions);
         if (payload.gameStateData) setGameStore("gameState", payload.gameStateData);
 
-        // ctx.setConnection((old) => {
-        //   return {
-        //     ...old,
-        //     playerId: payload.thisPlayerPrivateId,
-        //   };
-        // });
-
         break;
       }
 
@@ -41,14 +34,19 @@ export const handleOnWsMessage = () => {
         break;
       }
 
-      case "PLAYER_STATUS_CHANGE": {
+      case "PLAYER_DATA_CHANGE": {
         const payload = data.message.payload;
-        setGameStore(
-          "players",
-          (player) => player.publicId === data.publicId,
-          "status",
-          payload.newStatus
-        );
+
+        console.log("HOST", payload.isHost);
+
+        if (payload.isHost) gameStore.players.forEach((player) => (player.isHost = false));
+
+        setGameStore("players", (player) => player.publicId === data.publicId, {
+          status: payload.status,
+          isHost: payload.isHost,
+        });
+
+        console.log(gameStore.players);
 
         break;
       }

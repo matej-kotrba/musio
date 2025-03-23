@@ -41,9 +41,9 @@ export function getPlayerByPrivateId(lobby: Lobby, privateId?: string) {
 
 export function removePlayerFromLobby(lobby: Lobby, playerPrivateId: string) {
   const indexOfPlayer = lobby.players.findIndex((player) => player.privateId === playerPrivateId);
-  if (!indexOfPlayer) return;
+  if (indexOfPlayer === -1) return;
 
-  const removedPlayer = lobby.players[indexOfPlayer];
+  const removedPlayer = {...lobby.players[indexOfPlayer]};
   lobby.players.splice(indexOfPlayer, 1);
 
   return removedPlayer;

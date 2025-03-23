@@ -3,15 +3,14 @@ import type { Lobby } from "./lobby";
 import { getRandomId } from "../common/utils";
 import type { Song } from "shared";
 import type { PlayerServer } from "./player";
-import { DEFAULT_POINTS_LIMIT } from "../common/constants";
 
 export class LobbyMap<K extends string, V extends Lobby> extends Map<K, V> {
-  publish(lobbyId: K, senderId: string, message: string) {
+  publish(lobbyId: K, senderPrivateId: string, message: string) {
     const lobby = this.get(lobbyId);
     if (!lobby) return;
 
     lobby.players.forEach((player) => {
-      if (player.privateId === senderId) return;
+      if (player.privateId === senderPrivateId) return;
       player.ws.send(message);
     });
   }
@@ -64,7 +63,7 @@ export function createNewLobby(lobbies: LobbiesMap) {
     },
     options: {
       toPointsLimit: 20,
-      playerLimit: 6
+      playerLimit: 6,
     },
   } satisfies Lobby;
 

@@ -15,8 +15,13 @@ import { handleLobbyEvent } from "../events/lobby";
 import { handlePickingEvent } from "../events/picking";
 import { getLobbiesService, createNewPlayer, createNewLobby } from "../game/create";
 import { isHost } from "../game/game-utils";
-import { isLobbyState } from "../game/lobby";
-import { getPlayerByPrivateId, getPlayerByWs, removePlayerFromLobby } from "../game/player";
+import { isLobbyState, type Lobby } from "../game/lobby";
+import {
+  getPlayerByPrivateId,
+  getPlayerByWs,
+  removePlayerFromLobby,
+  type PlayerServer,
+} from "../game/player";
 import type { Hono } from "hono";
 import type { UpgradeWebSocket } from "hono/ws";
 import { handleLeaderboardsEvent } from "../events/leaderboards";
@@ -35,8 +40,8 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
           );
 
           const lobbyId = c.req.query("lobbyId");
-          const name = c.req.query("name") || "Hello";
-          const icon = c.req.query("icon") || "seal";
+          const name = c.req.query("name");
+          const icon = c.req.query("icon");
           const lobbies = getLobbiesService().lobbies;
 
           console.log("cookies", cookiePrivateId, cookieLobbyId);
@@ -59,7 +64,7 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
             const newPlayer = createNewPlayer(ws, getRandomId(), getRandomId(), name!, icon!);
 
             if (lobby?.players.length === 0) {
-              lobby.leaderPlayerId = newPlayer.privateId;
+              lobby.leaderPrivateId = newPlayer.privateId;
             }
 
             lobby!.players.push(newPlayer);
@@ -98,6 +103,7 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
             );
           } else {
             reconnectedPlayer.ws = ws;
+            reconnectedPlayer.status = "connected";
 
             console.log("[ws] reconnected open - ", reconnectedPlayer.name);
             ws.send(
@@ -116,12 +122,13 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
               )
             );
 
-            lobbies.broadcast(
+            lobbies.publish(
               lobbyId!,
+              reconnectedPlayer.privateId,
               toPayloadToClient(
                 reconnectedPlayer.publicId,
-                createNewMessageToClient(lobbyId!, "PLAYER_STATUS_CHANGE", {
-                  newStatus: "connected",
+                createNewMessageToClient(lobbyId!, "PLAYER_DATA_CHANGE", {
+                  status: "connected",
                 })
               )
             );
@@ -180,32 +187,51 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
               )
             );
           } else {
+            playerToDisconnect.status = "disconnected";
+
             lobbies.broadcast(
               lobbyId!,
               toPayloadToClient(
                 playerToDisconnect.publicId,
-                createNewMessageToClient(lobbyId!, "PLAYER_STATUS_CHANGE", {
-                  newStatus: "disconnected",
+                createNewMessageToClient(lobbyId!, "PLAYER_DATA_CHANGE", {
+                  status: "disconnected",
                 })
               )
             );
           }
 
-          //TODO: Delete if empty
+          if (playerToDisconnect.privateId === lobby.leaderPrivateId) {
+            const player = changeLobbyLeaderToNextInArray(lobby, playerToDisconnect.privateId);
+            if (player) {
+              lobbies.broadcast(
+                lobbyId!,
+                toPayloadToClient(
+                  player.publicId,
+                  createNewMessageToClient(lobbyId!, "PLAYER_DATA_CHANGE", {
+                    isHost: true,
+                  })
+                )
+              );
+            }
+          }
 
-          // const removedPlayer = removePlayerFromLobby(lobby, ws);
-
-          // lobbies.broadcast(
-          //   lobbyId!,
-          //   toPayloadToClient(
-          //     "server",
-          //     createNewMessageToClient(lobbyId!, "PLAYER_REMOVED_FROM_LOBBY", {
-          //       publicId: removedPlayer!.publicId,
-          //     })
-          //   )
-          // );
+          if (lobby.players.length === 0) lobbies.delete(lobby.id);
         },
       };
     })
   );
+}
+
+function changeLobbyLeaderToNextInArray(
+  lobby: Lobby,
+  currentLeaderPrivateId: string
+): PlayerServer | undefined {
+  for (const player of lobby.players) {
+    if (player.privateId !== currentLeaderPrivateId && player.status === "connected") {
+      lobby.leaderPrivateId = player.privateId;
+      return player;
+    }
+  }
+
+  return;
 }

@@ -21,7 +21,7 @@ export type Lobby<T extends GameState["state"] | undefined = undefined> = {
     id: string;
     stateProperties: GameStateMap[Key];
     players: PlayerServer[];
-    leaderPlayerId?: string;
+    leaderPrivateId?: string;
     data: {
       currentTimeoutAbortController?: AbortController;
       pickedSongs: Song[];

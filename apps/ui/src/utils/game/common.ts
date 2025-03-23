@@ -14,6 +14,7 @@ export function playerServerToPlayer(player: PlayerFromServer): Player {
     },
     points: player.points,
     isHost: player.isHost,
+    status: "connected",
   };
 }
 

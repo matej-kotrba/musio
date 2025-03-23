@@ -19,7 +19,7 @@ and then show the current leaderboard whenever the game actually ends, then rese
 [x] - create new lobby component for displaying it when points limit was not reached, so basically for the
 temporary round lobby
 [] - try to refactor how GuessingPhase works, the fallback especially
-[x] - change host when host leaves
+[] - change host when host leaves
 
 [] - add rate limiting for sending messages and limit the length of the message
 [] - host reloading page in lobby causes wierd bugs

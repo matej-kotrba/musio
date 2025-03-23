@@ -23,8 +23,9 @@ export type WS_MessageMapServer = {
   PLAYER_REMOVED_FROM_LOBBY: {
     publicId: string;
   };
-  PLAYER_STATUS_CHANGE: {
-    newStatus: PlayerStatus;
+  PLAYER_DATA_CHANGE: {
+    status?: PlayerStatus;
+    isHost?: true;
   };
   NEW_SONG_TO_GUESS: {
     song: SongWithNameHidden;
