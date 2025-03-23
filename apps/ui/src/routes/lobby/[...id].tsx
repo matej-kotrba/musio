@@ -37,6 +37,7 @@ import Loader from "~/components/common/loader/Loader";
 import { Motion } from "solid-motionone";
 import { useCookies } from "~/hooks";
 import LobbyChat from "~/features/lobbyChat/LobbyChat";
+import WholePageLoaderFallback from "~/components/common/fallbacks/WholePageLoader";
 
 type WsConnectionResourceParams = Maybe<{ lobbyId: string; data: ProfileData }>;
 
@@ -123,7 +124,7 @@ export default function Lobby() {
       <Show when={shouldDisplayProfileSelection()}>
         <ProfileSelection onProfileSelected={handleProfileSelected} />
       </Show>
-      <Suspense fallback={<ConnectingFallback />}>
+      <Suspense fallback={<WholePageLoaderFallback />}>
         <Show when={data()}>
           <div
             class="relative"
@@ -156,18 +157,5 @@ export default function Lobby() {
         </Show>
       </Suspense>
     </WsConnectionProvider>
-  );
-}
-
-function ConnectingFallback() {
-  return (
-    <Motion.div
-      class="fixed inset-0 grid place-content-center bg-black/40 z-[100]"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-    >
-      <Loader />
-    </Motion.div>
   );
 }
