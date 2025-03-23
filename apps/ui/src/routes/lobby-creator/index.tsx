@@ -1,7 +1,8 @@
 import { Icon } from "@iconify-icon/solid";
 import { action, useIsRouting, useNavigate, useSearchParams } from "@solidjs/router";
 import { constructURL, getServerURL } from "shared";
-import { createResource, Show } from "solid-js";
+import { createEffect, createResource, createSignal, Show } from "solid-js";
+import { isServer } from "solid-js/web";
 import toast from "solid-toast";
 import WholePageLoaderFallback from "~/components/common/fallbacks/WholePageLoader";
 import Loader from "~/components/common/loader/Loader";
@@ -18,6 +19,8 @@ export default function LobbyCreator() {
   const navigate = useNavigate();
   const isRouting = useIsRouting();
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const [joinCode, setJoinCode] = createSignal("");
 
   function handleCreateGame() {
     navigate("/lobby", { replace: true });
@@ -38,7 +41,7 @@ export default function LobbyCreator() {
   });
 
   function handleJoinGame() {
-    refetchLobbyIdCheck("ahoj");
+    refetchLobbyIdCheck(joinCode());
   }
 
   const getDefaultTabValue: () => ActionQueryParamsValue = () => {
@@ -103,7 +106,9 @@ export default function LobbyCreator() {
                   <TextFieldRoot>
                     <TextField
                       placeholder="Enter game code"
-                      maxLength={6}
+                      maxLength={8}
+                      value={joinCode()}
+                      onInput={(e) => setJoinCode(e.currentTarget.value)}
                       class="text-center text-lg uppercase py-2 border-zinc-600"
                     />
                   </TextFieldRoot>
@@ -112,7 +117,7 @@ export default function LobbyCreator() {
                   <Button
                     class="w-full"
                     onClick={handleJoinGame}
-                    disabled={lobbyIdCheckData.loading}
+                    disabled={!isServer && lobbyIdCheckData.loading}
                   >
                     Join Game
                     <Icon icon={"lucide:arrow-right"} class="ml-2" />

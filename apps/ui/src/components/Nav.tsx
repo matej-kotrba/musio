@@ -21,10 +21,16 @@ export default function Nav() {
         </A>
         <Show when={shouldDisplayGeneralLinks()} fallback={<LeaveLobby />}>
           <nav class={`hidden md:flex space-x-4`}>
-            <Link href="/host" class="text-foreground hover:text-primary transition-colors">
+            <Link
+              href="/lobby-creator?action=create"
+              class="text-foreground hover:text-primary transition-colors"
+            >
               Host
             </Link>
-            <Link href="/join" class="text-foreground hover:text-primary transition-colors">
+            <Link
+              href="/lobby-creator?action=join"
+              class="text-foreground hover:text-primary transition-colors"
+            >
               Join
             </Link>
           </nav>

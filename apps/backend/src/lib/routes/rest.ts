@@ -23,24 +23,29 @@ export default function setupRestEndpoints(app: Hono) {
   });
 
   app.get("/isLobbyId", (c) => {
-    const lobbyId = c.req.query("lobbyId")
-    const lobbies = getLobbiesService().lobbies
+    const lobbyId = c.req.query("lobbyId");
+    const lobbies = getLobbiesService().lobbies;
 
-    if (!lobbyId || !lobbies.has(lobbyId)) throw new HTTPException(404, {message: "Lobby with this ID does not exist"})
+    console.log(lobbyId, lobbies.has(lobbyId!));
 
-    return c.json({message: "Success"})
-  })
+    if (!lobbyId || !lobbies.has(lobbyId))
+      throw new HTTPException(404, { message: "Lobby with this ID does not exist" });
+
+    return c.json({ message: "Success" });
+  });
 
   app.get("/isValidPlayerInLobby", (c) => {
-    const cookies = c.req.header().cookie
-    const [lobbyId, privateId] = parseCookie(cookies, LOBBY_ID_COOKIE, PRIVATE_ID_COOKIE)
+    const cookies = c.req.header().cookie;
+    const [lobbyId, privateId] = parseCookie(cookies, LOBBY_ID_COOKIE, PRIVATE_ID_COOKIE);
 
     const lobby = getLobbiesService().lobbies.get(lobbyId!);
-    if (!lobby) throw new HTTPException(400, {message: "Incorrect combination of lobby and private ids"})
+    if (!lobby)
+      throw new HTTPException(400, { message: "Incorrect combination of lobby and private ids" });
 
-      const player = getPlayerByPrivateId(lobby, privateId!)
-    if (!player) throw new HTTPException(400, {message: "Incorrect combination of lobby and private ids"})
+    const player = getPlayerByPrivateId(lobby, privateId!);
+    if (!player)
+      throw new HTTPException(400, { message: "Incorrect combination of lobby and private ids" });
 
-    return c.json({ message: "Success" }, 200)
-  })
+    return c.json({ message: "Success" }, 200);
+  });
 }
