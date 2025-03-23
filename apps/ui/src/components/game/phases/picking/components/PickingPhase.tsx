@@ -35,7 +35,7 @@ export default function PickingPhase() {
   };
 
   return (
-    <Show when={getGamePhaseIfValid<PickingGameState>(gameStore.gameState, "picking")}>
+    <Show when={getGamePhaseIfValid<PickingGameState>(gameStore.gameState!, "picking")}>
       {(pickingState) => (
         <div class="flex flex-col items-center">
           <Timer

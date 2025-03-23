@@ -136,16 +136,16 @@ export default function Lobby() {
               <PlayerList />
               {/* ___ */}
               <Switch>
-                <Match when={gameStore.gameState.state === "lobby"}>
+                <Match when={gameStore.gameState?.state === "lobby"}>
                   <LobbyPhase />
                 </Match>
-                <Match when={gameStore.gameState.state === "picking"}>
+                <Match when={gameStore.gameState?.state === "picking"}>
                   <PickingPhase />
                 </Match>
-                <Match when={gameStore.gameState.state === "guessing"}>
+                <Match when={gameStore.gameState?.state === "guessing"}>
                   <GuessingGamePhase />
                 </Match>
-                <Match when={gameStore.gameState.state === "leaderboard"}>
+                <Match when={gameStore.gameState?.state === "leaderboard"}>
                   <LeaderboardsGamePhase />
                 </Match>
               </Switch>

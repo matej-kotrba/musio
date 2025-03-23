@@ -11,7 +11,7 @@ export default function GuessingGamePhase() {
   const [gameStore] = useGameStore();
 
   return (
-    <Show when={getGamePhaseIfValid<GuessingGameState>(gameStore.gameState, "guessing")}>
+    <Show when={getGamePhaseIfValid<GuessingGameState>(gameStore.gameState!, "guessing")}>
       {(guessingPhase) => <GuessingGamePhaseInner gameState={guessingPhase()} />}
     </Show>
   );

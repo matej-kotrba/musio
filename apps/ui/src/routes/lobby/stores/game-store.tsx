@@ -8,7 +8,7 @@ export type GameStore = {
   players: PlayerToDisplay[];
   chatMessages: ChatMessage[];
   thisPlayerIds?: { public: string; private: string };
-  gameState: GameState;
+  gameState?: GameState;
   gameOptions: GameOptions;
 
   didPick: boolean;
@@ -55,10 +55,6 @@ export function getNewGameStore(): GetNewGameStoreReturnType {
     lobbyId: "",
     players: [],
     chatMessages: [],
-    gameState: {
-      state: "lobby",
-      type: "INITIAL",
-    },
     gameOptions: {
       toPointsLimit: 0,
       playerLimit: 0,
