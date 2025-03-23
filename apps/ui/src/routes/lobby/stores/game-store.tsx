@@ -61,6 +61,7 @@ export function getNewGameStore(): GetNewGameStoreReturnType {
     },
     gameOptions: {
       toPointsLimit: 0,
+      playerLimit: 0,
     },
     // gameState: {
     //   state: "guessing",

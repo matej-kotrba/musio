@@ -80,7 +80,10 @@ export default function Dev() {
 
   return (
     <div class="w-72 mx-auto flex flex-col gap-2 mt-2">
-      <PlayerDisplay player={dummy_player} maxPoints={100} />
+      <LobbySettings gameLimit={20} playerLimit={4}>
+        Open
+      </LobbySettings>
+      {/* <PlayerDisplay player={dummy_player} maxPoints={100} /> */}
       {/* <SongPicker onSongSelect={() => {}} /> */}
       {/* <button onClick={incrementRoot}>Increment root</button>
       <button onClick={increment}>Increment</button>

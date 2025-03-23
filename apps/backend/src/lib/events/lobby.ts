@@ -1,6 +1,7 @@
 import {
   createNewMessageToClient,
   gameLimitSchema,
+  playerLimitSchema,
   toPayloadToClient,
   type FromMessageOnServerByStateType,
   type GameOptions,
@@ -31,12 +32,16 @@ export function handleLobbyEvent(
       setAbortControllerForPickingPhase(lobbies, lobby, initialData.gameState);
 
       break;
-    case "CHANGE_GAME_LIMIT":
+    case "CHANGE_GAME_OPTIONS":
       if (!isHost(data.privateId, lobby)) return;
       if (lobby.stateProperties.type !== "INITIAL") return;
-      if (!gameLimitSchema.safeParse(data.message.payload.newLimit).success) return;
+      
+      const {newGameLimit, newPlayerLimit} = data.message.payload
+      if (!newGameLimit || !gameLimitSchema.safeParse(newGameLimit).success) return;
+      if (!newPlayerLimit || !playerLimitSchema.safeParse(newPlayerLimit).success) return;
 
-      lobby.options.toPointsLimit = data.message.payload.newLimit;
+      lobby.options.toPointsLimit = newGameLimit;
+      lobby.options.playerLimit = newPlayerLimit;
       notifyPlayersOfGameOptionsChange(lobbies, lobby, lobby.options);
 
       break;
@@ -93,6 +98,7 @@ function notifyPlayersOfGameOptionsChange(
       "server",
       createNewMessageToClient(lobby.id, "CHANGE_GAME_OPTIONS", {
         gameLimit: gameOptions.toPointsLimit,
+        playerLimit: gameOptions.playerLimit
       })
     )
   );

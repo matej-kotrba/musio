@@ -64,6 +64,7 @@ export function createNewLobby(lobbies: LobbiesMap) {
     },
     options: {
       toPointsLimit: 20,
+      playerLimit: 6
     },
   } satisfies Lobby;
 

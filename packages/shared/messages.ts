@@ -11,7 +11,7 @@ import type {
 export const messageConfig = {
   lobby: {
     START_GAME: {} as {},
-    CHANGE_GAME_LIMIT: {} as { newLimit: number },
+    CHANGE_GAME_OPTIONS: {} as { newGameLimit?: number, newPlayerLimit?: number },
   },
   picking: {
     PICK_SONG: {} as Omit<Song, "fromPlayerByPublicId">,

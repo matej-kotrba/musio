@@ -68,6 +68,9 @@ export const handleOnWsMessage = () => {
         if (!!payload.gameLimit) {
           setGameStore("gameOptions", "toPointsLimit", payload.gameLimit);
         }
+        if (!!payload.playerLimit) {
+          setGameStore("gameOptions", "playerLimit", payload.playerLimit);
+        }
 
         break;
       }

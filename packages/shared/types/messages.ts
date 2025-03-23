@@ -17,6 +17,7 @@ export type WS_MessageMapServer = {
   };
   CHANGE_GAME_OPTIONS: {
     gameLimit?: number;
+    playerLimit?: number;
   };
   PLAYER_PICKED_SONG: {};
   PLAYER_REMOVED_FROM_LOBBY: {

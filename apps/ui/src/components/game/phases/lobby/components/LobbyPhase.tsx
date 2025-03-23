@@ -4,6 +4,7 @@ import {
   createNewMessageToServer,
   gameLimitSchema,
   LobbyGameState,
+  playerLimitSchema,
 } from "shared";
 import { createEffect, Show } from "solid-js";
 import { Button } from "~/components/ui/button";
@@ -75,13 +76,18 @@ function LobbyInitial(props: LobbyTypesProps) {
   function handleLobbySettingsSave(data: OnSaveData) {
     if (!gameStore.thisPlayerIds?.private || getLobbyHost()?.publicId !== getThisPlayer()?.publicId)
       return;
-    if (gameLimitSchema.safeParse(data.gameLimit).success) {
+    if (
+      gameLimitSchema.safeParse(data.gameLimit).success &&
+      playerLimitSchema.safeParse(data.playerLimit).success
+    ) {
       setGameStore("gameOptions", "toPointsLimit", data.gameLimit);
+      setGameStore("gameOptions", "playerLimit", data.playerLimit);
       ws.send?.(
         toPayloadToServer(
           gameStore.thisPlayerIds.private,
-          createNewMessageToServer(gameStore.lobbyId, "CHANGE_GAME_LIMIT", {
-            newLimit: data.gameLimit,
+          createNewMessageToServer(gameStore.lobbyId, "CHANGE_GAME_OPTIONS", {
+            newGameLimit: data.gameLimit,
+            newPlayerLimit: data.playerLimit,
           })
         )
       );
@@ -93,6 +99,7 @@ function LobbyInitial(props: LobbyTypesProps) {
       <Show when={getThisPlayer()?.isHost}>
         <LobbySettings
           gameLimit={gameStore.gameOptions.toPointsLimit}
+          playerLimit={gameStore.gameOptions.playerLimit}
           onSettingsSave={handleLobbySettingsSave}
         >
           <div class="absolute top-0 right-0">

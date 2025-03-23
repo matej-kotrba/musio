@@ -54,4 +54,5 @@ export type GameStateType = GameState["state"];
 
 export type GameOptions = {
   toPointsLimit: number;
+  playerLimit: number;
 };
