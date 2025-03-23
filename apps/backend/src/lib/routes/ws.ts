@@ -86,6 +86,7 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
                   thisPlayerPrivateId: newPlayer.privateId,
                   thisPlayerPublicId: newPlayer.publicId,
                   gameOptions: lobby!.options,
+                  gameStateData: lobby!.stateProperties,
                 })
               )
             );

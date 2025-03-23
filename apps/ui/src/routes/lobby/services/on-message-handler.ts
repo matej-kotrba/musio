@@ -22,6 +22,7 @@ export const handleOnWsMessage = () => {
           public: payload.thisPlayerPublicId,
         });
         setGameStore("gameOptions", payload.gameOptions);
+        setGameStore("gameState", payload.gameStateData);
         if (payload.gameStateData) setGameStore("gameState", payload.gameStateData);
 
         break;
@@ -37,16 +38,12 @@ export const handleOnWsMessage = () => {
       case "PLAYER_DATA_CHANGE": {
         const payload = data.message.payload;
 
-        console.log("HOST", payload.isHost);
-
         if (payload.isHost) gameStore.players.forEach((player) => (player.isHost = false));
 
         setGameStore("players", (player) => player.publicId === data.publicId, {
           status: payload.status,
           isHost: payload.isHost,
         });
-
-        console.log(gameStore.players);
 
         break;
       }
