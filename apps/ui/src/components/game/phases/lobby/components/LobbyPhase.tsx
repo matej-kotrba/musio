@@ -6,7 +6,7 @@ import {
   LobbyGameState,
   playerLimitSchema,
 } from "shared";
-import { createEffect, Show } from "solid-js";
+import { createEffect, JSX, Show } from "solid-js";
 import { Button } from "~/components/ui/button";
 import { TextField, TextFieldRoot } from "~/components/ui/textfield";
 import { TooltipTrigger, TooltipContent, Tooltip } from "~/components/ui/tooltip";
@@ -95,65 +95,95 @@ function LobbyInitial(props: LobbyTypesProps) {
   }
 
   return (
-    <section class="grid place-content-center relative">
-      <Show when={getThisPlayer()?.isHost}>
-        <LobbySettings
-          gameLimit={gameStore.gameOptions.toPointsLimit}
-          playerLimit={gameStore.gameOptions.playerLimit}
-          onSettingsSave={handleLobbySettingsSave}
-        >
-          <div class="absolute top-0 right-0">
-            <Icon icon="ic:round-settings" class="text-2xl text-foreground duration-100" />
+    <section class="h-full relative">
+      <div class="flex justify-end items-center gap-1">
+        <Badge>
+          <div>
+            <span>{gameStore.players.length}</span>
+            <span class="text-foreground/75">/</span>
+            <span>{gameStore.gameOptions.playerLimit}</span>
           </div>
-        </LobbySettings>
-      </Show>
-      <p class="text-foreground/70">
-        Currently <span class="font-bold text-foreground">{gameStore.players.length}</span> players
-        in lobby
-      </p>
-      <Show
-        fallback={
-          <span class="text-lg font-semibold">Waiting for the host to start next round</span>
-        }
-        when={getLobbyHost()?.publicId === gameStore.thisPlayerIds?.public}
-      >
-        <Button
-          variant={"default"}
-          class="mb-2"
-          disabled={gameStore.players.length === 0}
-          on:click={props.onNextRoundStartButtonClick}
-        >
-          Start next round
-        </Button>
-        <div class="flex gap-1 mb-4">
-          <TextFieldRoot class="w-full">
-            <TextField
-              type="text"
-              name="lobbyId"
-              autocomplete="off"
-              readOnly
-              value={gameStore.lobbyId}
-              class="text-center uppercase font-bold tracking-wider"
+          <Icon
+            icon="lucide:users-round"
+            class="text-md text-foreground align-middles duration-100"
+          />
+        </Badge>
+        <Badge>
+          <span>{gameStore.gameOptions.toPointsLimit}</span>
+          <Icon icon="lucide:target" class="text-md text-foreground align-middles duration-100" />
+        </Badge>
+        <Show when={getThisPlayer()?.isHost}>
+          <LobbySettings
+            gameLimit={gameStore.gameOptions.toPointsLimit}
+            playerLimit={gameStore.gameOptions.playerLimit}
+            onSettingsSave={handleLobbySettingsSave}
+          >
+            <Icon
+              icon="ic:round-settings"
+              class="grid place-content-center text-2xl text-foreground duration-100"
             />
-          </TextFieldRoot>
-          <Tooltip>
-            <TooltipTrigger>
-              <Button
-                type="button"
-                variant={"outline"}
-                on:click={() => copyToClipboard(window.location.href)}
-              >
-                <Icon icon="solar:copy-bold-duotone" class="text-2xl py-1 text-foreground" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Copy URL</p>
-            </TooltipContent>
-          </Tooltip>
-        </div>
-      </Show>
+          </LobbySettings>
+        </Show>
+      </div>
+      <div class="h-full grid place-content-center relative">
+        <p class="text-foreground/70">
+          Currently <span class="font-bold text-foreground">{gameStore.players.length}</span>{" "}
+          players in lobby
+        </p>
+        <Show
+          fallback={
+            <span class="text-lg font-semibold">Waiting for the host to start next round</span>
+          }
+          when={getLobbyHost()?.publicId === gameStore.thisPlayerIds?.public}
+        >
+          <Button
+            variant={"default"}
+            class="mb-2"
+            disabled={gameStore.players.length === 0}
+            on:click={props.onNextRoundStartButtonClick}
+          >
+            Start next round
+          </Button>
+          <div class="flex gap-1 mb-4">
+            <TextFieldRoot class="w-full">
+              <TextField
+                type="text"
+                name="lobbyId"
+                autocomplete="off"
+                readOnly
+                value={gameStore.lobbyId}
+                class="text-center uppercase font-bold tracking-wider"
+              />
+            </TextFieldRoot>
+            <Tooltip>
+              <TooltipTrigger>
+                <Button
+                  type="button"
+                  variant={"outline"}
+                  on:click={() => copyToClipboard(window.location.href)}
+                >
+                  <Icon icon="solar:copy-bold-duotone" class="text-2xl py-1 text-foreground" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Copy URL</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </Show>
 
-      <img src="/svgs/waiting.svg" alt="" class="w-80 aspect-[2/3]" />
+        <img src="/svgs/waiting.svg" alt="" class="w-80 aspect-[2/3]" />
+      </div>
     </section>
+  );
+}
+
+type BadgeProps = {
+  children: JSX.Element;
+};
+
+function Badge(props: BadgeProps) {
+  return (
+    <div class="text-sm flex items-center gap-1 border-2 rounded-lg px-1">{props.children}</div>
   );
 }

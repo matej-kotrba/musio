@@ -61,10 +61,8 @@ export default function Lobby() {
   const [data] = createResource(wsConnectionResourceParams, connectFetchHandler);
 
   createEffect(() => {
-    console.log("GAMESTORE", gameStore.thisPlayerIds?.private);
     if (!gameStore.lobbyId || !gameStore.thisPlayerIds?.private) return;
     // On connection update cookie for lobbyId so it can be reused when reloading page...
-    console.log("SETTING");
     setCookie(LOBBY_ID_COOKIE, { value: gameStore.lobbyId, path: "/" });
     setCookie("privateId", { value: gameStore.thisPlayerIds?.private, path: "/" });
   });

@@ -19,9 +19,10 @@ and then show the current leaderboard whenever the game actually ends, then rese
 [x] - create new lobby component for displaying it when points limit was not reached, so basically for the
 temporary round lobby
 [] - try to refactor how GuessingPhase works, the fallback especially
-[] - fix game options slider value being written on top of slider thumb
-[] - change host when host leaves
+[x] - change host when host leaves
 
+[] - add rate limiting for sending messages and limit the length of the message
+[] - host reloading page in lobby causes wierd bugs
 [] - now new lobby is created when hitting the rest endpoint, just check if the lobby exist there and create it
 only on join
 [x] - currently points are being summed on client, maybe send from server the total points and not only the gained ones
