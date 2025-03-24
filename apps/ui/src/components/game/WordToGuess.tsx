@@ -30,22 +30,6 @@ export default function WordToGuess(props: Props) {
             })}
           </div>
         );
-        // if (char === " ") {
-        //   return <span class="inline-block w-[1ch]"></span>;
-        // } else if (char !== null) {
-        //   return <span>{char}</span>;
-        // } else {
-        //   return (
-        //     <Motion.span
-        //       initial={{ opacity: 0 }}
-        //       animate={{ opacity: 1 }}
-        //       transition={{ duration: 1, easing: "ease", delay: Math.random() }}
-        //       class="border-b-2 border-white w-[1ch] inline-block"
-        //     >
-        //       {" "}
-        //     </Motion.span>
-        //   );
-        // }
       })}
     </div>
   );
