@@ -41,6 +41,9 @@ importers:
       '@hono/vite-build':
         specifier: ^1.4.0
         version: 1.4.0(hono@4.6.14)
+      '@hono/vite-dev-server':
+        specifier: ^0.19.0
+        version: 0.19.0(hono@4.6.14)
       '@types/node':
         specifier: ^20.11.17
         version: 20.17.10
@@ -53,6 +56,9 @@ importers:
       vite:
         specifier: 5.4.11
         version: 5.4.11(@types/node@20.17.10)(terser@5.37.0)
+      vite-plugin-restart:
+        specifier: ^0.4.2
+        version: 0.4.2(vite@5.4.11(@types/node@20.17.10)(terser@5.37.0))
 
   apps/ui:
     dependencies:
@@ -835,6 +841,19 @@ packages:
     engines: {node: '>=18.14.1'}
     peerDependencies:
       hono: '*'
+
+  '@hono/vite-dev-server@0.19.0':
+    resolution: {integrity: sha512-myMc4Nm0nFQSPaeE6I/a1ODyDR5KpQ4EHodX4Tu/7qlB31GfUemhUH/WsO91HJjDEpRRpsT4Zbg+PleMlpTljw==}
+    engines: {node: '>=18.14.1'}
+    peerDependencies:
+      hono: '*'
+      miniflare: '*'
+      wrangler: '*'
+    peerDependenciesMeta:
+      miniflare:
+        optional: true
+      wrangler:
+        optional: true
 
   '@iconify-icon/solid@2.2.0':
     resolution: {integrity: sha512-DizrpCXPV9QoVfItxW27pwdS+zfo5Oyc4KtKT+Fjpu+iPellwZCIY3DH/CFvMDxJLdW7Gx9KBGyzj/hLatBzpQ==}
@@ -3070,6 +3089,11 @@ packages:
     resolution: {integrity: sha512-RgJz7RWftML5h/qfPsp3QKVc2FSlvV4+HevpE0yEY2j+PS/I2ULjoSsZDXaR8Ks2WYuFFDzQr8yrox7v8aqkng==}
     hasBin: true
 
+  vite-plugin-restart@0.4.2:
+    resolution: {integrity: sha512-9aWN2ScJ8hbT7aC8SDeZnsbWapnslz1vhNq6Vgf2GU9WdN4NExlrWhtnu7pmtOUG3Guj8y6lPcUZ+ls7SVP33w==}
+    peerDependencies:
+      vite: ^2.9.0 || ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0
+
   vite-plugin-solid@2.11.0:
     resolution: {integrity: sha512-G+NiwDj4EAeUE0wt3Ur9f+Lt9oMUuLd0FIxYuqwJSqRacKQRteCwUFzNy8zMEt88xWokngQhiFjfJMhjc1fDXw==}
     peerDependencies:
@@ -3662,6 +3686,12 @@ snapshots:
   '@hono/vite-build@1.4.0(hono@4.6.14)':
     dependencies:
       hono: 4.6.14
+
+  '@hono/vite-dev-server@0.19.0(hono@4.6.14)':
+    dependencies:
+      '@hono/node-server': 1.13.7(hono@4.6.14)
+      hono: 4.6.14
+      minimatch: 9.0.5
 
   '@iconify-icon/solid@2.2.0(solid-js@1.9.3)':
     dependencies:
@@ -6122,6 +6152,11 @@ snapshots:
       - uWebSockets.js
       - uploadthing
       - xml2js
+
+  vite-plugin-restart@0.4.2(vite@5.4.11(@types/node@20.17.10)(terser@5.37.0)):
+    dependencies:
+      micromatch: 4.0.8
+      vite: 5.4.11(@types/node@20.17.10)(terser@5.37.0)
 
   vite-plugin-solid@2.11.0(solid-js@1.9.3)(vite@5.4.11(@types/node@20.17.10)(terser@5.37.0)):
     dependencies:

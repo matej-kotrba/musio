@@ -5,6 +5,8 @@ import "./app.css";
 import Nav from "./components/Nav";
 import { Toaster } from "solid-toast";
 
+console.log(import.meta.env.VITE_BACKEND_URL)
+
 export default function App() {
   return (
     <Router

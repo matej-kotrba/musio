@@ -7,6 +7,7 @@ import setupRestEndpoints from "./lib/routes/rest";
 import { isDev } from "./lib/common/utils";
 import { cors } from "hono/cors";
 
+console.log(import.meta.env);
 const port = 5173;
 const app = new Hono();
 
@@ -19,7 +20,6 @@ setupWsEndpoints(app, upgradeWebSocket);
 setupRestEndpoints(app);
 
 console.log(`Server is running on http://localhost:${port}`);
-
 const server = serve({
   fetch: app.fetch,
   port,
