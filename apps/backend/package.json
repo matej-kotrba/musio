@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=development tsx watch src/index.ts",
-    "start": "cross-env NODE_ENV=production tsx src/index.ts"
+    "start": "tsup && cross-env NODE_ENV=production node ./dist/apps/backend/src/index.js",
+    "build": "tsup"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
@@ -15,12 +16,9 @@
     "string-similarity-js": "^2.1.4"
   },
   "devDependencies": {
-    "@hono/vite-build": "^1.4.0",
-    "@hono/vite-dev-server": "^0.19.0",
     "@types/node": "^20.11.17",
+    "tsup": "^8.4.0",
     "tsx": "^4.7.1",
-    "typescript": "^5.7.3",
-    "vite": "5.4.11",
-    "vite-plugin-restart": "^0.4.2"
+    "typescript": "^5.7.3"
   }
 }

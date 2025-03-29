@@ -18,8 +18,8 @@ COPY --from=build /usr/src/app/pnpm-workspace.yaml /app/
 COPY --from=build /usr/src/app/pnpm-lock.yaml /app/
 
 COPY --from=build /usr/src/app/apps/backend/package.json /app/apps/backend/
-COPY --from=build /usr/src/app/apps/backend/dist /app/apps/backend/dist
 COPY --from=build /usr/src/app/packages/shared /app/packages/shared
+COPY --from=build /usr/src/app/apps/backend/src /app/apps/backend/
 
 WORKDIR /app
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --no-frozen-lockfile

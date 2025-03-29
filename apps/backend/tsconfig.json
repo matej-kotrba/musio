@@ -4,7 +4,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "outDir": "./.dist",
+    "outDir": "./dist",
     "paths": {
       "shared": ["../../packages/shared/index"]
     },
@@ -15,5 +15,5 @@
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx"
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
 }
