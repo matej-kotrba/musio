@@ -7,9 +7,11 @@ import setupRestEndpoints from "./lib/routes/rest";
 import { isDev } from "./lib/common/utils";
 import { cors } from "hono/cors";
 
-const app = new Hono();
-app.use("*", cors({ origin: "http://localhost:3000", credentials: true }));
 const port = 5173;
+const app = new Hono();
+
+app.use("*", cors({ origin: "http://localhost:3000", credentials: true }));
+
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
 
 if (isDev()) setupDevEndpoints(app);
@@ -22,4 +24,7 @@ const server = serve({
   fetch: app.fetch,
   port,
 });
+
 injectWebSocket(server);
+
+export default app;
