@@ -24,7 +24,10 @@ COPY --from=build /usr/src/app/apps/backend/src /app/apps/backend/
 WORKDIR /app
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --no-frozen-lockfile
 
+COPY --from=build /usr/src/app/apps/backend/dist /app/apps/backend/dist
+
 WORKDIR /app/apps/backend
+
 EXPOSE 5173
 CMD ["pnpm", "start"]
 

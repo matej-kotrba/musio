@@ -1,7 +1,6 @@
-interface ImportMetaEnv {
-  readonly VITE_BACKEND_URL: string;
-}
-
-interface ImportMeta {
-  readonly env: ImportMetaEnv;
+declare namespace NodeJS {
+  export interface ProcessEnv {
+    PORT: string;
+    UI_URL: string;
+  }
 }

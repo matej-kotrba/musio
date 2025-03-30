@@ -3,14 +3,13 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_ENV=development tsx watch src/index.ts",
-    "start": "tsup && cross-env NODE_ENV=production node ./dist/apps/backend/src/index.js",
+    "dev": "tsx watch --env-file=.env.dev src/index.ts",
+    "start": "node --env-file=.env.prod ./dist/apps/backend/src/index.js",
     "build": "tsup"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
     "@hono/node-ws": "^1.0.5",
-    "cross-env": "^7.0.3",
     "hono": "^4.6.14",
     "shared": "workspace:*",
     "string-similarity-js": "^2.1.4"
@@ -20,5 +19,8 @@
     "tsup": "^8.4.0",
     "tsx": "^4.7.1",
     "typescript": "^5.7.3"
+  },
+  "devEngines": {
+    "node": ">=20.0.0"
   }
 }

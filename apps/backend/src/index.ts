@@ -7,11 +7,12 @@ import setupRestEndpoints from "./lib/routes/rest";
 import { isDev } from "./lib/common/utils";
 import { cors } from "hono/cors";
 
-console.log(import.meta.env);
-const port = 5173;
+const portEnv = Number(process.env.PORT!);
+const port = isNaN(portEnv) ? 5173 : portEnv;
+
 const app = new Hono();
 
-app.use("*", cors({ origin: "http://localhost:3000", credentials: true }));
+app.use("*", cors({ origin: process.env.UI_URL, credentials: true }));
 
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
 
@@ -19,7 +20,9 @@ if (isDev()) setupDevEndpoints(app);
 setupWsEndpoints(app, upgradeWebSocket);
 setupRestEndpoints(app);
 
-console.log(`Server is running on http://localhost:${port}`);
+console.log(
+  `Server is running on http://localhost:${port} with UI requests excepting from ${process.env.UI_URL}`
+);
 const server = serve({
   fetch: app.fetch,
   port,
