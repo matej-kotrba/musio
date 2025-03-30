@@ -12,7 +12,7 @@ export function getRandomId() {
 // Dev utils
 // ****
 export function isDev() {
-  return process.env.NODE_ENV === "development";
+  return process.env.ENV === "DEVELOPMENT";
 }
 // ****
 

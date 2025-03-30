@@ -4,9 +4,9 @@ import { Hono } from "hono";
 import setupDevEndpoints from "./lib/routes/dev";
 import setupWsEndpoints from "./lib/routes/ws";
 import setupRestEndpoints from "./lib/routes/rest";
-import { isDev } from "./lib/common/utils";
 import { cors } from "hono/cors";
 
+console.log(process.env.ENV);
 const portEnv = Number(process.env.PORT!);
 const port = isNaN(portEnv) ? 5173 : portEnv;
 
@@ -16,7 +16,7 @@ app.use("*", cors({ origin: process.env.UI_URL, credentials: true }));
 
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
 
-if (isDev()) setupDevEndpoints(app);
+setupDevEndpoints(app);
 setupWsEndpoints(app, upgradeWebSocket);
 setupRestEndpoints(app);
 
