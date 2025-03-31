@@ -1,3 +1,4 @@
+import { Title } from "@solidjs/meta";
 import BackgroundEffect from "~/components/landing-page/background-effect/BackgroundEffect";
 import Footer from "~/components/landing-page/Footer";
 import Hero from "~/components/landing-page/Hero";
@@ -6,6 +7,8 @@ import HowToPlay from "~/components/landing-page/how-to-play/HowToPlay";
 export default function Home() {
   return (
     <div class="min-h-screen bg-background-DEAFULT text-foreground overflow-hidden relative">
+      <Title>Musio</Title>
+
       <BackgroundEffect />
       <main class="container mx-auto px-4 sm:px-6 lg:px-8">
         <Hero />

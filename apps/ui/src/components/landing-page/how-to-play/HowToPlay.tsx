@@ -34,33 +34,33 @@ export default function HowToPlay() {
         </span>
         <span class="text-4xl text-foreground">How to play</span>
       </h2> */}
-      <h2 class="text-foreground font-bold text-5xl text-center mb-4">
+      <h2 class="text-foreground font-bold text-5xl text-center mb-8">
         How to play <span class="text-primary">Musio</span>?
       </h2>
       <div class={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12`}>
-        <HowToPlayStep icon="fluent:people-20-filled" title="Host or join" animationDelay={0.5}>
+        <HowToPlayStep icon="fluent:people-20-filled" title="Host or join">
           Pick one of vast pallette endearing animal avatars, choose your name and head into lobby
           via hosting it or joining existing one.
         </HowToPlayStep>
-        <HowToPlayStep icon="majesticons:music" title="Picking phase" animationDelay={1}>
+        <HowToPlayStep icon="majesticons:music" title="Picking phase">
           First part of the game is picking a song for others to guess, you are able to listen to
           your selection and change its name before submitting it.
         </HowToPlayStep>
-        <HowToPlayStep icon="octicon:goal-16" title="Guessing phase" animationDelay={1.5}>
+        <HowToPlayStep icon="octicon:goal-16" title="Guessing phase">
           Next ahead is guessing phase, here selected songs are about to take turns for everyone
           (except the one who chose it) to guess, doing so will grant them points necessary to win,
           speed is the key aspect here!
         </HowToPlayStep>
-        <HowToPlayStep icon="ic:round-leaderboard" title="Leaderboards" animationDelay={2}>
+        <HowToPlayStep icon="ic:round-leaderboard" title="Leaderboards">
           After guessing phase you'll be able to see overall leaderboards, either some of the
           players hit the points goal and final leaderboards are shown or next round will take
           place.
         </HowToPlayStep>
-        <HowToPlayStep icon="material-symbols:repeat-rounded" title="Repeat" animationDelay={2.5}>
+        <HowToPlayStep icon="material-symbols:repeat-rounded" title="Repeat">
           If no-one hit the points goal, next round starts, repeating all the previous steps until
           on of the animals becomes the ULTIMATE MUSIER!
         </HowToPlayStep>
-        <HowToPlayStep icon="mynaui:confetti-solid" title="The goal" animationDelay={3}>
+        <HowToPlayStep icon="mynaui:confetti-solid" title="The goal">
           Your main goal is to have fun, enjoy the game and have a great time with your friends!
         </HowToPlayStep>
       </div>
@@ -72,7 +72,6 @@ type HowToPlayStepProps = {
   title: string;
   icon: string;
   children: JSX.Element;
-  animationDelay: number;
   class?: string;
 };
 
@@ -86,8 +85,7 @@ function HowToPlayStep(props: HowToPlayStepProps) {
     >
       <Motion.div
         data-animate="true"
-        class={`${styles["how-to-play__container-revealing-effect"]} absolute inset-0 rounded-xl`}
-        style={{ "animation-delay": `${props.animationDelay}s` }}
+        class={`absolute inset-0 rounded-xl`}
       ></Motion.div>
       <div class="mb-6 flex justify-center">
         <div class="p-3 bg-background-dark rounded-full transition-colors duration-300">

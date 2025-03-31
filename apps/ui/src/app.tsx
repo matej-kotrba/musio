@@ -4,6 +4,7 @@ import { Suspense } from "solid-js";
 import "./app.css";
 import Nav from "./components/Nav";
 import { Toaster } from "solid-toast";
+import { MetaProvider } from "@solidjs/meta";
 
 console.log(import.meta.env.VITE_BACKEND_URL)
 
@@ -11,7 +12,7 @@ export default function App() {
   return (
     <Router
       root={(props) => (
-        <>
+        <MetaProvider>
           <Toaster
             position="top-center"
             toastOptions={{
@@ -23,7 +24,7 @@ export default function App() {
           />
           <Nav />
           <Suspense>{props.children}</Suspense>
-        </>
+        </MetaProvider>
       )}
     >
       <FileRoutes />

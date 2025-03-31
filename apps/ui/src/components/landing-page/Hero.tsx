@@ -9,9 +9,9 @@ export default function Hero() {
         <div class="lg:w-1/2 lg:pr-10">
           <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
             Guess the Song, <br />
-            <span class="text-primary">Rock the Party!</span>
+            <span class="text-primary" style={{"text-shadow": "0 0 4px #00000050"}}>Rock the Party!</span>
           </h1>
-          <p class="text-xl mb-8 text-gray-300">
+          <p class="text-xl mb-8 text-foreground">
             Musio turns your gatherings into unforgettable music trivia experiences. Challenge
             friends, discover new tunes, and create lasting memories.
           </p>
