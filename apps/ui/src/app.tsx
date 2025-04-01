@@ -6,8 +6,6 @@ import Nav from "./components/Nav";
 import { Toaster } from "solid-toast";
 import { MetaProvider } from "@solidjs/meta";
 
-console.log(import.meta.env.VITE_BACKEND_URL)
-
 export default function App() {
   return (
     <Router

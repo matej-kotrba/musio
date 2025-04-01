@@ -8,8 +8,8 @@ export default function Hero() {
       <div class="flex flex-col lg:flex-row items-center">
         <div class="lg:w-1/2 lg:pr-10">
           <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-            Guess the Song, <br />
-            <span class="text-primary" style={{"text-shadow": "0 0 4px #00000050"}}>Rock the Party!</span>
+            Ultimate party<br />
+            <span class="text-primary" style={{"text-shadow": "0 0 4px #00000050"}}>Music Trivia!</span>
           </h1>
           <p class="text-xl mb-8 text-foreground">
             Musio turns your gatherings into unforgettable music trivia experiences. Challenge
@@ -25,7 +25,7 @@ export default function Hero() {
           </div>
         </div>
         <div class="@container w-full lg:w-1/2 mt-10 lg:mt-0">
-          <div class="bg-secondary rounded-lg shadow-2xl p-8">
+          <div class="rounded-lg shadow-2xl p-8 border-2 border-zinc-600 motion-preset-oscillate-sm motion-duration-[4s]" style={{"background-image": "radial-gradient(circle at top right, hsl(var(--foreground) / 0.1), hsl(var(--secondary) / 1))"}}>
             <div class="flex flex-col @md:grid grid-cols-2 gap-6 text-xl grid-rows-[repeat(2,auto_1em_1fr)]">
               <HeroTile
                 title="Play with friends"

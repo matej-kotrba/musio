@@ -1,15 +1,27 @@
 import { Title } from "@solidjs/meta";
-import BackgroundEffect from "~/components/landing-page/background-effect/BackgroundEffect";
+import { useNavigate, useSearchParams } from "@solidjs/router";
+import { onMount } from "solid-js";
+import toast from "solid-toast";
+import BackgroundNetEffect from "~/components/landing-page/background-effect/BackgroundNetEffect";
 import Footer from "~/components/landing-page/Footer";
 import Hero from "~/components/landing-page/Hero";
 import HowToPlay from "~/components/landing-page/how-to-play/HowToPlay";
 
 export default function Home() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  onMount(() => {
+    if (searchParams.leftLobby) {
+      toast.success("You have successfully left the lobby.");
+      setSearchParams({ leftLobby: null });
+    }
+  });
+
   return (
     <div class="min-h-screen bg-background-DEAFULT text-foreground overflow-hidden relative">
       <Title>Musio</Title>
 
-      <BackgroundEffect />
+      <BackgroundNetEffect />
       <main class="container mx-auto px-4 sm:px-6 lg:px-8">
         <Hero />
         <div class="mt-32"></div>
