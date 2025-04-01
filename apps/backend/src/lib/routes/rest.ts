@@ -48,4 +48,8 @@ export default function setupRestEndpoints(app: Hono) {
 
     return c.json({ message: "Success" }, 200);
   });
+
+  app.get("/ping", (c) => {
+    return c.json("Server is running", 200);
+  });
 }

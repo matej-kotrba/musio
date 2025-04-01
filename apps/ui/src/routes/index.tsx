@@ -6,6 +6,7 @@ import BackgroundNetEffect from "~/components/landing-page/background-effect/Bac
 import Footer from "~/components/landing-page/Footer";
 import Hero from "~/components/landing-page/Hero";
 import HowToPlay from "~/components/landing-page/how-to-play/HowToPlay";
+import BackendAccessibilityDisplay from "~/features/checkBackendAccessibility/components/BackendAccessibilityDisplay";
 
 export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
