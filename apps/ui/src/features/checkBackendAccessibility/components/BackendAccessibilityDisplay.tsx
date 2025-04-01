@@ -6,7 +6,6 @@ import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 const pingServerUrl = () => constructURL(getServerURL(), "ping");
 
 async function pingBackend() {
-  // await new Promise((res) => setTimeout(() => res(""), 2000));
   const response = await fetch(pingServerUrl());
   return response.status;
 }

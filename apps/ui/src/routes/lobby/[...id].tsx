@@ -4,11 +4,11 @@ import {
   Switch,
   Match,
   onCleanup,
-  createUniqueId,
   createEffect,
   createResource,
   onMount,
   Suspense,
+  ErrorBoundary,
 } from "solid-js";
 import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
 import { useParams, useNavigate } from "@solidjs/router";
@@ -23,18 +23,7 @@ import PickingPhase from "~/components/game/phases/picking/components/PickingPha
 import GuessingGamePhase from "~/components/game/phases/guessing/components/GuessingPhase";
 import LobbyPhase from "~/components/game/phases/lobby/components/LobbyPhase";
 import LeaderboardsGamePhase from "~/components/game/phases/leaderboards/components/LeaderboardsPhase";
-import Chat from "~/features/lobbyChat/components/Chat";
-import {
-  ChatMessage,
-  constructURL,
-  createNewMessageToServer,
-  getServerURL,
-  LOBBY_ID_COOKIE,
-  PRIVATE_ID_COOKIE,
-  toPayloadToServer,
-} from "shared";
-import Loader from "~/components/common/loader/Loader";
-import { Motion } from "solid-motionone";
+import { constructURL, getServerURL, LOBBY_ID_COOKIE, PRIVATE_ID_COOKIE } from "shared";
 import { useCookies } from "~/hooks";
 import LobbyChat from "~/features/lobbyChat/LobbyChat";
 import WholePageLoaderFallback from "~/components/common/fallbacks/WholePageLoader";
@@ -135,22 +124,24 @@ export default function Lobby() {
               {/* Player sidebar */}
               <PlayerList />
               {/* ___ */}
-              <div>
-                <Switch>
-                  <Match when={gameStore.gameState?.state === "lobby"}>
-                    <LobbyPhase />
-                  </Match>
-                  <Match when={gameStore.gameState?.state === "picking"}>
-                    <PickingPhase />
-                  </Match>
-                  <Match when={gameStore.gameState?.state === "guessing"}>
-                    <GuessingGamePhase />
-                  </Match>
-                  <Match when={gameStore.gameState?.state === "leaderboard"}>
-                    <LeaderboardsGamePhase />
-                  </Match>
-                </Switch>
-              </div>
+              <ErrorBoundary fallback={<LobbyErrorBoundary />}>
+                <div>
+                  <Switch>
+                    <Match when={gameStore.gameState?.state === "lobby"}>
+                      <LobbyPhase />
+                    </Match>
+                    <Match when={gameStore.gameState?.state === "picking"}>
+                      <PickingPhase />
+                    </Match>
+                    <Match when={gameStore.gameState?.state === "guessing"}>
+                      <GuessingGamePhase />
+                    </Match>
+                    <Match when={gameStore.gameState?.state === "leaderboard"}>
+                      <LeaderboardsGamePhase />
+                    </Match>
+                  </Switch>
+                </div>
+              </ErrorBoundary>
               <LobbyChat />
             </div>
           </div>
@@ -158,4 +149,8 @@ export default function Lobby() {
       </Suspense>
     </WsConnectionProvider>
   );
+}
+
+function LobbyErrorBoundary() {
+  return <div>Something went wrong</div>;
 }
