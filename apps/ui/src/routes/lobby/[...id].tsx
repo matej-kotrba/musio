@@ -9,9 +9,10 @@ import {
   onMount,
   Suspense,
   ErrorBoundary,
+  on,
 } from "solid-js";
 import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
-import { useParams, useNavigate } from "@solidjs/router";
+import { useParams, useNavigate, createAsync } from "@solidjs/router";
 import { getLobbyURL as getLobbyId } from "~/utils/rscs";
 import useWebsocket from "./services/websockets-service";
 import { useGameStore } from "./stores/game-store";
@@ -24,7 +25,7 @@ import GuessingGamePhase from "~/components/game/phases/guessing/components/Gues
 import LobbyPhase from "~/components/game/phases/lobby/components/LobbyPhase";
 import LeaderboardsGamePhase from "~/components/game/phases/leaderboards/components/LeaderboardsPhase";
 import { constructURL, getServerURL, LOBBY_ID_COOKIE, PRIVATE_ID_COOKIE } from "shared";
-import { useCookies } from "~/hooks";
+import { useCookies, useDeferredResource } from "~/hooks";
 import LobbyChat from "~/features/lobbyChat/LobbyChat";
 import WholePageLoaderFallback from "~/components/common/fallbacks/WholePageLoader";
 
@@ -47,7 +48,7 @@ export default function Lobby() {
     return connect(params.lobbyId, params.data);
   };
 
-  const [data] = createResource(wsConnectionResourceParams, connectFetchHandler);
+  const [wsConnectionIndicator] = createResource(wsConnectionResourceParams, connectFetchHandler);
 
   createEffect(() => {
     if (!gameStore.lobbyId || !gameStore.thisPlayerIds?.private) return;
@@ -58,15 +59,36 @@ export default function Lobby() {
 
   const getLobbyIdFromParams = () => params.id;
 
-  async function handleProfileSelected(data: ProfileData) {
-    const newLobbyId = await getLobbyId(getLobbyIdFromParams());
-    if (newLobbyId !== getLobbyIdFromParams()) {
-      navigate(`/lobby/${newLobbyId}`, { replace: true });
-    }
-
-    setGameStore("lobbyId", newLobbyId);
-    setWsConnectionResourceParams({ data, lobbyId: newLobbyId });
+  async function handleProfileSelected(profileData: ProfileData) {
+    await new Promise((res) => setTimeout(() => res(""), 2000));
+    const lobbyId = await getLobbyId(getLobbyIdFromParams());
+    return { lobbyId, profileData };
   }
+
+  const [runNewLobbyIdResource, lobbyCallResource] = useDeferredResource<
+    { lobbyId: string; profileData: ProfileData },
+    ProfileData
+  >(handleProfileSelected);
+
+  async function onProfileSelected(data: ProfileData) {
+    runNewLobbyIdResource(data);
+  }
+
+  createEffect(
+    on(lobbyCallResource, () => {
+      const lobbyCallData = lobbyCallResource();
+      console.log(lobbyCallData);
+      if (!lobbyCallData) return;
+      const { lobbyId: newLobbyId, profileData } = lobbyCallData;
+
+      if (newLobbyId !== getLobbyIdFromParams()) {
+        navigate(`/lobby/${newLobbyId}`, { replace: true });
+      }
+
+      setGameStore("lobbyId", newLobbyId);
+      setWsConnectionResourceParams({ data: profileData, lobbyId: newLobbyId });
+    })
+  );
 
   const eventListenerAbortController = new AbortController();
 
@@ -83,6 +105,8 @@ export default function Lobby() {
         setShouldDisplayProfileSelection(true);
         return;
       }
+
+      // TODO: ?
       handleProfileSelected({ name: "", icon: "seal" });
     } else {
       setShouldDisplayProfileSelection(true);
@@ -108,11 +132,11 @@ export default function Lobby() {
 
   return (
     <WsConnectionProvider wsConnection={wsActions}>
-      <Show when={shouldDisplayProfileSelection()}>
-        <ProfileSelection onProfileSelected={handleProfileSelected} />
-      </Show>
       <Suspense fallback={<WholePageLoaderFallback />}>
-        <Show when={data()}>
+        <Show when={shouldDisplayProfileSelection()}>
+          <ProfileSelection onProfileSelected={onProfileSelected} />
+        </Show>
+        <Show when={lobbyCallResource() && wsConnectionIndicator()}>
           <div
             class="relative"
             style={{
@@ -142,7 +166,9 @@ export default function Lobby() {
                   </Switch>
                 </div>
               </ErrorBoundary>
+              {/* Player sidebar */}
               <LobbyChat />
+              {/* ___ */}
             </div>
           </div>
         </Show>
