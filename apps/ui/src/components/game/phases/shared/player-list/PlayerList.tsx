@@ -10,9 +10,10 @@ type Props = {
 };
 
 export default function PlayerList(props: Props) {
-  const [gameStore] = useGameStore();
-  const emptyGameSlots = () => [null, null];
-  // Array(Math.max(gameStore.gameOptions.playerLimit - props.players.length, 0)).fill(null);
+  const [gameStore, { queries }] = useGameStore();
+  const emptyGameSlots = () =>
+    Array(Math.max(gameStore.gameOptions.playerLimit - props.players.length, 0)).fill(null);
+  // const shouldDisplayPlaceholders = gameStore.gameState.state === ""
 
   return (
     <aside
@@ -30,6 +31,7 @@ export default function PlayerList(props: Props) {
                 maxPoints={gameStore.gameOptions.toPointsLimit}
                 player={player}
                 previousPoints={player.previousPoints}
+                isMyself={queries.getThisPlayer()?.publicId === player.publicId}
               />
             </div>
           )}

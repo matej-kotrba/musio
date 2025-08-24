@@ -23,6 +23,7 @@ type Props = {
   player: Player;
   maxPoints: number;
   previousPoints?: number;
+  isMyself?: boolean;
 };
 
 export default function PlayerDisplay(props: Props) {
@@ -80,10 +81,17 @@ export default function PlayerDisplay(props: Props) {
           {/* Main content */}
           <div class="min-w-0 self-start w-full">
             <div
-              class="text-lg font-medium overflow-hidden whitespace-nowrap text-ellipsis"
+              class="flex gap-2 items-center text-lg font-medium overflow-hidden whitespace-nowrap text-ellipsis"
               title={props.player.name}
             >
-              {props.player.name}
+              <span class="overflow-ellipsis whitespace-nowrap overflow-hidden">
+                {props.player.name}
+              </span>
+              <Show when={props.isMyself}>
+                <div class="border border-green-400 rounded-md text-green-400 text-xs px-1.5 py-0.5">
+                  You
+                </div>
+              </Show>
             </div>
             <div class="flex items-center gap-1">
               <div
