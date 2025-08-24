@@ -1,5 +1,5 @@
 import { Player } from "shared";
-import { createSignal, Show } from "solid-js";
+import { createEffect, createSignal, Show } from "solid-js";
 import SongQueueProgress from "~/components/game/phases/guessing/components/SongQueueProgress";
 import LobbySettings from "~/components/game/phases/lobby/components/Settings";
 import SongPicker from "~/components/game/phases/picking/components/song-picker/SongPicker";
@@ -12,7 +12,7 @@ const dummy_players: PlayerToDisplay[] = [
     name: "Player 1",
     icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
     isHost: true,
-    points: 95,
+    points: 5,
     publicId: "a",
     previousPoints: 85,
     status: "connected",
@@ -21,7 +21,7 @@ const dummy_players: PlayerToDisplay[] = [
     name: "Player 2",
     icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
     isHost: false,
-    points: 90,
+    points: 100,
     publicId: "b",
     previousPoints: 80,
     status: "connected",
@@ -76,6 +76,10 @@ const dummy_players: PlayerToDisplay[] = [
 
 export default function Dev() {
   const [gameStore, { actions }] = useGameStore();
+
+  createEffect(() => {
+    actions.setGameStore("gameOptions", "toPointsLimit", 100);
+  });
   // const [step, setStep] = createSignal<number>(0);
   // const [stepRoot, setStepRoot] = createSignal<number>(0);
 

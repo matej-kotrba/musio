@@ -1,4 +1,4 @@
-import { For, Show } from "solid-js";
+import { createEffect, For, Show } from "solid-js";
 import styles from "./index.module.css";
 import PlayerDisplay, { PlayerToDisplay } from "~/components/game/Player";
 import { useGameStore } from "~/routes/lobby/stores/game-store";
@@ -43,7 +43,7 @@ export default function PlayerList(props: Props) {
 function EmptyGameSlot() {
   return (
     <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-700/20 border-2 border-dashed border-gray-600">
-      <div class="w-12 h-12 rounded-full bg-gray-600/50 grid content-center">
+      <div class="w-16 aspect-square rounded-lg bg-gray-600/50 grid content-center">
         <Icon icon="tabler:users" class="text-xl text-gray-500" />
       </div>
       <span class="text-gray-500 text-sm font-semibold">Waiting for player...</span>
