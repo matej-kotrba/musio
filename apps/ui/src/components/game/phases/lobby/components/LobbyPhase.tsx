@@ -172,7 +172,8 @@ function LobbyInitial(props: LobbyTypesProps) {
           </div>
         </Show>
 
-        <img src="/svgs/waiting.svg" alt="" class="w-80 aspect-[2/3]" />
+        <DecorativeWaitingIndicator />
+        {/* <img src="/svgs/waiting.svg" alt="" class="w-80 aspect-[2/3]" /> */}
       </div>
     </section>
   );
@@ -185,5 +186,25 @@ type BadgeProps = {
 function Badge(props: BadgeProps) {
   return (
     <div class="text-sm flex items-center gap-1 border-2 rounded-lg px-1">{props.children}</div>
+  );
+}
+
+function DecorativeWaitingIndicator() {
+  return (
+    <div class="relative mt-8">
+      <div class="relative w-40 h-40 mx-auto">
+        <div class="w-full h-full bg-background-dark rounded-full shadow-xl border-4 border-background-highlight relative shadow-primary/10">
+          {/* Simple record grooves */}
+          <div class="absolute inset-6 border border-background-highlight rounded-full opacity-40"></div>
+          <div class="absolute inset-10 border border-background-highlight rounded-full opacity-30"></div>
+          <div class="absolute inset-14 border border-background-highlight rounded-full opacity-20"></div>
+
+          {/* Center label with subtle glow */}
+          <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/30">
+            <Icon icon={"majesticons:music"} class="text-lg text-black" />
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

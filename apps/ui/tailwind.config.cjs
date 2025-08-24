@@ -1,7 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class", '[data-kb-theme="dark"]'],
-  content: ["src/routes/**/*.{ts,tsx}", "src/components/**/*.{ts,tsx}", "src/features/**/*.{ts,tsx}"],
+  content: [
+    "src/routes/**/*.{ts,tsx}",
+    "src/components/**/*.{ts,tsx}",
+    "src/features/**/*.{ts,tsx}",
+  ],
   prefix: "",
   safelist: ["dark"],
   theme: {
@@ -104,5 +108,9 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"),require('tailwindcss-motion'),require('@tailwindcss/container-queries')],
+  plugins: [
+    require("tailwindcss-animate"),
+    require("tailwindcss-motion"),
+    require("@tailwindcss/container-queries"),
+  ],
 };
