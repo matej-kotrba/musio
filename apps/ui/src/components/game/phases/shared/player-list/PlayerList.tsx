@@ -1,11 +1,18 @@
 import { For, Show } from "solid-js";
 import styles from "./index.module.css";
-import PlayerDisplay from "~/components/game/Player";
+import PlayerDisplay, { PlayerToDisplay } from "~/components/game/Player";
 import { useGameStore } from "~/routes/lobby/stores/game-store";
 import { TransitionGroup } from "solid-transition-group";
+import { Icon } from "@iconify-icon/solid";
 
-export default function PlayerList() {
+type Props = {
+  players: PlayerToDisplay[];
+};
+
+export default function PlayerList(props: Props) {
   const [gameStore] = useGameStore();
+  const emptyGameSlots = () => [null, null];
+  // Array(Math.max(gameStore.gameOptions.playerLimit - props.players.length, 0)).fill(null);
 
   return (
     <aside
@@ -16,7 +23,7 @@ export default function PlayerList() {
       }}
     >
       <TransitionGroup name="player-sidebar">
-        <For each={gameStore.players.toSorted((a, b) => b.points - a.points)}>
+        <For each={props.players.toSorted((a, b) => b.points - a.points)}>
           {(player, index) => (
             <div class="player-sidebar duration-200">
               <PlayerDisplay
@@ -27,7 +34,19 @@ export default function PlayerList() {
             </div>
           )}
         </For>
+        <For each={emptyGameSlots()}>{() => <EmptyGameSlot />}</For>
       </TransitionGroup>
     </aside>
+  );
+}
+
+function EmptyGameSlot() {
+  return (
+    <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-700/20 border-2 border-dashed border-gray-600">
+      <div class="w-12 h-12 rounded-full bg-gray-600/50 grid content-center">
+        <Icon icon="tabler:users" class="text-xl text-gray-500" />
+      </div>
+      <span class="text-gray-500 text-sm font-semibold">Waiting for player...</span>
+    </div>
   );
 }

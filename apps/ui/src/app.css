@@ -67,9 +67,16 @@
 }
 
 body {
-  background: hsl(var(--background));
+  /* background: hsl(var(--background)); */
+  background-image: linear-gradient(
+    to right bottom,
+    hsl(var(--background-accent)),
+    hsl(var(--background)),
+    hsl(var(--background-accent))
+  );
   color: hsl(var(--foreground));
   font-family: "Geist";
+  min-height: 100dvh;
 }
 
 /* Group transition styles */

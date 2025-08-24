@@ -1,6 +1,7 @@
-import { JSXElement } from "solid-js";
+import { For, JSXElement, Show } from "solid-js";
 import { GlobalsContextProvider } from "~/contexts/globals";
 import { GameStoreProvider, getNewGameStore } from "./lobby/stores/game-store";
+import { isServer } from "solid-js/web";
 
 type Props = {
   children: JSXElement;
@@ -8,10 +9,33 @@ type Props = {
 
 export default function LobbyLayout(props: Props) {
   return (
-    <GlobalsContextProvider>
-      <GameStoreProvider gameStore={getNewGameStore()}>
-        <div class="container mx-auto">{props.children}</div>
-      </GameStoreProvider>
-    </GlobalsContextProvider>
+    <div class="relative">
+      <GlobalsContextProvider>
+        <GameStoreProvider gameStore={getNewGameStore()}>
+          <div class="container mx-auto">{props.children}</div>
+        </GameStoreProvider>
+      </GlobalsContextProvider>
+      <DotsEffect />
+    </div>
+  );
+}
+
+function DotsEffect() {
+  return (
+    <div class="absolute inset-0 opacity-20">
+      <For each={Array.from({ length: 50 })}>
+        {() => (
+          <div
+            class="absolute w-1 h-1 bg-green-400 rounded-full animate-pulse"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              "animation-delay": `${Math.random() * 3}s`,
+              "animation-duration": `${2 + Math.random() * 2}s`,
+            }}
+          />
+        )}
+      </For>
+    </div>
   );
 }

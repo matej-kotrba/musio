@@ -3,70 +3,79 @@ import { createSignal, Show } from "solid-js";
 import SongQueueProgress from "~/components/game/phases/guessing/components/SongQueueProgress";
 import LobbySettings from "~/components/game/phases/lobby/components/Settings";
 import SongPicker from "~/components/game/phases/picking/components/song-picker/SongPicker";
+import PlayerList from "~/components/game/phases/shared/player-list/PlayerList";
 import PlayerDisplay, { getAllIcons, PlayerToDisplay } from "~/components/game/Player";
+import { useGameStore } from "../lobby/stores/game-store";
 
-// const dummy_players: PlayerToDisplay[] = [
-//   {
-//     name: "Player 1",
-//     icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
-//     isHost: true,
-//     points: 95,
-//     publicId: "a",
-//     previousPoints: 85,
-//   },
-//   {
-//     name: "Player 2",
-//     icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
-//     isHost: false,
-//     points: 90,
-//     publicId: "b",
-//     previousPoints: 80,
-//   },
-//   {
-//     name: "Player 3",
-//     icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
-//     isHost: false,
-//     points: 80,
-//     publicId: "c",
-//     previousPoints: 76,
-//   },
-//   {
-//     name: "Player 4",
-//     icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
-//     isHost: true,
-//     points: 72,
-//     publicId: "d",
-//     previousPoints: 69,
-//   },
-//   {
-//     name: "Player 5",
-//     icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
-//     isHost: false,
-//     points: 56,
-//     publicId: "e",
-//     previousPoints: 56,
-//   },
-//   {
-//     name: "Player 6",
-//     icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
-//     isHost: false,
-//     points: 32,
-//     publicId: "f",
-//     previousPoints: 15,
-//   },
-// ];
+const dummy_players: PlayerToDisplay[] = [
+  {
+    name: "Player 1",
+    icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
+    isHost: true,
+    points: 95,
+    publicId: "a",
+    previousPoints: 85,
+    status: "connected",
+  },
+  {
+    name: "Player 2",
+    icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
+    isHost: false,
+    points: 90,
+    publicId: "b",
+    previousPoints: 80,
+    status: "connected",
+  },
+  {
+    name: "Player 3",
+    icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
+    isHost: false,
+    points: 80,
+    publicId: "c",
+    previousPoints: 76,
+    status: "connected",
+  },
+  {
+    name: "Player 4",
+    icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
+    isHost: true,
+    points: 72,
+    publicId: "d",
+    previousPoints: 69,
+    status: "connected",
+  },
+  // {
+  //   name: "Player 5",
+  //   icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
+  //   isHost: false,
+  //   points: 56,
+  //   publicId: "e",
+  //   previousPoints: 56,
+  //   status: "connected",
+  // },
+  // {
+  //   name: "Player 6",
+  //   icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
+  //   isHost: false,
+  //   points: 32,
+  //   publicId: "f",
+  //   previousPoints: 15,
+  //   status: "connected",
+  // },
+];
 
-const dummy_player: PlayerToDisplay = {
-  name: "Player 1",
-  icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
-  isHost: true,
-  points: 95,
-  publicId: "a",
-  previousPoints: 85,
-  status: "disconnected",
-};
+// const dummy_player: PlayerToDisplay = {
+//   name: "Player 1",
+//   icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
+//   isHost: true,
+//   points: 95,
+//   publicId: "a",
+//   previousPoints: 85,
+//   status: "disconnected",
+// };
 
 export default function Dev() {
+  const [gameStore, { actions }] = useGameStore();
   // const [step, setStep] = createSignal<number>(0);
   // const [stepRoot, setStepRoot] = createSignal<number>(0);
 
@@ -80,9 +89,10 @@ export default function Dev() {
 
   return (
     <div class="w-72 mx-auto flex flex-col gap-2 mt-2">
-      <LobbySettings gameLimit={20} playerLimit={4}>
+      <PlayerList players={dummy_players} />
+      {/* <LobbySettings gameLimit={20} playerLimit={4}>
         Open
-      </LobbySettings>
+      </LobbySettings> */}
       {/* <PlayerDisplay player={dummy_player} maxPoints={100} /> */}
       {/* <SongPicker onSongSelect={() => {}} /> */}
       {/* <button onClick={incrementRoot}>Increment root</button>

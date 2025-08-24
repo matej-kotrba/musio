@@ -133,10 +133,11 @@ export default function Lobby() {
   return (
     <WsConnectionProvider wsConnection={wsActions}>
       <Suspense fallback={<WholePageLoaderFallback />}>
-        <Show when={shouldDisplayProfileSelection()}>
+        {/* <Show when={shouldDisplayProfileSelection()}>
           <ProfileSelection onProfileSelected={onProfileSelected} />
-        </Show>
-        <Show when={lobbyCallResource() && wsConnectionIndicator()}>
+        </Show> */}
+        {/* <Show when={lobbyCallResource() && wsConnectionIndicator()}> */}
+        <Show when={true}>
           <div
             class="relative"
             style={{
@@ -146,7 +147,7 @@ export default function Lobby() {
           >
             <div class="grid grid-cols-[auto,1fr,auto] gap-4 py-4 overflow-hidden">
               {/* Player sidebar */}
-              <PlayerList />
+              <PlayerList players={gameStore.players} />
               {/* ___ */}
               <ErrorBoundary fallback={<LobbyErrorBoundary />}>
                 <div>
