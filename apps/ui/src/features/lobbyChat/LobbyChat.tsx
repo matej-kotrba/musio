@@ -11,10 +11,12 @@ export default function LobbyChat() {
   const wsActions = useWsConnection();
 
   const handleChatMessage = (content: string) => {
-    if (!gameStore.thisPlayerIds?.public || !getThisPlayer()) return;
+    const thisPlayer = getThisPlayer();
+    if (!gameStore.thisPlayerIds?.public || !thisPlayer) return;
 
     const newMessage: ChatMessage = {
       id: createUniqueId(),
+      senderPublicId: thisPlayer.publicId,
       content: content,
       guessRelation: false,
       senderName: getThisPlayer()!.name,

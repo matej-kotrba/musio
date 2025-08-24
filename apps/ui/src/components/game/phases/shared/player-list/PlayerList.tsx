@@ -13,7 +13,8 @@ export default function PlayerList(props: Props) {
   const [gameStore, { queries }] = useGameStore();
   const emptyGameSlots = () =>
     Array(Math.max(gameStore.gameOptions.playerLimit - props.players.length, 0)).fill(null);
-  // const shouldDisplayPlaceholders = gameStore.gameState.state === ""
+  const shouldDisplayPlaceholders =
+    gameStore.gameState?.state === "lobby" && gameStore.gameState?.type === "INITIAL";
 
   return (
     <aside
@@ -36,8 +37,10 @@ export default function PlayerList(props: Props) {
             </div>
           )}
         </For>
-        <For each={emptyGameSlots()}>{() => <EmptyGameSlot />}</For>
       </TransitionGroup>
+      <Show when={shouldDisplayPlaceholders}>
+        <For each={emptyGameSlots()}>{() => <EmptyGameSlot />}</For>
+      </Show>
     </aside>
   );
 }

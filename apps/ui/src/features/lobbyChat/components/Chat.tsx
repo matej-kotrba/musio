@@ -1,7 +1,8 @@
 import styles from "./Chat.module.css";
-import { createEffect, For } from "solid-js";
+import { createEffect, For, Show } from "solid-js";
 import ChatInput from "./ChatInput";
 import type { ChatMessage } from "shared";
+import { useGameStore } from "~/routes/lobby/stores/game-store";
 
 // const dummy_messages: Message[] = [
 //   {
@@ -121,6 +122,7 @@ type ChatProps = {
 };
 
 export default function Chat(props: ChatProps) {
+  const [_, { queries }] = useGameStore();
   let chatRef!: HTMLDivElement;
 
   createEffect(() => {
@@ -140,14 +142,26 @@ export default function Chat(props: ChatProps) {
         class={`${styles.messages__mask} flex flex-col gap-2 overflow-y-auto pr-2`}
       >
         <div class="flex-1"></div>
-        <For each={props.messages}>{(message) => <MessageComponent message={message} />}</For>
+        <For each={props.messages}>
+          {(message) => (
+            <Message
+              message={message}
+              isFromThisPlayer={queries.getThisPlayer()?.publicId === message.senderPublicId}
+            />
+          )}
+        </For>
       </div>
       <ChatInput onSubmit={createNewMessage} disabled={props.disabled} />
     </div>
   );
 }
 
-function MessageComponent(props: { message: ChatMessage }) {
+type MessageProps = {
+  message: ChatMessage;
+  isFromThisPlayer?: boolean;
+};
+
+function Message(props: MessageProps) {
   return (
     <div
       class={`${styles.message} data-[optimistic=true]:opacity-50`}
@@ -163,9 +177,16 @@ function MessageComponent(props: { message: ChatMessage }) {
       data-guessed={props.message.guessRelation === "guessed"}
       data-optimistic={props.message.isOptimistic}
     >
-      <span class="font-semibold text-sm opacity-75 text-ellipsis overflow-x-hidden whitespace-nowrap block">
-        {props.message.senderName}
-      </span>
+      <div class="flex items-center gap-2">
+        <span class="font-semibold text-sm opacity-75 text-ellipsis overflow-x-hidden whitespace-nowrap block">
+          {props.message.senderName}
+        </span>
+        <Show when={props.isFromThisPlayer}>
+          <div class="border border-green-400 rounded-md text-green-400 text-xs px-1.5 py-0.5">
+            You
+          </div>
+        </Show>
+      </div>
       <p class="hyphens-auto">{props.message.content}</p>
     </div>
   );

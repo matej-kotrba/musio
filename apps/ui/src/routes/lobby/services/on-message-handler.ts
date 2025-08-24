@@ -164,6 +164,7 @@ export const handleOnWsMessage = () => {
           content: payload.content,
           guessRelation: false,
           senderName: sender.name,
+          senderPublicId: sender.publicId,
         });
         // setChatMessages((old) => [
         //   ...old,

@@ -80,6 +80,7 @@ export type WS_MessageInterface<T extends WS_MESSAGE> = {
 
 export type ChatMessage = {
   id?: string;
+  senderPublicId: string;
   senderName: string;
   content: string;
   guessRelation: GuessChatMessageType;
