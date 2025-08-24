@@ -22,12 +22,10 @@ type Props = JSX.HTMLAttributes<HTMLDivElement> & {
 const AudioControl: Component<Props> = (props) => {
   const [local, rest] = splitProps(props, ["volume", "muted", "class"]);
 
-  const [audio, setAudio] = createSignal<HTMLAudioElement>(
-    new Audio(props.audioUrl)
-  );
+  const [audio, setAudio] = createSignal<HTMLAudioElement>(new Audio(props.audioUrl));
 
   const [isPlaying, setIsPlaying] = createSignal<boolean>(!audio()?.paused);
-  const [volume, setVolume] = createSignal<number>(props.volume || 50);
+  const [volume, setVolume] = createSignal<number>(props.volume || 10);
   const prevVolume = usePrevious(volume);
   const [time, setTime] = createSignal<number>(0);
   const [maxTime, setMaxTime] = createSignal<number>(0);
@@ -73,7 +71,7 @@ const AudioControl: Component<Props> = (props) => {
 
     setAudio(newAudio);
     setTime(0);
-    // setIsPlaying(true);
+    setIsPlaying(true);
 
     return newAudio;
   });
@@ -98,6 +96,11 @@ const AudioControl: Component<Props> = (props) => {
     audio().volume = volume() / 100;
   });
 
+  onCleanup(() => {
+    audio().pause();
+    audio().remove();
+  });
+
   return (
     <div
       {...rest}
@@ -107,10 +110,7 @@ const AudioControl: Component<Props> = (props) => {
       )}
     >
       <button type="button" on:click={handlePlayPauseButton}>
-        <Show
-          when={isPlaying()}
-          fallback={<MotionIcon icon={"mingcute:play-fill"} />}
-        >
+        <Show when={isPlaying()} fallback={<MotionIcon icon={"mingcute:play-fill"} />}>
           <MotionIcon icon={"material-symbols:pause-rounded"} />
         </Show>
       </button>
@@ -121,18 +121,13 @@ const AudioControl: Component<Props> = (props) => {
         max={maxTime()}
         value={time()}
         on:input={handleTrackChange}
-        style={`--percentage: ${
-          (time() / 30) * 100 + 3 - 3 * 2 * (time() / 30)
-        }%;`}
+        style={`--percentage: ${(time() / 30) * 100 + 3 - 3 * 2 * (time() / 30)}%;`}
       />
       <span class="text-xs mr-auto">
         {Math.floor(time() / 60)}:{time().toFixed(0).padStart(2, "0")}/0:30
       </span>
       <button type="button" on:click={handleVolumeButtonClick}>
-        <Show
-          when={volume() > 0}
-          fallback={<MotionIcon icon={"mynaui:volume-x-solid"} />}
-        >
+        <Show when={volume() > 0} fallback={<MotionIcon icon={"mynaui:volume-x-solid"} />}>
           <MotionIcon icon={"icon-park-solid:volume-notice"} />
         </Show>
       </button>
