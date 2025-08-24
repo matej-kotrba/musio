@@ -106,8 +106,9 @@ export default function Lobby() {
         return;
       }
 
-      // TODO: ?
-      handleProfileSelected({ name: "", icon: "seal" });
+      // Reconnect logic, sending incorrect data means that it will fail if the player is not reconnecting
+      // as the server checks the privateId sent with the request first
+      onProfileSelected({ name: "", icon: "" });
     } else {
       setShouldDisplayProfileSelection(true);
     }
@@ -133,11 +134,10 @@ export default function Lobby() {
   return (
     <WsConnectionProvider wsConnection={wsActions}>
       <Suspense fallback={<WholePageLoaderFallback />}>
-        {/* <Show when={shouldDisplayProfileSelection()}>
+        <Show when={shouldDisplayProfileSelection()}>
           <ProfileSelection onProfileSelected={onProfileSelected} />
-        </Show> */}
-        {/* <Show when={lobbyCallResource() && wsConnectionIndicator()}> */}
-        <Show when={true}>
+        </Show>
+        <Show when={lobbyCallResource() && wsConnectionIndicator()}>
           <div
             class="relative"
             style={{

@@ -1,11 +1,17 @@
 import { Player } from "shared";
-import { createEffect, createSignal, Show } from "solid-js";
+import { createEffect, createSignal, ErrorBoundary, Match, Show, Switch } from "solid-js";
 import SongQueueProgress from "~/components/game/phases/guessing/components/SongQueueProgress";
 import LobbySettings from "~/components/game/phases/lobby/components/Settings";
 import SongPicker from "~/components/game/phases/picking/components/song-picker/SongPicker";
 import PlayerList from "~/components/game/phases/shared/player-list/PlayerList";
 import PlayerDisplay, { getAllIcons, PlayerToDisplay } from "~/components/game/Player";
 import { useGameStore } from "../lobby/stores/game-store";
+import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
+import LobbyPhase from "~/components/game/phases/lobby/components/LobbyPhase";
+import PickingPhase from "~/components/game/phases/picking/components/PickingPhase";
+import GuessingGamePhase from "~/components/game/phases/guessing/components/GuessingPhase";
+import LeaderboardsGamePhase from "~/components/game/phases/leaderboards/components/LeaderboardsPhase";
+import LobbyChat from "~/features/lobbyChat/LobbyChat";
 
 const dummy_players: PlayerToDisplay[] = [
   {
@@ -92,8 +98,40 @@ export default function Dev() {
   // };
 
   return (
-    <div class="w-72 mx-auto flex flex-col gap-2 mt-2">
-      <PlayerList players={dummy_players} />
+    <div
+      class="relative"
+      style={{
+        "--custom-height": `calc(100vh - ${NAV_HEIGHT} - ${LOBBY_LAYOUT_HEIGHT} * 2 - 2rem)`,
+        height: `calc(var(--custom-height) + ${LOBBY_LAYOUT_HEIGHT} * 2)`,
+      }}
+    >
+      <div class="grid grid-cols-[auto,1fr,auto] gap-4 py-4 overflow-hidden">
+        {/* Player sidebar */}
+        <PlayerList players={gameStore.players} />
+        {/* ___ */}
+        <ErrorBoundary fallback={<LobbyErrorBoundary />}>
+          <div>
+            <Switch>
+              <Match when={gameStore.gameState?.state}>
+                <LobbyPhase />
+              </Match>
+              <Match when={gameStore.gameState?.state === "picking"}>
+                <PickingPhase />
+              </Match>
+              <Match when={gameStore.gameState?.state === "guessing"}>
+                <GuessingGamePhase />
+              </Match>
+              <Match when={gameStore.gameState?.state === "leaderboard"}>
+                <LeaderboardsGamePhase />
+              </Match>
+            </Switch>
+          </div>
+        </ErrorBoundary>
+        {/* Player sidebar */}
+        <LobbyChat />
+        {/* ___ */}
+      </div>
+      {/* <div class="w-72 mx-auto flex flex-col gap-2 mt-2">*/}
       {/* <LobbySettings gameLimit={20} playerLimit={4}>
         Open
       </LobbySettings> */}
@@ -122,6 +160,11 @@ export default function Dev() {
           return bPoints - aPoints;
         })}
       /> */}
+      {/*</div>*/}
     </div>
   );
+}
+
+function LobbyErrorBoundary() {
+  return <div>Something went wrong</div>;
 }

@@ -17,7 +17,7 @@ export default function PlayerList(props: Props) {
 
   return (
     <aside
-      class={`${styles.aside__scrollbar} relative flex flex-col gap-4 w-80 pr-2 overflow-x-clip h-full overflow-y-auto`}
+      class={`${styles.aside__scrollbar} relative flex flex-col gap-2 w-80 pr-2 overflow-x-clip h-full overflow-y-auto`}
       style={{
         height: "var(--custom-height)",
         "scroll-snap-type": "y mandatory",

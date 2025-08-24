@@ -1,7 +1,7 @@
 import { For, JSXElement, Show } from "solid-js";
 import { GlobalsContextProvider } from "~/contexts/globals";
 import { GameStoreProvider, getNewGameStore } from "./lobby/stores/game-store";
-import { isServer } from "solid-js/web";
+import { NAV_HEIGHT } from "~/utils/constants";
 
 type Props = {
   children: JSXElement;
@@ -9,7 +9,7 @@ type Props = {
 
 export default function LobbyLayout(props: Props) {
   return (
-    <div class="relative">
+    <div class="relative" style={{ height: `calc(100vh - ${NAV_HEIGHT})` }}>
       <GlobalsContextProvider>
         <GameStoreProvider gameStore={getNewGameStore()}>
           <div class="container mx-auto">{props.children}</div>
@@ -22,7 +22,7 @@ export default function LobbyLayout(props: Props) {
 
 function DotsEffect() {
   return (
-    <div class="absolute inset-0 opacity-20">
+    <div class="absolute inset-0 opacity-20 -z-10">
       <For each={Array.from({ length: 50 })}>
         {() => (
           <div
