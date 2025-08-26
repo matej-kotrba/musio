@@ -21,7 +21,8 @@ temporary round lobby
 [] - try to refactor how GuessingPhase works, the fallback especially
 [] - change host when host leaves
 
-[] - add rate limiting for sending messages and limit the length of the message
+[] - add rate limiting for sending messages
+[x] - limit the length of the message
 [] - host reloading page in lobby causes wierd bugs
 [] - now new lobby is created when hitting the rest endpoint, just check if the lobby exist there and create it
 only on join
