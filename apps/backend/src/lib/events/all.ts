@@ -1,4 +1,9 @@
-import { createNewMessageToClient, toPayloadToClient, type fromMessageOnServer } from "shared";
+import {
+  createNewMessageToClient,
+  messageLengthSchema,
+  toPayloadToClient,
+  type fromMessageOnServer,
+} from "shared";
 import type { Lobby } from "../game/lobby";
 import { getPlayerByPrivateId, type PlayerServer } from "../game/player";
 import { getLobbiesService } from "../game/create";
@@ -22,6 +27,31 @@ export function handleChatMessage(
   lobby: Lobby,
   { messageId, content }: { messageId: string; content: string }
 ) {
+  const messageLengthValidation = messageLengthSchema.safeParse(content);
+  if (!messageLengthValidation.success) {
+    player.ws.send(
+      toPayloadToClient(
+        lobby.id,
+        createNewMessageToClient(lobby.id, "ERROR_MESSAGE", {
+          errorMessage: `${messageLengthValidation.error.errors[0].message}`,
+        })
+      )
+    );
+
+    player.ws.send(
+      toPayloadToClient(
+        lobby.id,
+        createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
+          isOk: false,
+          messageId,
+          type: false,
+        })
+      )
+    );
+
+    return;
+  }
+
   player.ws.send(
     toPayloadToClient(
       lobby.id,

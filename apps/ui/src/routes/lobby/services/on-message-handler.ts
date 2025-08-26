@@ -2,6 +2,7 @@ import { fromMessageOnClient } from "shared";
 import { playerServerToPlayer } from "~/utils/game/common";
 import { useGameStore } from "../stores/game-store";
 import { produce } from "solid-js/store";
+import toast from "solid-toast";
 
 export const handleOnWsMessage = () => {
   const [gameStore, { actions }] = useGameStore();
@@ -208,6 +209,14 @@ export const handleOnWsMessage = () => {
         //     return player;
         //   })
         // );
+
+        break;
+      }
+
+      case "ERROR_MESSAGE": {
+        const payload = data.message.payload;
+
+        toast.error(payload.errorMessage);
       }
     }
   };

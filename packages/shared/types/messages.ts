@@ -49,6 +49,9 @@ export type WS_MessageMapServer = {
     publicId: string;
     newPoints: number;
   }[];
+  ERROR_MESSAGE: {
+    errorMessage: string;
+  };
 };
 
 export type GuessChatMessageType = "near" | "guessed" | false;

@@ -1,3 +1,9 @@
 import { z } from "zod";
 
-export const messageLengthSchema = z.string().min(1).max(256);
+const MIN = 1;
+const MAX = 256;
+
+export const messageLengthSchema = z
+  .string()
+  .min(MIN, `Message has to have at least ${MIN} character`)
+  .max(MAX, `Message has to be at max ${MAX} characters long`);

@@ -2,6 +2,8 @@ import { createEffect, createSignal } from "solid-js";
 import styles from "./ChatInput.module.css";
 import { Icon } from "@iconify-icon/solid";
 import clsx from "clsx";
+import { messageLengthSchema } from "shared";
+import toast from "solid-toast";
 
 type Props = {
   onSubmit: (value: string) => void;
@@ -15,10 +17,29 @@ export default function ChatInput(props: Props) {
   function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
 
-    if (inputValue() === "") return;
+    if (isEmpty(inputValue())) return;
 
-    props.onSubmit(inputValue());
+    const validationResult = isValid(inputValue());
+    if (validationResult.success) {
+      props.onSubmit(inputValue());
+    } else {
+      toast.error(validationResult.message);
+    }
+
     setInputValue("");
+  }
+
+  function isEmpty(message: string) {
+    return message.length === 0;
+  }
+
+  function isValid(message: string): { success: boolean; message?: string } {
+    const messageLengthValidation = messageLengthSchema.safeParse(message);
+    if (!messageLengthValidation.success) {
+      return { success: false, message: messageLengthValidation.error.errors[0].message };
+    }
+
+    return { success: true };
   }
 
   return (
