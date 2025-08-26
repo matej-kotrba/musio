@@ -1,3 +1,4 @@
+import styles from "./lobby.module.css";
 import {
   createSignal,
   Show,
@@ -145,7 +146,9 @@ export default function Lobby() {
               height: `calc(var(--custom-height) + ${LOBBY_LAYOUT_HEIGHT} * 2)`,
             }}
           >
-            <div class="grid grid-cols-[auto,1fr,auto] gap-4 py-4 overflow-hidden">
+            <div
+              class={`${styles["glassy-bg"]} grid grid-cols-[auto,1fr,auto] gap-4 py-4 overflow-hidden px-3`}
+            >
               {/* Player sidebar */}
               <PlayerList players={gameStore.players} />
               {/* ___ */}
