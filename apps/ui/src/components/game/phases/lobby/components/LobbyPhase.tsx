@@ -15,6 +15,7 @@ import { useCopyToClipboard } from "~/hooks";
 import { useGameStore } from "~/routes/lobby/stores/game-store";
 import LobbySettings, { OnSaveData } from "./Settings";
 import Loader from "~/components/common/loader/Loader";
+import Stats from "./Stats";
 
 export default function LobbyPhase() {
   const [gameStore, { queries }] = useGameStore();
@@ -71,8 +72,6 @@ function LobbyInitial(props: LobbyTypesProps) {
   const { setGameStore } = actions;
   const ws = useWsConnection();
 
-  const copyToClipboard = useCopyToClipboard();
-
   function handleLobbySettingsSave(data: OnSaveData) {
     if (!gameStore.thisPlayerIds?.private || getLobbyHost()?.publicId !== getThisPlayer()?.publicId)
       return;
@@ -97,21 +96,7 @@ function LobbyInitial(props: LobbyTypesProps) {
   return (
     <section class="h-full relative">
       <div class="flex justify-end items-center gap-1">
-        <Badge>
-          <div>
-            <span>{gameStore.players.length}</span>
-            <span class="text-foreground/75">/</span>
-            <span>{gameStore.gameOptions.playerLimit}</span>
-          </div>
-          <Icon
-            icon="lucide:users-round"
-            class="text-md text-foreground align-middles duration-100"
-          />
-        </Badge>
-        <Badge>
-          <span>{gameStore.gameOptions.toPointsLimit}</span>
-          <Icon icon="lucide:target" class="text-md text-foreground align-middles duration-100" />
-        </Badge>
+        <Stats />
         <Show when={getThisPlayer()?.isHost}>
           <LobbySettings
             gameLimit={gameStore.gameOptions.toPointsLimit}
@@ -144,32 +129,7 @@ function LobbyInitial(props: LobbyTypesProps) {
           >
             Start next round
           </Button>
-          <div class="flex gap-1 mb-4">
-            <TextFieldRoot class="w-full">
-              <TextField
-                type="text"
-                name="lobbyId"
-                autocomplete="off"
-                readOnly
-                value={gameStore.lobbyId}
-                class="text-center uppercase font-bold tracking-wider"
-              />
-            </TextFieldRoot>
-            <Tooltip>
-              <TooltipTrigger>
-                <Button
-                  type="button"
-                  variant={"outline"}
-                  on:click={() => copyToClipboard(window.location.href)}
-                >
-                  <Icon icon="solar:copy-bold-duotone" class="text-2xl py-1 text-foreground" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Copy URL</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
+          <LobbyCopyToClipboardCode />
         </Show>
 
         <DecorativeWaitingIndicator />
@@ -179,13 +139,38 @@ function LobbyInitial(props: LobbyTypesProps) {
   );
 }
 
-type BadgeProps = {
-  children: JSX.Element;
-};
+function LobbyCopyToClipboardCode() {
+  const [gameStore] = useGameStore();
 
-function Badge(props: BadgeProps) {
+  const copyToClipboard = useCopyToClipboard();
+
   return (
-    <div class="text-sm flex items-center gap-1 border-2 rounded-lg px-1">{props.children}</div>
+    <div class="flex gap-1 mb-4">
+      <TextFieldRoot class="w-full">
+        <TextField
+          type="text"
+          name="lobbyId"
+          autocomplete="off"
+          readOnly
+          value={gameStore.lobbyId}
+          class="text-center uppercase font-bold tracking-wider"
+        />
+      </TextFieldRoot>
+      <Tooltip>
+        <TooltipTrigger>
+          <Button
+            type="button"
+            variant={"outline"}
+            on:click={() => copyToClipboard(window.location.href)}
+          >
+            <Icon icon="solar:copy-bold-duotone" class="text-2xl py-1 text-foreground" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Copy URL</p>
+        </TooltipContent>
+      </Tooltip>
+    </div>
   );
 }
 
