@@ -51,11 +51,16 @@ export const handleOnWsMessage = () => {
 
       case "CHANGE_GAME_STATE": {
         const payload = data.message.payload;
+
+        // Could be used to display alert when player did not pick a song but needs a property that is currently not being sent
+        // const doesChangeFromPickingToGuessing =
+        //   gameStore.gameState?.state === "picking" && payload.properties.state === "guessing";
+
         setGameStore("gameState", payload.properties);
         resetPlayerChecks();
 
         if (payload.properties.state === "lobby") resetGameData();
-
+        // if (doesChangeFromPickingToGuessing) console.log(payload.properties);
         break;
       }
 

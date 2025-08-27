@@ -5,7 +5,9 @@ import { constructURL, getServerURL } from "shared";
 // Returns relative URL path to correct lobby
 // TODO: Add error handling
 export const getLobbyURL = async (lobbyId?: string) => {
-  const serverResponse = await fetch(constructURL(getServerURL(), `getLobbyId?lobbyId=${lobbyId}`));
+  const serverResponse = await fetch(
+    constructURL(getServerURL(), `getOrCreateLobbyById?lobbyId=${lobbyId}`)
+  );
   const data = (await serverResponse.json()) as string;
 
   return data;

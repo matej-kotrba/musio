@@ -3,18 +3,25 @@ import { getLobbiesService, createNewLobby } from "../game/create";
 import { parseCookie } from "../common/utils";
 import { LOBBY_ID_COOKIE, PRIVATE_ID_COOKIE } from "shared";
 import { HTTPException } from "hono/http-exception";
-import { getPlayerByPrivateId } from "../game/player";
+import { getPlayerByPrivateId, removePlayerFromLobby } from "../game/player";
+import type { Lobby } from "../game/lobby";
 
 /**
  * Rest endpoints
  */
 export default function setupRestEndpoints(app: Hono) {
-  app.get("/getLobbyId", (c) => {
+  app.get("/getOrCreateLobbyById", (c) => {
     const lobbyId = c.req.query("lobbyId");
     const lobbies = getLobbiesService().lobbies;
 
     if (!lobbyId || !lobbies.has(lobbyId)) {
       const newLobby = createNewLobby(lobbies);
+      const CHECK_WHETHER_PLAYER_IN_LOBBY_AFTER_MS = 10_000;
+      setTimeout(() => {
+        if (!isAnyPlayerInLobby(newLobby) && lobbies.has(newLobby.id)) {
+          lobbies.delete(newLobby.id);
+        }
+      }, CHECK_WHETHER_PLAYER_IN_LOBBY_AFTER_MS);
 
       return c.json(newLobby.id);
     }
@@ -52,4 +59,8 @@ export default function setupRestEndpoints(app: Hono) {
   app.get("/ping", (c) => {
     return c.json("Server is running", 200);
   });
+}
+
+function isAnyPlayerInLobby(lobby: Lobby) {
+  return lobby.players.length > 0;
 }
