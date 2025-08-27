@@ -25,7 +25,7 @@ export type WS_MessageMapServer = {
   };
   PLAYER_DATA_CHANGE: {
     status?: PlayerStatus;
-    isHost?: true;
+    isHost?: boolean;
   };
   NEW_SONG_TO_GUESS: {
     song: SongWithNameHidden;

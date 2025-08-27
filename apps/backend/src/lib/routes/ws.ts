@@ -207,6 +207,15 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
               lobbies.broadcast(
                 lobbyId!,
                 toPayloadToClient(
+                  playerToDisconnect.publicId,
+                  createNewMessageToClient(lobbyId!, "PLAYER_DATA_CHANGE", {
+                    isHost: false,
+                  })
+                )
+              );
+              lobbies.broadcast(
+                lobbyId!,
+                toPayloadToClient(
                   player.publicId,
                   createNewMessageToClient(lobbyId!, "PLAYER_DATA_CHANGE", {
                     isHost: true,

@@ -42,8 +42,8 @@ export const handleOnWsMessage = () => {
         if (payload.isHost) gameStore.players.forEach((player) => (player.isHost = false));
 
         setGameStore("players", (player) => player.publicId === data.publicId, {
-          ...(payload.status ? { status: payload.status } : {}),
-          ...(payload.isHost ? { isHost: payload.isHost } : {}),
+          ...(payload.status !== undefined ? { status: payload.status } : {}),
+          ...(payload.isHost != undefined ? { isHost: payload.isHost } : {}),
         });
 
         break;
