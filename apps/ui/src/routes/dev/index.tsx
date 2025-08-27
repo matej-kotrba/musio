@@ -81,81 +81,47 @@ const dummy_players: PlayerToDisplay[] = [
 // };
 
 export default function Dev() {
-  const [gameStore, { actions }] = useGameStore();
+  const [step, setStep] = createSignal<number>(0);
+  const [stepRoot, setStepRoot] = createSignal<number>(0);
+
+  const incrementRoot = () => {
+    setStepRoot((old) => old + 1);
+  };
+
+  const increment = () => {
+    setStep((old) => old + 1);
+  };
 
   createEffect(() => {
-    actions.setGameStore("gameOptions", "toPointsLimit", 100);
+    console.log(step());
   });
-  // const [step, setStep] = createSignal<number>(0);
-  // const [stepRoot, setStepRoot] = createSignal<number>(0);
-
-  // const incrementRoot = () => {
-  //   setStepRoot((old) => old + 1);
-  // };
-
-  // const increment = () => {
-  //   setStep((old) => old + 1);
-  // };
 
   return (
     <div class="container mx-auto">
-      <div
-        class="relative"
-        style={{
-          "--custom-height": `calc(100vh - ${NAV_HEIGHT} - ${LOBBY_LAYOUT_HEIGHT} * 2 - 2rem)`,
-          height: `calc(var(--custom-height) + ${LOBBY_LAYOUT_HEIGHT} * 2)`,
-        }}
-      >
-        <div
-          class={`${styles["glassy-bg"]} grid grid-cols-[auto,1fr,auto] gap-4 py-4 overflow-hidden px-2`}
-        >
-          {/* Player sidebar */}
-          <PlayerList players={gameStore.players} />
-          {/* ___ */}
-          <ErrorBoundary fallback={<LobbyErrorBoundary />}>
-            <div>
-              <Switch>
-                <Match when={gameStore.gameState?.state}>
-                  <LobbyPhase />
-                </Match>
-                <Match when={gameStore.gameState?.state === "picking"}>
-                  <PickingPhase />
-                </Match>
-                <Match when={gameStore.gameState?.state === "guessing"}>
-                  <GuessingGamePhase />
-                </Match>
-                <Match when={gameStore.gameState?.state === "leaderboard"}>
-                  <LeaderboardsGamePhase />
-                </Match>
-              </Switch>
-            </div>
-          </ErrorBoundary>
-          {/* Player sidebar */}
-          <LobbyChat />
-          {/* ___ */}
-        </div>
-        {/* <div class="w-72 mx-auto flex flex-col gap-2 mt-2">*/}
-        {/* <LobbySettings gameLimit={20} playerLimit={4}>
+      {/* <div class="w-72 mx-auto flex flex-col gap-2 mt-2">*/}
+      {/* <LobbySettings gameLimit={20} playerLimit={4}>
         Open
       </LobbySettings> */}
-        {/* <PlayerDisplay player={dummy_player} maxPoints={100} /> */}
-        {/* <SongPicker onSongSelect={() => {}} /> */}
-        {/* <button onClick={incrementRoot}>Increment root</button>
+      {/* <PlayerDisplay player={dummy_player} maxPoints={100} /> */}
+      {/* <SongPicker onSongSelect={() => {}} /> */}
+      <button onClick={incrementRoot} class="border">
+        Increment root
+      </button>
       <button onClick={increment}>Increment</button>
-      <Show when={stepRoot() % 2 === 1} keyed>
-        <SongQueueProgress
-          stepIndex={step()}
-          animateFromIndex={step() - 1}
-          maxSteps={4}
-          stepDescription={[
-            "Dr House's song",
-            "Dr House's song",
-            "Dr House's song",
-            "Dr House's song",
-          ]}
-        />
-      </Show> */}
-        {/* <GuessingGameLeaderboardsFallback
+      {/* <Show when={stepRoot() % 2 === 1} keyed> */}
+      <SongQueueProgress
+        stepIndex={step()}
+        animateFromIndex={step() - 1}
+        maxSteps={1}
+        stepDescription={[
+          "Dr House's song",
+          "Dr House's song",
+          "Dr House's song",
+          "Dr House's song",
+        ]}
+      />
+      {/* </Show> */}
+      {/* <GuessingGameLeaderboardsFallback
         prevSong={{ name: "Monody", artist: "TheFatRat" }}
         playersOrderedByPointsGained={dummy_players.toSorted((a, b) => {
           const aPoints = a.points - (a.previousPoints ?? 0);
@@ -163,8 +129,7 @@ export default function Dev() {
           return bPoints - aPoints;
         })}
       /> */}
-        {/*</div>*/}
-      </div>
+      {/*</div>*/}
     </div>
   );
 }

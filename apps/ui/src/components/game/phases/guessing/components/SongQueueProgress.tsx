@@ -11,7 +11,7 @@ type Props = {
 };
 
 export default function SongQueueProgress(props: Props) {
-  const [currentIndex, setCurrentIndex] = createSignal<number>(props.animateFromIndex);
+  const [currentIndex, setCurrentIndex] = createSignal<number>(Math.max(props.animateFromIndex, 0));
   const [lastHoveredIndex, setLastHoveredIndex] = createSignal<Maybe<number>>(undefined);
   let containerRef!: HTMLDivElement;
 
@@ -26,6 +26,10 @@ export default function SongQueueProgress(props: Props) {
     return ((index1 - index2) * rect.width) / length;
   }
 
+  function shouldApplyRangeBarStyles() {
+    return props.maxSteps > 1;
+  }
+
   createEffect(() => {
     props.stepIndex;
     setTimeout(() => setCurrentIndex(props.stepIndex));
@@ -34,7 +38,9 @@ export default function SongQueueProgress(props: Props) {
   return (
     <div
       ref={containerRef}
-      class={`${styles.progress} relative flex isolate w-full flex-nowrap justify-between`}
+      class={`${
+        shouldApplyRangeBarStyles() ? `${styles.progress} justify-between` : "justify-center"
+      } relative flex isolate w-full flex-nowrap`}
       style={{
         "--scale-ratio": `${currentIndex() / (props.maxSteps - 1)}`,
       }}

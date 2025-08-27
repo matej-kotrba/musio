@@ -18,11 +18,14 @@ and then show the current leaderboard whenever the game actually ends, then rese
 [x] - show song requester when playing the song + in the delay
 [x] - create new lobby component for displaying it when points limit was not reached, so basically for the
 temporary round lobby
-[] - try to refactor how GuessingPhase works, the fallback especially
+[-] - WONT DO: try to refactor how GuessingPhase works, the fallback especially
 [x] - change host when host leaves
+[] - limit game start to have at least 2 players
+[] - add alert when player does not choose song
 
 [] - add rate limiting for sending messages
 [x] - limit the length of the message
+[] - remove lobby when last player leaves smartly, currently it does not happen at all
 [] - host reloading page in lobby causes wierd bugs
 [] - now new lobby is created when hitting the rest endpoint, just check if the lobby exist there and create it
 only on join

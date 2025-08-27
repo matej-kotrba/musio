@@ -29,6 +29,7 @@ const getGameStoreActions = (store: GameStore, setStore: SetStoreFunction<GameSt
     },
     resetGameData() {
       setStore("previousSongData", undefined);
+      setStore("delaySongProgress", undefined);
     },
   } as const;
 };
