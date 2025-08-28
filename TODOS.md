@@ -23,15 +23,16 @@ temporary round lobby
 [] - limit game start to have at least 2 players
 [] - add alert when player does not choose song
 
+[] - add error handling to various parts of the app
 [] - add rate limiting for sending messages
 [x] - limit the length of the message
-[] - remove lobby when last player leaves smartly, currently it does not happen at all
-[] - host reloading page in lobby causes wierd bugs
-[] - now new lobby is created when hitting the rest endpoint, just check if the lobby exist there and create it
+[x] - remove lobby when last player leaves smartly, currently it does not happen at all
+[-] - WONT DO: host reloading page in lobby causes wierd bugs
+[x] - now new lobby is created when hitting the rest endpoint, just check if the lobby exist there and create it
 only on join
 [x] - currently points are being summed on client, maybe send from server the total points and not only the gained ones
 [] - remove all the ws calls from regular code and move it to some actions layer for ws communication
-[] - when user requests new lobby but does not join it, it should get deleted
+[x] - when user requests new lobby but does not join it, it should get deleted
 [] - I disabled setting an expiration of the cookies beacuse it caused issues, look into it
 
 [-] - fix timer bug when out of focus in browser -> Can't do much about it

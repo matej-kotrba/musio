@@ -47,6 +47,7 @@ type Convert<
 
 export type PhasesHandlerMethods = {
   [Key in keyof WS_MessageMapClient as `handle${Convert<Key>}`]?: (
-    eventData: Extract<FromMessageOnServer, { message: { type: Key } }>
+    publisherPrivateId: string,
+    eventData: Extract<FromMessageOnServer["message"], { type: Key }>
   ) => void;
 };
