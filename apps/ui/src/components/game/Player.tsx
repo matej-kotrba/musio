@@ -1,5 +1,5 @@
 import { Icon } from "@iconify-icon/solid";
-import { Icon as IconType, Player } from "shared/index.types";
+import { Icon as IconType, ClientPlayer } from "shared/index.types";
 import { Show } from "solid-js";
 import { Motion } from "solid-motionone";
 
@@ -17,10 +17,10 @@ export function getAllIcons(): IconType[] {
   });
 }
 
-export type PlayerToDisplay = Player & { previousPoints?: number };
+export type PlayerToDisplay = ClientPlayer & { previousPoints?: number };
 
 type Props = {
-  player: Player;
+  player: ClientPlayer;
   maxPoints: number;
   previousPoints?: number;
   isMyself?: boolean;

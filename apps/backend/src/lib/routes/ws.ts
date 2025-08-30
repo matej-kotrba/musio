@@ -17,6 +17,7 @@ import { getLobbiesService, createNewPlayer, createNewLobby } from "../game/crea
 import { isHost } from "../game/game-utils";
 import { isLobbyState, type Lobby } from "../game/lobby";
 import {
+  convertServerPlayerToClientPlayer,
   getPlayerByPrivateId,
   getPlayerByWs,
   removePlayerFromLobby,
@@ -79,10 +80,9 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
               toPayloadToClient(
                 "server",
                 createNewMessageToClient(lobby!.id, "PLAYER_INIT", {
-                  allPlayers: lobby!.players.map((player) => ({
-                    ...player,
-                    isHost: isHost(player.privateId, lobby!),
-                  })),
+                  allPlayers: lobby!.players.map((player) =>
+                    convertServerPlayerToClientPlayer(lobby, player)
+                  ),
                   thisPlayerPrivateId: newPlayer.privateId,
                   thisPlayerPublicId: newPlayer.publicId,
                   gameOptions: lobby!.options,
@@ -96,10 +96,11 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
               newPlayer.privateId,
               toPayloadToClient(
                 "server",
-                createNewMessageToClient(lobby!.id, "PLAYER_JOIN", {
-                  ...newPlayer,
-                  isHost: isHost(newPlayer.privateId, lobby!),
-                })
+                createNewMessageToClient(
+                  lobby!.id,
+                  "PLAYER_JOIN",
+                  convertServerPlayerToClientPlayer(lobby, newPlayer)
+                )
               )
             );
           } else {
@@ -111,10 +112,9 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
               toPayloadToClient(
                 "server",
                 createNewMessageToClient(lobby!.id, "PLAYER_INIT", {
-                  allPlayers: lobby!.players.map((player) => ({
-                    ...player,
-                    isHost: isHost(player.privateId, lobby!),
-                  })),
+                  allPlayers: lobby!.players.map((player) =>
+                    convertServerPlayerToClientPlayer(lobby, player)
+                  ),
                   thisPlayerPrivateId: reconnectedPlayer.privateId,
                   thisPlayerPublicId: reconnectedPlayer.publicId,
                   gameOptions: lobby!.options,
@@ -150,6 +150,8 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
             const lobby = getLobbiesService().lobbies.get(parsedData.message.lobbyId);
 
             if (!lobby) throw new Error("Invalid lobbyId");
+
+            const player = getPlayerByPrivateId(lobby, parsedData.privateId);
 
             if (isLobbyState(lobby, "lobby"))
               handleLobbyEvent(lobby, parsedData as FromMessageOnServerByStateType<"lobby">);

@@ -1,10 +1,16 @@
-import { GameState, GameStateMap, GameStateType, Player, PlayerFromServer } from "shared";
+import {
+  GameState,
+  GameStateMap,
+  GameStateType,
+  ClientPlayer,
+  ClientPlayerFromServer,
+} from "shared";
 
 export function iconNameToDisplayName(icon: string) {
   return icon.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
 }
 
-export function playerServerToPlayer(player: PlayerFromServer): Player {
+export function playerServerToPlayer(player: ClientPlayerFromServer): ClientPlayer {
   return {
     publicId: player.publicId,
     name: player.name,

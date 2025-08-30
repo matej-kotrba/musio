@@ -23,6 +23,7 @@ temporary round lobby
 [] - limit game start to have at least 2 players
 [] - add alert when player does not choose song
 
+[] - add converter from server player to client player, make sure to use correct types
 [] - add error handling to various parts of the app
 [] - add rate limiting for sending messages
 [x] - limit the length of the message

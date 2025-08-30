@@ -7,8 +7,8 @@ const playerGuessPositionBonus: Record<number, number> = {
   2: 1,
 };
 
-export function isHost(playerId: string, lobby: Lobby) {
-  return lobby.leaderPrivateId === playerId;
+export function isHost(playerPrivateId: string, lobby: Lobby) {
+  return lobby.leaderPrivateId === playerPrivateId;
 }
 
 export function hasAnyPlayerHitPointsLimit(lobby: Lobby): boolean {

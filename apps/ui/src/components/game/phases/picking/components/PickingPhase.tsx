@@ -3,7 +3,7 @@ import {
   GameState,
   ItunesSong,
   PickingGameState,
-  Player,
+  ClientPlayer,
   toPayloadToServer,
 } from "shared";
 import { Show } from "solid-js";

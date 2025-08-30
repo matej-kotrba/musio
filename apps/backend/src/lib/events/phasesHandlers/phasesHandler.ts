@@ -1,4 +1,9 @@
-import type { FromMessageOnServer, WS_MessageMapClient } from "shared";
+import type {
+  FromMessageOnServer,
+  FromMessageOnServerByStateType,
+  WS_MessageMapClient,
+} from "shared";
+import type { Lobby } from "../../game/lobby";
 
 interface Mapping {
   A: "a";
@@ -45,7 +50,7 @@ type Convert<
     : Convert<Rest, `${Base}${Char}`, false>
   : Base;
 
-export type PhasesHandlerMethods = {
+type PhasesHandlerMethodsOriginal = {
   [Key in keyof WS_MessageMapClient as `handle${Convert<Key>}`]?: (
     publisherPrivateId: string,
     eventData: Extract<FromMessageOnServer["message"], { type: Key }>

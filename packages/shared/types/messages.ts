@@ -1,17 +1,17 @@
 import type { messageConfig } from "../messages";
 import type { GameOptions, GameState, SongWithNameHidden } from "./lobby";
-import type { PlayerFromServer, PlayerStatus } from "./player";
+import type { ClientPlayerFromServer, PlayerStatus } from "./player";
 
 // Player ids are never specified as they are passed with the ws messageToClient already
 export type WS_MessageMapServer = {
   PLAYER_INIT: {
-    allPlayers: PlayerFromServer[];
+    allPlayers: ClientPlayerFromServer[];
     thisPlayerPublicId: string;
     thisPlayerPrivateId: string;
     gameOptions: GameOptions;
     gameStateData: GameState;
   };
-  PLAYER_JOIN: PlayerFromServer;
+  PLAYER_JOIN: ClientPlayerFromServer;
   CHANGE_GAME_STATE: {
     properties: GameState;
   };

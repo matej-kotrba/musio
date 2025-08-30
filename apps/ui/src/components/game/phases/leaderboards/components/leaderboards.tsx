@@ -1,11 +1,11 @@
 import { Icon } from "@iconify-icon/solid";
 import clsx from "clsx";
-import { Player } from "shared";
+import { ClientPlayer } from "shared";
 import { For, Index, Show } from "solid-js";
 import { Motion } from "solid-motionone";
 
 type LeaderboardsProps = {
-  players: Player[];
+  players: ClientPlayer[];
 };
 
 export function LeaderboardsEmphasized(props: LeaderboardsProps) {
@@ -42,7 +42,7 @@ export function LeaderboardsEmphasized(props: LeaderboardsProps) {
 }
 
 type PlayerComponentProps = {
-  player: Player;
+  player: ClientPlayer;
   isFirst?: boolean;
   class?: string;
 };

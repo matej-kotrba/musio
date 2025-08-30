@@ -1,4 +1,4 @@
-import { SongWithNameHidden, Song, GuessingGameState, Player } from "shared";
+import { SongWithNameHidden, Song, GuessingGameState, ClientPlayer } from "shared";
 import { createSignal, createEffect, Show, For } from "solid-js";
 import WordToGuess from "~/components/game/WordToGuess";
 import Timer from "../../picking/components/timer/Timer";
@@ -149,7 +149,11 @@ function GuessingGamePhaseInner(props: GuessingGamePhaseInnerProps) {
   );
 }
 
-type PlayerOrderedByPointsGained = { name: string; icon: Player["icon"]; pointsGained: number };
+type PlayerOrderedByPointsGained = {
+  name: string;
+  icon: ClientPlayer["icon"];
+  pointsGained: number;
+};
 
 type GuessingGameLeaderboardsProps = {
   prevSong: Maybe<Pick<Song, "artist"> & { songName: string; playerName: string }>;

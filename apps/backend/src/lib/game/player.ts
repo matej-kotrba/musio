@@ -1,20 +1,17 @@
 import type { WSContext } from "hono/ws";
 import type { Lobby } from "./lobby";
-import type { Player } from "shared";
+import type { ClientPlayer, Player, ClientPlayerFromServer } from "shared";
 import type { LobbiesMap } from "./create";
+import { isHost } from "./game-utils";
 
-export type PlayerServer = Omit<PlayerServerWithoutWS, "ws"> & {
-  ws: WSContext<unknown>;
-};
-
-export type PlayerServerWithoutWS = Omit<
-  Player,
-  "icon" | "ws" | "isHost" | "isMe" | "isChecked"
-> & {
+export type PlayerServerOnlyProperties = {
   privateId: string;
-  icon: string;
-  ws?: never;
+  ws: WSContext<unknown>;
+  lastSentMessage: Date;
 };
+
+export type PlayerServer = Omit<ClientPlayerFromServer, "isHost" | "isChecked"> &
+  PlayerServerOnlyProperties;
 
 export function initPlayerToLobby(lobbies: LobbiesMap, lobbyId: string, player: PlayerServer) {
   console.log("Lobby: ", lobbyId);
@@ -43,8 +40,22 @@ export function removePlayerFromLobby(lobby: Lobby, playerPrivateId: string) {
   const indexOfPlayer = lobby.players.findIndex((player) => player.privateId === playerPrivateId);
   if (indexOfPlayer === -1) return;
 
-  const removedPlayer = {...lobby.players[indexOfPlayer]};
+  const removedPlayer = { ...lobby.players[indexOfPlayer] };
   lobby.players.splice(indexOfPlayer, 1);
 
   return removedPlayer;
+}
+
+export function convertServerPlayerToClientPlayer(
+  lobby: Lobby,
+  player: PlayerServer
+): ClientPlayerFromServer {
+  return {
+    name: player.name,
+    icon: player.icon,
+    isHost: isHost(player.privateId, lobby),
+    points: player.points,
+    publicId: player.publicId,
+    status: player.status,
+  };
 }

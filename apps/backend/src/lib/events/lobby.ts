@@ -6,7 +6,7 @@ import {
   type FromMessageOnServerByStateType,
   type GameOptions,
   type PickingGameState,
-  type PlayerFromServer,
+  type ClientPlayerFromServer,
 } from "shared";
 import { isHost } from "../game/game-utils";
 import { changeToLobbyState, getInitialPickingGameState, type Lobby } from "../game/lobby";
@@ -35,8 +35,8 @@ export function handleLobbyEvent(
     case "CHANGE_GAME_OPTIONS":
       if (!isHost(data.privateId, lobby)) return;
       if (lobby.stateProperties.type !== "INITIAL") return;
-      
-      const {newGameLimit, newPlayerLimit} = data.message.payload
+
+      const { newGameLimit, newPlayerLimit } = data.message.payload;
       if (!newGameLimit || !gameLimitSchema.safeParse(newGameLimit).success) return;
       if (!newPlayerLimit || !playerLimitSchema.safeParse(newPlayerLimit).success) return;
 
@@ -98,7 +98,7 @@ function notifyPlayersOfGameOptionsChange(
       "server",
       createNewMessageToClient(lobby.id, "CHANGE_GAME_OPTIONS", {
         gameLimit: gameOptions.toPointsLimit,
-        playerLimit: gameOptions.playerLimit
+        playerLimit: gameOptions.playerLimit,
       })
     )
   );

@@ -4,7 +4,7 @@ import { LeaderboardsEmphasized, LeaderboardsSimple } from "./leaderboards";
 import { Button } from "~/components/ui/button";
 import { useGameStore } from "~/routes/lobby/stores/game-store";
 import { useWsConnection } from "~/contexts/wsConnection";
-import { toPayloadToServer, createNewMessageToServer, Player } from "shared";
+import { toPayloadToServer, createNewMessageToServer, ClientPlayer } from "shared";
 
 export default function LeaderboardsGamePhase() {
   const [gameStore, { queries }] = useGameStore();
@@ -22,7 +22,7 @@ export default function LeaderboardsGamePhase() {
     );
   }
 
-  function hasAnyPlayerHitGameLimit(players: Player[]) {
+  function hasAnyPlayerHitGameLimit(players: ClientPlayer[]) {
     return players.some((player) => player.points >= gameStore.gameOptions.toPointsLimit);
   }
 

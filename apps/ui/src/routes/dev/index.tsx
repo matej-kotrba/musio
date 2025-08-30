@@ -1,5 +1,5 @@
 import styles from "./styles.module.css";
-import { Player } from "shared";
+import { ClientPlayer } from "shared";
 import { createEffect, createSignal, ErrorBoundary, Match, Show, Switch } from "solid-js";
 import SongQueueProgress from "~/components/game/phases/guessing/components/SongQueueProgress";
 import LobbySettings from "~/components/game/phases/lobby/components/Settings";

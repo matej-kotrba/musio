@@ -87,6 +87,7 @@ export function createNewPlayer(
     icon,
     status: "connected",
     points: points ?? 0,
+    lastSentMessage: new Date(),
   };
 }
 

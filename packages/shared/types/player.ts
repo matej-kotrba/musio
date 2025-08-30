@@ -8,11 +8,14 @@ export type PlayerStatus = "connected" | "disconnected";
 export type Player = {
   publicId: string;
   name: string;
-  icon: Icon;
   points: number;
-  isHost: boolean;
   status: PlayerStatus;
+};
+
+export type ClientPlayer = Player & {
+  icon: Icon;
+  isHost: boolean;
   isChecked?: boolean;
 };
 
-export type PlayerFromServer = Omit<Player, "icon" | "isChecked"> & { icon: string };
+export type ClientPlayerFromServer = Omit<ClientPlayer, "icon"> & { icon: string };
