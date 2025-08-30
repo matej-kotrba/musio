@@ -41,6 +41,7 @@ export type WS_MessageMapServer = {
     isOk: boolean;
     type: GuessChatMessageType;
     messageId: string;
+    rateLimitExpirationTime: number;
   };
   CHAT_MESSAGE: {
     content: string;

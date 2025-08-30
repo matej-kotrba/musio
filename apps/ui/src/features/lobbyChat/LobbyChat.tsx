@@ -3,6 +3,7 @@ import { createUniqueId } from "solid-js";
 import { useWsConnection } from "~/contexts/wsConnection";
 import { useGameStore } from "~/routes/lobby/stores/game-store";
 import Chat from "./components/Chat";
+import toast from "solid-toast";
 
 export default function LobbyChat() {
   const [gameStore, { queries, actions }] = useGameStore();
@@ -14,27 +15,39 @@ export default function LobbyChat() {
     const thisPlayer = getThisPlayer();
     if (!gameStore.thisPlayerIds?.public || !thisPlayer) return;
 
-    const newMessage: ChatMessage = {
-      id: createUniqueId(),
-      senderPublicId: thisPlayer.publicId,
-      content: content,
-      guessRelation: false,
-      senderName: getThisPlayer()!.name,
-      isOptimistic: true,
-    };
+    const now = new Date();
+    const isRateLimitExpired =
+      !gameStore.chatMessageRateLimitExpiration ||
+      now.getTime() > gameStore.chatMessageRateLimitExpiration;
+    if (isRateLimitExpired) {
+      const newMessage: ChatMessage = {
+        id: createUniqueId(),
+        senderPublicId: thisPlayer.publicId,
+        content: content,
+        guessRelation: false,
+        senderName: getThisPlayer()!.name,
+        isOptimistic: true,
+      };
 
-    // Optimistically update messages
-    setGameStore("chatMessages", gameStore.chatMessages.length, newMessage);
+      // Optimistically update messages
+      setGameStore("chatMessages", gameStore.chatMessages.length, newMessage);
 
-    wsActions.send?.(
-      toPayloadToServer(
-        gameStore.thisPlayerIds.private,
-        createNewMessageToServer(gameStore.lobbyId, "CHAT_MESSAGE", {
-          messageId: newMessage.id!,
-          content,
-        })
-      )
-    );
+      wsActions.send?.(
+        toPayloadToServer(
+          gameStore.thisPlayerIds.private,
+          createNewMessageToServer(gameStore.lobbyId, "CHAT_MESSAGE", {
+            messageId: newMessage.id!,
+            content,
+          })
+        )
+      );
+    } else {
+      toast.error(
+        `Wait ${(gameStore.chatMessageRateLimitExpiration! - now.getTime()).toFixed(
+          1
+        )}s before sending another message.`
+      );
+    }
   };
 
   const isSongToGuessFromThisPlayer = () =>

@@ -1,6 +1,7 @@
 import {
   createNewMessageToClient,
   messageLengthSchema,
+  RATELIMIT_MESSAGE_IN_MS,
   toPayloadToClient,
   type FromMessageOnServerByStateType,
 } from "shared";
@@ -35,6 +36,7 @@ export function handleGuessingEvent(
               isOk: false,
               messageId,
               type: false,
+              rateLimitExpirationTime: new Date().getTime() + RATELIMIT_MESSAGE_IN_MS,
             })
           )
         );
@@ -111,6 +113,7 @@ function handleGuessWhenSame(lobby: Lobby<"guessing">, player: PlayerServer, mes
         isOk: true,
         type: "guessed",
         messageId,
+        rateLimitExpirationTime: new Date().getTime() + RATELIMIT_MESSAGE_IN_MS,
       })
     )
   );
@@ -135,6 +138,7 @@ function handleGuessWhenSimilar(lobby: Lobby<"guessing">, player: PlayerServer, 
         isOk: true,
         type: "near",
         messageId,
+        rateLimitExpirationTime: new Date().getTime() + RATELIMIT_MESSAGE_IN_MS,
       })
     )
   );

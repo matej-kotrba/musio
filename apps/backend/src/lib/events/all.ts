@@ -1,6 +1,7 @@
 import {
   createNewMessageToClient,
   messageLengthSchema,
+  RATELIMIT_MESSAGE_IN_MS,
   toPayloadToClient,
   type fromMessageOnServer,
 } from "shared";
@@ -45,6 +46,7 @@ export function handleChatMessage(
           isOk: false,
           messageId,
           type: false,
+          rateLimitExpirationTime: new Date().getTime() + RATELIMIT_MESSAGE_IN_MS,
         })
       )
     );
@@ -59,6 +61,7 @@ export function handleChatMessage(
         isOk: true,
         messageId,
         type: false,
+        rateLimitExpirationTime: new Date().getTime() + RATELIMIT_MESSAGE_IN_MS,
       })
     )
   );

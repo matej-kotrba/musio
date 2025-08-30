@@ -7,6 +7,7 @@ export type GameStore = {
   lobbyId: string;
   players: PlayerToDisplay[];
   chatMessages: ChatMessage[];
+  chatMessageRateLimitExpiration?: number;
   thisPlayerIds?: { public: string; private: string };
   gameState?: GameState;
   gameOptions: GameOptions;

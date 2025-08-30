@@ -130,6 +130,7 @@ export const handleOnWsMessage = () => {
         const messageIdx = gameStore.chatMessages.findIndex(
           (message) => message.id === payload.messageId
         );
+        setGameStore("chatMessageRateLimitExpiration", payload.rateLimitExpirationTime);
         if (messageIdx !== -1) {
           if (payload.isOk)
             setGameStore(

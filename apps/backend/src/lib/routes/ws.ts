@@ -7,6 +7,7 @@ import {
   type FromMessageOnServerByStateType,
   PRIVATE_ID_COOKIE,
   LOBBY_ID_COOKIE,
+  RATELIMIT_MESSAGE_IN_MS,
 } from "shared";
 import { getRandomId, parseCookie } from "../common/utils";
 import { handleAllEvent } from "../events/all";
@@ -148,10 +149,41 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
             }
 
             const lobby = getLobbiesService().lobbies.get(parsedData.message.lobbyId);
-
             if (!lobby) throw new Error("Invalid lobbyId");
 
             const player = getPlayerByPrivateId(lobby, parsedData.privateId);
+            if (!player) throw new Error("Invalid player");
+
+            // Ideally refactor that someday so it doesn't have to be here
+            if (parsedData.message.type === "CHAT_MESSAGE") {
+              const now = new Date();
+              const dateDiff = now.getTime() - player.lastSentMessage.getTime();
+              if (dateDiff <= RATELIMIT_MESSAGE_IN_MS) {
+                player.ws.send(
+                  toPayloadToClient(
+                    lobby.id,
+                    createNewMessageToClient(lobby.id, "ERROR_MESSAGE", {
+                      errorMessage: `Wait ${(RATELIMIT_MESSAGE_IN_MS - dateDiff).toFixed(
+                        1
+                      )}s before sending another message.`,
+                    })
+                  )
+                );
+                player.ws.send(
+                  toPayloadToClient(
+                    lobby.id,
+                    createNewMessageToClient(lobby.id, "CHAT_MESSAGE_CONFIRM", {
+                      isOk: false,
+                      messageId: parsedData.message.payload.messageId,
+                      type: false,
+                      rateLimitExpirationTime: now.getTime() + RATELIMIT_MESSAGE_IN_MS - dateDiff,
+                    })
+                  )
+                );
+              } else {
+                player.lastSentMessage = new Date();
+              }
+            }
 
             if (isLobbyState(lobby, "lobby"))
               handleLobbyEvent(lobby, parsedData as FromMessageOnServerByStateType<"lobby">);
