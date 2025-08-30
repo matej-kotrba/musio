@@ -20,12 +20,12 @@ and then show the current leaderboard whenever the game actually ends, then rese
 temporary round lobby
 [-] - WONT DO: try to refactor how GuessingPhase works, the fallback especially
 [x] - change host when host leaves
-[] - limit game start to have at least 2 players
+[x] - limit game start to have at least 2 players
 [] - add alert when player does not choose song
 
 [x] - add converter from server player to client player, make sure to use correct types
 [] - add error handling to various parts of the app
-[] - add rate limiting for sending messages
+[x] - add rate limiting for sending messages
 [x] - limit the length of the message
 [x] - remove lobby when last player leaves smartly, currently it does not happen at all
 [-] - WONT DO: host reloading page in lobby causes wierd bugs

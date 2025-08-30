@@ -16,10 +16,10 @@ import { useGameStore } from "~/routes/lobby/stores/game-store";
 import LobbySettings, { OnSaveData } from "./Settings";
 import Loader from "~/components/common/loader/Loader";
 import Stats from "./Stats";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 
 export default function LobbyPhase() {
-  const [gameStore, { queries }] = useGameStore();
-  const { getPlayerByPublicId } = queries;
+  const [gameStore] = useGameStore();
   const ws = useWsConnection();
 
   const onNextRoundStartButtonClick = () => {
@@ -93,6 +93,10 @@ function LobbyInitial(props: LobbyTypesProps) {
     }
   }
 
+  function canStartRound() {
+    return gameStore.players.length > 1;
+  }
+
   return (
     <section class="h-full relative">
       <div class="flex justify-end items-center gap-1">
@@ -110,7 +114,7 @@ function LobbyInitial(props: LobbyTypesProps) {
           </LobbySettings>
         </Show>
       </div>
-      <div class="h-full grid place-content-center relative">
+      <div class="h-full grid place-content-center relative w-80 mx-auto">
         <p class="text-foreground/70">
           Currently <span class="font-bold text-foreground">{gameStore.players.length}</span>{" "}
           players in lobby
@@ -123,13 +127,17 @@ function LobbyInitial(props: LobbyTypesProps) {
         >
           <Button
             variant={"default"}
-            class="mb-2"
-            disabled={gameStore.players.length === 0}
+            disabled={!canStartRound()}
             on:click={props.onNextRoundStartButtonClick}
           >
             Start next round
           </Button>
+          <div class="my-1"></div>
           <LobbyCopyToClipboardCode />
+          <Show when={!canStartRound()}>
+            <div class="my-1"></div>
+            <AlertOfPlayersMissing />
+          </Show>
         </Show>
 
         <DecorativeWaitingIndicator />
@@ -145,7 +153,7 @@ function LobbyCopyToClipboardCode() {
   const copyToClipboard = useCopyToClipboard();
 
   return (
-    <div class="flex gap-1 mb-4">
+    <div class="flex gap-1 h-fit">
       <TextFieldRoot class="w-full">
         <TextField
           type="text"
@@ -170,6 +178,15 @@ function LobbyCopyToClipboardCode() {
           <p>Copy URL</p>
         </TooltipContent>
       </Tooltip>
+    </div>
+  );
+}
+
+function AlertOfPlayersMissing() {
+  return (
+    <div class="flex gap-1 items-center border border-yellow-400 rounded-lg p-1">
+      <Icon icon={"mingcute:alert-fill"} class="text-xl text-yellow-400" />
+      <p class="text-sm">One more player needed to start the game</p>
     </div>
   );
 }

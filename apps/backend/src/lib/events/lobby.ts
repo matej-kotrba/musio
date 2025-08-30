@@ -23,6 +23,7 @@ export function handleLobbyEvent(
   switch (data.message.type) {
     case "START_GAME":
       if (!isHost(data.privateId, lobby)) return;
+      if (!isEnoughPlayersToStartGame(lobby)) return;
 
       if (lobby.stateProperties.type === "INITIAL") resetPlayerPoints(lobbies, lobby);
 
@@ -46,6 +47,10 @@ export function handleLobbyEvent(
 
       break;
   }
+}
+
+function isEnoughPlayersToStartGame(lobby: Lobby) {
+  return lobby.players.length;
 }
 
 function resetPlayerPoints(lobbies: LobbiesMap, lobby: Lobby) {
