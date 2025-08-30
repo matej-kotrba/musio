@@ -6,15 +6,13 @@ Musio is a music trivia game designed to turn gatherings into unforgettable expe
 
 ### UI
 
-- **SolidJS**: Reactive UI framework.
+- **SolidStart**: Reactive UI framework.
 - **TailwindCSS**: Utility-first CSS framework.
-- **WebSockets**: Real-time communication.
 
 ### Backend
 
 - **Hono**: Lightweight web framework.
-- **Zod**: Schema validation.
-- **WebSockets**: Real-time communication.
+- **Zod**: Schema validation library.
 
 ## 📂 Project Structure
 
