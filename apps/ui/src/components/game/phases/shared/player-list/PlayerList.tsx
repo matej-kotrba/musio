@@ -26,8 +26,8 @@ export default function PlayerList(props: Props) {
     >
       <TransitionGroup name="player-sidebar">
         <For each={props.players.toSorted((a, b) => b.points - a.points)}>
-          {(player, index) => (
-            <div class="player-sidebar duration-200">
+          {(player) => (
+            <div class="player-sidebar duration-200 snap-start">
               <PlayerDisplay
                 maxPoints={gameStore.gameOptions.toPointsLimit}
                 player={player}
@@ -47,7 +47,7 @@ export default function PlayerList(props: Props) {
 
 function EmptyGameSlot() {
   return (
-    <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-700/20 border-2 border-dashed border-gray-600">
+    <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-700/20 border-2 border-dashed border-gray-600 snap-start">
       <div class="w-16 aspect-square rounded-lg bg-gray-600/50 grid content-center">
         <Icon icon="tabler:users" class="text-xl text-gray-500" />
       </div>

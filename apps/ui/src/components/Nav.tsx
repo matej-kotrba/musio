@@ -13,7 +13,7 @@ export default function Nav() {
   return (
     <header
       style={{ height: NAV_HEIGHT }}
-      class={`sticky top-0 left-0 py-6 px-4 sm:px-6 lg:px-8 z-10`}
+      class={`sticky top-0 left-0 py-6 px-4 sm:px-6 lg:px-8 z-10 backdrop-blur-xl`}
       // ${styles.nav}
     >
       <div class="container mx-auto flex justify-between items-center">
