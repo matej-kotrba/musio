@@ -11,7 +11,7 @@ import {
 } from "solid-js";
 import { cn } from "~/libs/cn";
 import { Motion } from "solid-motionone";
-import { usePrevious } from "~/hooks";
+import { useLocalStorage, usePrevious } from "~/hooks";
 
 type Props = JSX.HTMLAttributes<HTMLDivElement> & {
   volume?: number;
@@ -25,7 +25,7 @@ const AudioControl: Component<Props> = (props) => {
   const [audio, setAudio] = createSignal<HTMLAudioElement>(new Audio(props.audioUrl));
 
   const [isPlaying, setIsPlaying] = createSignal<boolean>(!audio()?.paused);
-  const [volume, setVolume] = createSignal<number>(props.volume || 10);
+  const [volume, setVolume] = useLocalStorage("volume", "10");
   const prevVolume = usePrevious(volume);
   const [time, setTime] = createSignal<number>(0);
   const [maxTime, setMaxTime] = createSignal<number>(0);
@@ -35,8 +35,8 @@ const AudioControl: Component<Props> = (props) => {
   }
 
   function handleVolumeButtonClick() {
-    if (volume() > 0) {
-      setVolume(0);
+    if (Number(volume()) > 0) {
+      setVolume(String(0));
     } else {
       setVolume(prevVolume());
     }
@@ -93,7 +93,7 @@ const AudioControl: Component<Props> = (props) => {
   });
 
   createEffect(() => {
-    audio().volume = volume() / 100;
+    audio().volume = Number(volume()) / 100;
   });
 
   onCleanup(() => {
@@ -127,7 +127,7 @@ const AudioControl: Component<Props> = (props) => {
         {Math.floor(time() / 60)}:{time().toFixed(0).padStart(2, "0")}/0:30
       </span>
       <button type="button" on:click={handleVolumeButtonClick}>
-        <Show when={volume() > 0} fallback={<MotionIcon icon={"mynaui:volume-x-solid"} />}>
+        <Show when={Number(volume()) > 0} fallback={<MotionIcon icon={"mynaui:volume-x-solid"} />}>
           <MotionIcon icon={"icon-park-solid:volume-notice"} />
         </Show>
       </button>
@@ -136,8 +136,8 @@ const AudioControl: Component<Props> = (props) => {
         class={`${styles.volume} w-16 bg-transparent`}
         min={0}
         max={100}
-        value={volume()}
-        on:input={(e) => setVolume(Number(e.target.value))}
+        value={Number(volume())}
+        on:input={(e) => setVolume(e.target.value)}
       />
     </div>
   );

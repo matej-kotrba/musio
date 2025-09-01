@@ -27,7 +27,7 @@ export default function PickingPhase() {
         createNewMessageToServer(gameStore.lobbyId, "PICK_SONG", {
           name: selectedSong.trackName,
           artist: selectedSong.artistName,
-          trackUrl: selectedSong.trackViewUrl,
+          trackUrl: selectedSong.previewUrl,
           imageUrl100x100: selectedSong.artworkUrl100,
         })
       )

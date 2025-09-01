@@ -1,11 +1,12 @@
 import { SongWithNameHidden, Song, GuessingGameState, ClientPlayer } from "shared";
-import { createSignal, createEffect, Show, For } from "solid-js";
+import { createSignal, createEffect, Show, For, onCleanup } from "solid-js";
 import WordToGuess from "~/components/game/WordToGuess";
 import Timer from "../../picking/components/timer/Timer";
 import { useGameStore } from "~/routes/lobby/stores/game-store";
 import { getGamePhaseIfValid } from "~/utils/game/common";
 import { Motion } from "solid-motionone";
 import SongQueueProgress from "./SongQueueProgress";
+import { useLocalStorage } from "~/hooks";
 
 export default function GuessingGamePhase() {
   const [gameStore] = useGameStore();
@@ -38,6 +39,9 @@ function GuessingGamePhaseInner(props: GuessingGamePhaseInnerProps) {
     // }
     gameStore.currentSongToGuess
   );
+  const [volume, setVolume] = useLocalStorage("volume", "10");
+
+  const currentSongTrack = () => gameStore.currentSongToGuess?.trackUrl;
 
   const getPreviousSong: () => Maybe<
     Pick<Song, "artist"> & { playerName: string; songName: string }
@@ -94,6 +98,16 @@ function GuessingGamePhaseInner(props: GuessingGamePhaseInnerProps) {
     if (gameStore.currentSongToGuess) {
       setPreviousSong(gameStore.currentSongToGuess);
     }
+  });
+
+  createEffect(() => {
+    const audio = new Audio(currentSongTrack()!);
+    audio.volume = Number(volume()) / 100;
+    audio.play();
+    onCleanup(() => {
+      audio.pause();
+      audio.remove();
+    });
   });
 
   return (
