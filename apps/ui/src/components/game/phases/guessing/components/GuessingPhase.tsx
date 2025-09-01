@@ -1,5 +1,5 @@
 import { SongWithNameHidden, Song, GuessingGameState, ClientPlayer } from "shared";
-import { createSignal, createEffect, Show, For, onCleanup } from "solid-js";
+import { createSignal, createEffect, Show, For, onCleanup, on } from "solid-js";
 import WordToGuess from "~/components/game/WordToGuess";
 import Timer from "../../picking/components/timer/Timer";
 import { useGameStore } from "~/routes/lobby/stores/game-store";
@@ -7,6 +7,7 @@ import { getGamePhaseIfValid } from "~/utils/game/common";
 import { Motion } from "solid-motionone";
 import SongQueueProgress from "./SongQueueProgress";
 import { useLocalStorage } from "~/hooks";
+import VolumeInput from "~/components/common/audio-controller/VolumeInput";
 
 export default function GuessingGamePhase() {
   const [gameStore] = useGameStore();
@@ -39,6 +40,7 @@ function GuessingGamePhaseInner(props: GuessingGamePhaseInnerProps) {
     // }
     gameStore.currentSongToGuess
   );
+  const [audio, setAudio] = createSignal<Maybe<HTMLAudioElement>>();
   const [volume, setVolume] = useLocalStorage("volume", "10");
 
   const currentSongTrack = () => gameStore.currentSongToGuess?.trackUrl;
@@ -101,17 +103,32 @@ function GuessingGamePhaseInner(props: GuessingGamePhaseInnerProps) {
   });
 
   createEffect(() => {
-    const audio = new Audio(currentSongTrack()!);
-    audio.volume = Number(volume()) / 100;
-    audio.play();
-    onCleanup(() => {
-      audio.pause();
-      audio.remove();
-    });
+    if (audio() && volume()) {
+      audio()!.volume = Number(volume()) / 100;
+    }
   });
+
+  createEffect(
+    on(currentSongTrack, () => {
+      const audio = new Audio(currentSongTrack()!);
+      setAudio(audio);
+      audio.volume = Number(volume()) / 100;
+      audio.play();
+      onCleanup(() => {
+        audio.pause();
+        audio.remove();
+      });
+    })
+  );
 
   return (
     <>
+      <div class="flex items-center gap-2 justify-start">
+        <VolumeInput
+          value={Number(volume())}
+          onVolumeInputChange={(value) => setVolume(String(value))}
+        />
+      </div>
       <div class="flex flex-col items-center gap-2">
         <Timer
           maxTime={
