@@ -12,6 +12,8 @@ import {
 import { cn } from "~/libs/cn";
 import { Motion } from "solid-motionone";
 import { useLocalStorage, usePrevious } from "~/hooks";
+import MotionIcon from "./MotionIcon";
+import VolumeInput from "./VolumeInput";
 
 type Props = JSX.HTMLAttributes<HTMLDivElement> & {
   volume?: number;
@@ -26,20 +28,12 @@ const AudioControl: Component<Props> = (props) => {
 
   const [isPlaying, setIsPlaying] = createSignal<boolean>(!audio()?.paused);
   const [volume, setVolume] = useLocalStorage("volume", "10");
-  const prevVolume = usePrevious(volume);
+
   const [time, setTime] = createSignal<number>(0);
   const [maxTime, setMaxTime] = createSignal<number>(0);
 
   function handlePlayPauseButton() {
     setIsPlaying((old) => !old);
-  }
-
-  function handleVolumeButtonClick() {
-    if (Number(volume()) > 0) {
-      setVolume(String(0));
-    } else {
-      setVolume(prevVolume());
-    }
   }
 
   function handleTrackChange(
@@ -126,34 +120,11 @@ const AudioControl: Component<Props> = (props) => {
       <span class="text-xs mr-auto">
         {Math.floor(time() / 60)}:{time().toFixed(0).padStart(2, "0")}/0:30
       </span>
-      <button type="button" on:click={handleVolumeButtonClick}>
-        <Show when={Number(volume()) > 0} fallback={<MotionIcon icon={"mynaui:volume-x-solid"} />}>
-          <MotionIcon icon={"icon-park-solid:volume-notice"} />
-        </Show>
-      </button>
-      <input
-        type="range"
-        class={`${styles.volume} w-16 bg-transparent`}
-        min={0}
-        max={100}
+      <VolumeInput
         value={Number(volume())}
-        on:input={(e) => setVolume(e.target.value)}
+        onVolumeInputChange={(value) => setVolume(String(value))}
       />
     </div>
-  );
-};
-
-const MotionIcon: Component<{ icon: string }> = (props) => {
-  return (
-    <Motion
-      transition={{ duration: 0.2 }}
-      initial={{ opacity: 0, scale: 0.6 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.6 }}
-      class="grid place-content-center size-4"
-    >
-      <Icon icon={props.icon} class="text-2xl text-foreground duration-100" />
-    </Motion>
   );
 };
 
