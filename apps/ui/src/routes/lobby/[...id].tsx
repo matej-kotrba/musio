@@ -98,9 +98,12 @@ export default function Lobby() {
       getCookie(LOBBY_ID_COOKIE).value === getLobbyIdFromParams() &&
       getCookie(PRIVATE_ID_COOKIE).value
     ) {
-      const { status } = await fetch(constructURL(getServerURL(), "isValidPlayerInLobby"), {
-        credentials: "include",
-      });
+      const { status } = await fetch(
+        constructURL(getServerURL(import.meta.env.VITE_ENVIRONMENT), "isValidPlayerInLobby"),
+        {
+          credentials: "include",
+        }
+      );
 
       if (status !== 200) {
         setShouldDisplayProfileSelection(true);

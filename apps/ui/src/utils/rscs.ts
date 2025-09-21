@@ -6,7 +6,10 @@ import { constructURL, getServerURL } from "shared";
 // TODO: Add error handling
 export const getLobbyURL = async (lobbyId?: string) => {
   const serverResponse = await fetch(
-    constructURL(getServerURL(), `getOrCreateLobbyById?lobbyId=${lobbyId}`)
+    constructURL(
+      getServerURL(import.meta.env.VITE_ENVIRONMENT),
+      `getOrCreateLobbyById?lobbyId=${lobbyId}`
+    )
   );
   const data = (await serverResponse.json()) as string;
 

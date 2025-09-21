@@ -32,7 +32,9 @@ export default function LobbyCreator() {
 
     await new Promise((res) => setTimeout(() => res(""), 1500));
 
-    const { status } = await fetch(constructURL(getServerURL(), "isLobbyId"));
+    const { status } = await fetch(
+      constructURL(getServerURL(import.meta.env.VITE_ENVIRONMENT), "isLobbyId")
+    );
     if (status === 200) {
       navigate(`/lobby/${lobbyId}`);
     } else {

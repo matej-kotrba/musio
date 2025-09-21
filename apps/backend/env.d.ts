@@ -5,3 +5,12 @@ declare namespace NodeJS {
     UI_URL: string;
   }
 }
+
+interface ImportMetEnv {
+  VITE_BACKEND_URL: string;
+  VITE_ENVIRONMENT: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetEnv;
+}

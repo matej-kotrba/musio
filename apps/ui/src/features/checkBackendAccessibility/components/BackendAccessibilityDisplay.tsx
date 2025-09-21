@@ -3,7 +3,7 @@ import { constructURL, getServerURL } from "shared";
 import { createResource, Show } from "solid-js";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 
-const pingServerUrl = () => constructURL(getServerURL(), "ping");
+const pingServerUrl = () => constructURL(getServerURL(import.meta.env.VITE_ENVIRONMENT), "ping");
 
 async function pingBackend() {
   const response = await fetch(pingServerUrl());
