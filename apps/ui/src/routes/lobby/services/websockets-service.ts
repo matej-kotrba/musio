@@ -8,8 +8,9 @@ export default function useWebsocket(onMessageHandler: (event: MessageEvent<stri
   async function connect(lobbyId: string, data: ProfileData) {
     let serverAddress = getServerURL(import.meta.env.VITE_ENVIRONMENT);
     serverAddress = serverAddress.replace("https://", "").replace("http://", "");
+    const wsProtocol = import.meta.env.VITE_ENVIRONMENT === "development" ? "ws" : "wss";
     const newWs = new WebSocket(
-      `wss://${serverAddress}/ws?lobbyId=${lobbyId}&name=${data.name}&icon=${data.icon}`
+      `${wsProtocol}://${serverAddress}/ws?lobbyId=${lobbyId}&name=${data.name}&icon=${data.icon}`
     );
     return new Promise((res) => {
       newWs.addEventListener("open", () => {
