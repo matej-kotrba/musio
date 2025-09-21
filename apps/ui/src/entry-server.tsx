@@ -9,6 +9,7 @@ export default createHandler(() => (
           <meta charset="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <link rel="icon" href="/svgs/logo.svg" />
+          <title>Musio</title>
           {assets}
         </head>
         <body>
