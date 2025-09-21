@@ -9,7 +9,7 @@ export default function useWebsocket(onMessageHandler: (event: MessageEvent<stri
     let serverAddress = getServerURL(import.meta.env.VITE_ENVIRONMENT);
     serverAddress = serverAddress.replace("https://", "").replace("http://", "");
     const newWs = new WebSocket(
-      `ws://${serverAddress}/ws?lobbyId=${lobbyId}&name=${data.name}&icon=${data.icon}`
+      `wss://${serverAddress}/ws?lobbyId=${lobbyId}&name=${data.name}&icon=${data.icon}`
     );
     return new Promise((res) => {
       newWs.addEventListener("open", () => {
