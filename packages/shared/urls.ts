@@ -1,6 +1,7 @@
+// TODO: This file does not see the .env as it's not in the same folder, figure out a better way
 export const getServerURL = (environment: string) => {
   return environment === "production"
-    ? "https://0adc1a298d6a.ngrok-free.app"
+    ? (import.meta as any).env.VITE_BACKEND_URL
     : "http://localhost:5173";
 };
 
