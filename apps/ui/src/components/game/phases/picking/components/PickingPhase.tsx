@@ -34,10 +34,18 @@ export default function PickingPhase() {
     );
   };
 
+  const numberOfPlayersWhoPicked = () =>
+    gameStore.players.filter((player) => player.isChecked).length;
+
   return (
     <Show when={getGamePhaseIfValid<PickingGameState>(gameStore.gameState!, "picking")}>
       {(pickingState) => (
-        <div class="flex flex-col items-center">
+        <div class="relative flex flex-col items-center">
+          <Show when={!gameStore.didPick}>
+            <div class="absolute right-1 top-1">
+              Players ready: {numberOfPlayersWhoPicked()}/{gameStore.players.length}
+            </div>
+          </Show>
           <Timer
             maxTime={pickingState().initialTimeRemainingInSec}
             currentTime={pickingState().initialTimeRemainingInSec}
@@ -47,8 +55,7 @@ export default function PickingPhase() {
             fallback={
               <div class="mt-2">
                 <div class="text-center font-bold text-4xl mb-2">
-                  {gameStore.players.filter((player) => player.isChecked).length}/
-                  {gameStore.players.length}
+                  {numberOfPlayersWhoPicked()}/{gameStore.players.length}
                 </div>
                 <TextBouncy text="Waiting for others to pick!" class="font-bold text-2xl" />
               </div>
