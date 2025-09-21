@@ -1,3 +1,4 @@
+import { getServerURL } from "shared";
 import { createSignal } from "solid-js";
 import { ProfileData } from "~/components/game/profile/ProfileSelection";
 
@@ -5,15 +6,17 @@ export default function useWebsocket(onMessageHandler: (event: MessageEvent<stri
   const [ws, setWs] = createSignal<Maybe<WebSocket>>(undefined);
 
   async function connect(lobbyId: string, data: ProfileData) {
+    let serverAddress = getServerURL(import.meta.env.VITE_ENVIRONMENT);
+    serverAddress = serverAddress.replace("https://", "").replace("http://", "");
     const newWs = new WebSocket(
-      `ws://localhost:5173/ws?lobbyId=${lobbyId}&name=${data.name}&icon=${data.icon}`
+      `ws://${serverAddress}/ws?lobbyId=${lobbyId}&name=${data.name}&icon=${data.icon}`
     );
     return new Promise((res) => {
       newWs.addEventListener("open", () => {
         setWs(newWs);
         res("done");
       });
-     
+
       newWs.onmessage = onMessageHandler;
     });
   }
