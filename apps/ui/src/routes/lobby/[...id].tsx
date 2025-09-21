@@ -136,54 +136,64 @@ export default function Lobby() {
   });
 
   return (
-    <WsConnectionProvider wsConnection={wsActions}>
-      <Suspense fallback={<WholePageLoaderFallback />}>
-        <Show when={shouldDisplayProfileSelection()}>
-          <ProfileSelection onProfileSelected={onProfileSelected} />
-        </Show>
-        <Show when={lobbyCallResource() && wsConnectionIndicator()}>
-          <div
-            class="relative"
-            style={{
-              "--custom-height": `calc(100vh - ${NAV_HEIGHT} - ${LOBBY_LAYOUT_HEIGHT} * 2 - 2rem)`,
-              height: `calc(var(--custom-height) + ${LOBBY_LAYOUT_HEIGHT} * 2)`,
-            }}
-          >
+    <ErrorBoundary fallback={<WholePageErrorFallback />}>
+      <WsConnectionProvider wsConnection={wsActions}>
+        <Suspense fallback={<WholePageLoaderFallback />}>
+          <Show when={shouldDisplayProfileSelection()}>
+            <ProfileSelection onProfileSelected={onProfileSelected} />
+          </Show>
+          <Show when={lobbyCallResource() && wsConnectionIndicator()}>
             <div
-              class={`${styles["glassy-bg"]} grid grid-cols-[auto,1fr,auto] gap-4 py-4 overflow-hidden px-3`}
+              class="relative"
+              style={{
+                "--custom-height": `calc(100vh - ${NAV_HEIGHT} - ${LOBBY_LAYOUT_HEIGHT} * 2 - 2rem)`,
+                height: `calc(var(--custom-height) + ${LOBBY_LAYOUT_HEIGHT} * 2)`,
+              }}
             >
-              {/* Player sidebar */}
-              <PlayerList players={gameStore.players} />
-              {/* ___ */}
-              <ErrorBoundary fallback={<LobbyErrorBoundary />}>
-                <div>
-                  <Switch>
-                    <Match when={gameStore.gameState?.state === "lobby"}>
-                      <LobbyPhase />
-                    </Match>
-                    <Match when={gameStore.gameState?.state === "picking"}>
-                      <PickingPhase />
-                    </Match>
-                    <Match when={gameStore.gameState?.state === "guessing"}>
-                      <GuessingGamePhase />
-                    </Match>
-                    <Match when={gameStore.gameState?.state === "leaderboard"}>
-                      <LeaderboardsGamePhase />
-                    </Match>
-                  </Switch>
-                </div>
-              </ErrorBoundary>
-              {/* Player sidebar */}
-              <LobbyChat />
-              {/* ___ */}
+              <div
+                class={`${styles["glassy-bg"]} grid grid-cols-[auto,1fr,auto] gap-4 py-4 overflow-hidden px-3`}
+              >
+                {/* Player sidebar */}
+                <PlayerList players={gameStore.players} />
+                {/* ___ */}
+                <ErrorBoundary fallback={<LobbyErrorBoundary />}>
+                  <div>
+                    <Switch>
+                      <Match when={gameStore.gameState?.state === "lobby"}>
+                        <LobbyPhase />
+                      </Match>
+                      <Match when={gameStore.gameState?.state === "picking"}>
+                        <PickingPhase />
+                      </Match>
+                      <Match when={gameStore.gameState?.state === "guessing"}>
+                        <GuessingGamePhase />
+                      </Match>
+                      <Match when={gameStore.gameState?.state === "leaderboard"}>
+                        <LeaderboardsGamePhase />
+                      </Match>
+                    </Switch>
+                  </div>
+                </ErrorBoundary>
+                {/* Player sidebar */}
+                <LobbyChat />
+                {/* ___ */}
+              </div>
             </div>
-          </div>
-        </Show>
-      </Suspense>
-    </WsConnectionProvider>
+          </Show>
+        </Suspense>
+      </WsConnectionProvider>
+    </ErrorBoundary>
   );
 }
 
 function LobbyErrorBoundary() {
   return <div>Something went wrong</div>;
+}
+
+function WholePageErrorFallback() {
+  return (
+    <div class="text-6xl text-white font-bold text-center fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      Our services seem to be down 😭
+    </div>
+  );
 }

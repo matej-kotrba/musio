@@ -80,6 +80,14 @@ const dummy_players: PlayerToDisplay[] = [
 //   status: "disconnected",
 // };
 
+function WholePageErrorBoundary() {
+  return (
+    <div class="text-6xl text-white font-bold text-center fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      Our services seem to be down 😭
+    </div>
+  );
+}
+
 export default function Dev() {
   const [step, setStep] = createSignal<number>(0);
   const [stepRoot, setStepRoot] = createSignal<number>(0);
@@ -98,18 +106,19 @@ export default function Dev() {
 
   return (
     <div class="container mx-auto">
+      <WholePageErrorBoundary />
       {/* <div class="w-72 mx-auto flex flex-col gap-2 mt-2">*/}
       {/* <LobbySettings gameLimit={20} playerLimit={4}>
         Open
       </LobbySettings> */}
       {/* <PlayerDisplay player={dummy_player} maxPoints={100} /> */}
       {/* <SongPicker onSongSelect={() => {}} /> */}
-      <button onClick={incrementRoot} class="border">
+      {/* <button onClick={incrementRoot} class="border">
         Increment root
       </button>
-      <button onClick={increment}>Increment</button>
+      <button onClick={increment}>Increment</button> */}
       {/* <Show when={stepRoot() % 2 === 1} keyed> */}
-      <SongQueueProgress
+      {/* <SongQueueProgress
         stepIndex={step()}
         animateFromIndex={step() - 1}
         maxSteps={1}
@@ -119,7 +128,7 @@ export default function Dev() {
           "Dr House's song",
           "Dr House's song",
         ]}
-      />
+      /> */}
       {/* </Show> */}
       {/* <GuessingGameLeaderboardsFallback
         prevSong={{ name: "Monody", artist: "TheFatRat" }}
