@@ -42,6 +42,7 @@ export default function useCookie() {
       `${key}=${value}`,
       expires ? `expires=${expires}` : "",
       path ? `path=${path}` : "",
+      `samesite=none`,
     ].join(";");
 
     setCookies((old) => [...old, `${key}=${value}`]);
