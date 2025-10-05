@@ -18,7 +18,9 @@ export function isDev() {
 
 // Random utils
 // ****
-export function parseCookie(cookie: string, ...keys: string[]) {
+export function parseCookie(cookie: string | undefined, ...keys: string[]) {
+  if (!cookie) return [];
+
   const result: (string | null)[] = [];
   const splitted = cookie.split(";");
   $outer: for (const key of keys) {

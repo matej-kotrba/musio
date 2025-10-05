@@ -6,12 +6,16 @@ import setupWsEndpoints from "./lib/routes/ws";
 import setupRestEndpoints from "./lib/routes/rest";
 import { cors } from "hono/cors";
 
-console.log(process.env.ENV);
+console.log(process.env.ENV, process.env.UI_URL);
 const portEnv = Number(process.env.PORT!);
 const port = isNaN(portEnv) ? 5173 : portEnv;
 
 const app = new Hono();
 
+app.use("*", async (c, next) => {
+  c.res.headers.set("Access-Control-Allow-Origin", process.env.UI_URL);
+  await next();
+});
 app.use("*", cors({ origin: process.env.UI_URL, credentials: true }));
 
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });

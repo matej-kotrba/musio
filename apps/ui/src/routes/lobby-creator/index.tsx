@@ -33,7 +33,12 @@ export default function LobbyCreator() {
     await new Promise((res) => setTimeout(() => res(""), 1500));
 
     const { status } = await fetch(
-      constructURL(getServerURL(import.meta.env.VITE_ENVIRONMENT), "isLobbyId")
+      constructURL(getServerURL(import.meta.env.VITE_ENVIRONMENT), "isLobbyId"),
+      {
+        headers: {
+          "ngrok-skip-browser-warning": "true",
+        },
+      }
     );
     if (status === 200) {
       navigate(`/lobby/${lobbyId}`);

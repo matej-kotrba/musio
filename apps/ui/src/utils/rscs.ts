@@ -9,7 +9,12 @@ export const getLobbyURL = async (lobbyId?: string) => {
     constructURL(
       getServerURL(import.meta.env.VITE_ENVIRONMENT),
       `getOrCreateLobbyById?lobbyId=${lobbyId}`
-    )
+    ),
+    {
+      headers: {
+        "ngrok-skip-browser-warning": "true",
+      },
+    }
   );
   const data = (await serverResponse.json()) as string;
 

@@ -102,6 +102,9 @@ export default function Lobby() {
         constructURL(getServerURL(import.meta.env.VITE_ENVIRONMENT), "isValidPlayerInLobby"),
         {
           credentials: "include",
+          headers: {
+            "ngrok-skip-browser-warning": "true",
+          },
         }
       );
 
