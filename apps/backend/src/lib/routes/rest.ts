@@ -5,6 +5,8 @@ import { LOBBY_ID_COOKIE, PRIVATE_ID_COOKIE } from "shared";
 import { HTTPException } from "hono/http-exception";
 import { getPlayerByPrivateId, removePlayerFromLobby } from "../game/player";
 import type { Lobby } from "../game/lobby";
+import { setCookie } from "hono/cookie";
+import type { CookieOptions } from "hono/utils/cookie";
 
 /**
  * Rest endpoints
@@ -56,6 +58,20 @@ export default function setupRestEndpoints(app: Hono) {
     return c.json({ message: "Success" }, 200);
   });
 
+  app.get("/setCookies", (c) => {
+    const lobbyId = c.req.query("lobbyId");
+    const privateId = c.req.query("privateId");
+
+    console.log("SET COOKIES", lobbyId, privateId);
+    if (!lobbyId || !privateId) throw new HTTPException(400, { message: "Missing data" });
+
+    // This makes sure that Chrome does not regard the cookie as session one
+    setCookie(c, "lobbyId", lobbyId, getCookieOptionsForCrossSiteWithLongExpiration());
+    setCookie(c, "privateId", privateId, getCookieOptionsForCrossSiteWithLongExpiration());
+
+    return c.json({ message: "success" }, 200);
+  });
+
   app.get("/ping", (c) => {
     return c.json("Server is running", 200);
   });
@@ -63,4 +79,15 @@ export default function setupRestEndpoints(app: Hono) {
 
 function isAnyPlayerInLobby(lobby: Lobby) {
   return lobby.players.length > 0;
+}
+
+function getCookieOptionsForCrossSiteWithLongExpiration(): CookieOptions {
+  const hundredDays = 60 * 60 * 24 * 100;
+
+  return {
+    maxAge: hundredDays,
+    expires: new Date(Date.now() + hundredDays * 1000),
+    sameSite: "None",
+    secure: true,
+  };
 }

@@ -51,11 +51,29 @@ export default function Lobby() {
 
   const [wsConnectionIndicator] = createResource(wsConnectionResourceParams, connectFetchHandler);
 
+  async function setCookiesForLobbyAndPrivateId() {
+    const res = await fetch(
+      constructURL(
+        getServerURL(import.meta.env.VITE_ENVIRONMENT),
+        `setCookies?lobbyId=${gameStore.lobbyId}&privateId=${gameStore.thisPlayerIds?.private}`
+      ),
+      {
+        credentials: "include",
+        headers: {
+          "ngrok-skip-browser-warning": "true",
+        },
+      }
+    );
+
+    return res.status;
+  }
+
   createEffect(() => {
     if (!gameStore.lobbyId || !gameStore.thisPlayerIds?.private) return;
     // On connection update cookie for lobbyId so it can be reused when reloading page...
-    setCookie(LOBBY_ID_COOKIE, { value: gameStore.lobbyId, path: "/" });
-    setCookie("privateId", { value: gameStore.thisPlayerIds?.private, path: "/" });
+    setCookiesForLobbyAndPrivateId();
+    // setCookie(LOBBY_ID_COOKIE, { value: gameStore.lobbyId, path: "/" });
+    // setCookie("privateId", { value: gameStore.thisPlayerIds?.private, path: "/" });
   });
 
   const getLobbyIdFromParams = () => params.id;
@@ -94,31 +112,31 @@ export default function Lobby() {
   const eventListenerAbortController = new AbortController();
 
   onMount(async () => {
-    if (
-      getCookie(LOBBY_ID_COOKIE).value === getLobbyIdFromParams() &&
-      getCookie(PRIVATE_ID_COOKIE).value
-    ) {
-      const { status } = await fetch(
-        constructURL(getServerURL(import.meta.env.VITE_ENVIRONMENT), "isValidPlayerInLobby"),
-        {
-          credentials: "include",
-          headers: {
-            "ngrok-skip-browser-warning": "true",
-          },
-        }
-      );
-
-      if (status !== 200) {
-        setShouldDisplayProfileSelection(true);
-        return;
+    // if (
+    //   getCookie(LOBBY_ID_COOKIE).value === getLobbyIdFromParams() &&
+    //   getCookie(PRIVATE_ID_COOKIE).value
+    // ) {
+    const { status } = await fetch(
+      constructURL(getServerURL(import.meta.env.VITE_ENVIRONMENT), "isValidPlayerInLobby"),
+      {
+        credentials: "include",
+        headers: {
+          "ngrok-skip-browser-warning": "true",
+        },
       }
+    );
 
-      // Reconnect logic, sending incorrect data means that it will fail if the player is not reconnecting
-      // as the server checks the privateId sent with the request first
-      onProfileSelected({ name: "", icon: "" });
-    } else {
+    if (status !== 200) {
       setShouldDisplayProfileSelection(true);
+      return;
     }
+
+    // Reconnect logic, sending incorrect data means that it will fail if the player is not reconnecting
+    // as the server checks the privateId sent with the request first
+    onProfileSelected({ name: "", icon: "" });
+    // } else {
+    //   setShouldDisplayProfileSelection(true);
+    // }
 
     window.addEventListener(
       "beforeunload",
