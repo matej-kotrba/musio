@@ -1,5 +1,4 @@
 import styles from "./AudioControl.module.css";
-import { Icon } from "@iconify-icon/solid";
 import {
   createEffect,
   createSignal,
@@ -10,8 +9,7 @@ import {
   type JSX,
 } from "solid-js";
 import { cn } from "~/libs/cn";
-import { Motion } from "solid-motionone";
-import { useLocalStorage, usePrevious } from "~/hooks";
+import { useLocalStorage } from "~/hooks";
 import MotionIcon from "./MotionIcon";
 import VolumeInput from "./VolumeInput";
 
@@ -58,9 +56,7 @@ const AudioControl: Component<Props> = (props) => {
   };
 
   createEffect((prevAudio: HTMLAudioElement | undefined) => {
-    if (prevAudio) {
-      prevAudio.pause();
-    }
+    if (prevAudio) prevAudio.pause();
     const newAudio = new Audio(props.audioUrl);
 
     setAudio(newAudio);

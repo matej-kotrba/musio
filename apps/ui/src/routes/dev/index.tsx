@@ -1,6 +1,15 @@
 import styles from "./styles.module.css";
 import { ClientPlayer } from "shared";
-import { createEffect, createSignal, ErrorBoundary, Match, Show, Switch } from "solid-js";
+import {
+  createEffect,
+  createSignal,
+  ErrorBoundary,
+  Match,
+  on,
+  onCleanup,
+  Show,
+  Switch,
+} from "solid-js";
 import SongQueueProgress from "~/components/game/phases/guessing/components/SongQueueProgress";
 import LobbySettings from "~/components/game/phases/lobby/components/Settings";
 import SongPicker from "~/components/game/phases/picking/components/song-picker/SongPicker";
@@ -13,6 +22,10 @@ import PickingPhase from "~/components/game/phases/picking/components/PickingPha
 import GuessingGamePhase from "~/components/game/phases/guessing/components/GuessingPhase";
 import LeaderboardsGamePhase from "~/components/game/phases/leaderboards/components/LeaderboardsPhase";
 import LobbyChat from "~/features/lobbyChat/LobbyChat";
+import AudioControl from "~/components/common/audio-controller/AudioControl";
+import { clientOnly } from "@solidjs/start";
+import toast from "solid-toast";
+
 const dummy_players: PlayerToDisplay[] = [
   {
     name: "Player 1",
@@ -80,33 +93,56 @@ const dummy_players: PlayerToDisplay[] = [
 //   status: "disconnected",
 // };
 
-function WholePageErrorBoundary() {
-  return (
-    <div class="text-6xl text-white font-bold text-center fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-      Our services seem to be down 😭
-    </div>
-  );
-}
-
 export default function Dev() {
-  const [step, setStep] = createSignal<number>(0);
-  const [stepRoot, setStepRoot] = createSignal<number>(0);
-
-  const incrementRoot = () => {
-    setStepRoot((old) => old + 1);
-  };
-
-  const increment = () => {
-    setStep((old) => old + 1);
-  };
-
+  const [audio, setAudio] = createSignal<Maybe<HTMLAudioElement>>();
   createEffect(() => {
-    console.log(step());
+    const audio = new Audio(
+      "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/4d/48/11/4d4811dd-3ca0-84ef-466b-a9ecf595a74a/mzaf_15116832637931375614.plus.aac.p.m4a"
+    );
+    setAudio(audio);
+    audio.volume = 21 / 100;
+    const stop = tryToPlayAudioRecursivelyWithRetry(audio, 2_000);
+    onCleanup(() => {
+      stop?.();
+      audio.pause();
+      audio.remove();
+    });
   });
+
+  function tryToPlayAudioRecursivelyWithRetry(audio: HTMLAudioElement, retryDelay: number) {
+    let shouldRepeat = true;
+    const stop = () => (shouldRepeat = false);
+
+    const tryToPlayAudio = () => {
+      audio.play().catch(() => {
+        if (!shouldRepeat) return;
+        toast.error("Playing audio is blocked by the browser, interact with a page", {
+          duration: retryDelay,
+        });
+        setTimeout(() => tryToPlayAudio(), retryDelay);
+      });
+    };
+
+    return stop;
+  }
+
+  // const [step, setStep] = createSignal<number>(0);
+  // const [stepRoot, setStepRoot] = createSignal<number>(0);
+
+  // const incrementRoot = () => {
+  //   setStepRoot((old) => old + 1);
+  // };
+
+  // const increment = () => {
+  //   setStep((old) => old + 1);
+  // };
+
+  // createEffect(() => {
+  //   console.log(step());
+  // });
 
   return (
     <div class="container mx-auto">
-      <WholePageErrorBoundary />
       {/* <div class="w-72 mx-auto flex flex-col gap-2 mt-2">*/}
       {/* <LobbySettings gameLimit={20} playerLimit={4}>
         Open

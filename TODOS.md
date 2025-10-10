@@ -22,7 +22,7 @@ temporary round lobby
 [x] - change host when host leaves
 [x] - limit game start to have at least 2 players
 [] - add alert when player does not choose song
-[] - actually play audio when guessing
+[x] - actually play audio when guessing
 
 [x] - add converter from server player to client player, make sure to use correct types
 [] - add error handling to various parts of the app
@@ -38,3 +38,7 @@ only on join
 [] - I disabled setting an expiration of the cookies beacuse it caused issues, look into it
 
 [-] - fix timer bug when out of focus in browser -> Can't do much about it
+
+[] - apply some variable to check that user has httpOnly cookies, because now I have to request backend (isValidPlayerInLobby) every time because I cannot check it locally
+[] - browser needs interaction before it enables to play audio (at least on Chrome) but when reconnecting it could happen that user does not interact with anything hence the audio won't play
+[] - implement the input bar on the homepage to add custom backend server

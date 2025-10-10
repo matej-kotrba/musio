@@ -8,6 +8,7 @@ import { Motion } from "solid-motionone";
 import SongQueueProgress from "./SongQueueProgress";
 import { useLocalStorage } from "~/hooks";
 import VolumeInput from "~/components/common/audio-controller/VolumeInput";
+import toast from "solid-toast";
 
 export default function GuessingGamePhase() {
   const [gameStore] = useGameStore();
@@ -96,6 +97,23 @@ function GuessingGamePhaseInner(props: GuessingGamePhaseInnerProps) {
     return [...playersWhoGainedPoints, ...restPlayers];
   }
 
+  function tryToPlayAudioRecursivelyWithRetry(audio: HTMLAudioElement, retryDelay: number) {
+    let shouldRepeat = true;
+    const stop = () => (shouldRepeat = false);
+
+    const tryToPlayAudio = () => {
+      audio.play().catch(() => {
+        if (!shouldRepeat) return;
+        toast.error("Playing audio is blocked by the browser, interact with a page", {
+          duration: retryDelay,
+        });
+        setTimeout(() => tryToPlayAudio(), retryDelay);
+      });
+    };
+
+    return stop;
+  }
+
   createEffect(() => {
     if (gameStore.currentSongToGuess) {
       setPreviousSong(gameStore.currentSongToGuess);
@@ -114,7 +132,9 @@ function GuessingGamePhaseInner(props: GuessingGamePhaseInnerProps) {
       setAudio(audio);
       audio.volume = Number(volume()) / 100;
       audio.play();
+      const stop = tryToPlayAudioRecursivelyWithRetry(audio, 2_000);
       onCleanup(() => {
+        stop?.();
         audio.pause();
         audio.remove();
       });

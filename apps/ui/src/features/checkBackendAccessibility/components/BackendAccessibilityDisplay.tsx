@@ -1,6 +1,6 @@
 import { Icon } from "@iconify-icon/solid";
 import { constructURL, getServerURL } from "shared";
-import { createResource, ErrorBoundary, Show } from "solid-js";
+import { createSignal, ErrorBoundary, onMount, Show } from "solid-js";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 
 const pingServerUrl = () => constructURL(getServerURL(import.meta.env.VITE_ENVIRONMENT), "ping");
@@ -15,11 +15,13 @@ async function pingBackend() {
 }
 
 export default function BackendAccessibilityDisplay() {
-  const [data] = createResource(pingBackend);
+  const [pingServerStatus, setPingServerStatus] = createSignal<Maybe<number>>();
+
+  onMount(() => pingBackend().then(setPingServerStatus));
 
   return (
     <ErrorBoundary fallback={<ServicesDownAlert />}>
-      <Show when={data() !== 200}>
+      <Show when={pingServerStatus() && pingServerStatus() !== 200}>
         <ServicesDownAlert />
       </Show>
     </ErrorBoundary>
