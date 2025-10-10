@@ -83,7 +83,7 @@ const AudioControl: Component<Props> = (props) => {
   });
 
   createEffect(() => {
-    audio().volume = Number(volume()) / 100;
+    audio().volume = (isNaN(Number(volume())) ? 0 : Number(volume())) / 100;
   });
 
   onCleanup(() => {
