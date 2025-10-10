@@ -25,31 +25,36 @@ import PickingPhase from "~/components/game/phases/picking/components/PickingPha
 import GuessingGamePhase from "~/components/game/phases/guessing/components/GuessingPhase";
 import LobbyPhase from "~/components/game/phases/lobby/components/LobbyPhase";
 import LeaderboardsGamePhase from "~/components/game/phases/leaderboards/components/LeaderboardsPhase";
-import { constructURL, getServerURL, LOBBY_ID_COOKIE, PRIVATE_ID_COOKIE } from "shared";
+import { constructURL, getServerURL } from "shared";
 import { useCookies, useDeferredResource } from "~/hooks";
 import LobbyChat from "~/features/lobbyChat/LobbyChat";
 import WholePageLoaderFallback from "~/components/common/fallbacks/WholePageLoader";
+import { getOptionsForNgrokCrossSite } from "~/utils/fetch";
 
-type WsConnectionResourceParams = Maybe<{ lobbyId: string; data: ProfileData }>;
+type WsConnectionResourceParams = { lobbyId: string; data: ProfileData };
 
 export default function Lobby() {
   const [{ connect, disconnect }, wsActions] = useWebsocket(handleOnWsMessage());
   const [gameStore, { actions }] = useGameStore();
   const { setGameStore } = actions;
-  const { get: getCookie, set: setCookie } = useCookies();
   const params = useParams();
   const navigate = useNavigate();
 
   const [shouldDisplayProfileSelection, setShouldDisplayProfileSelection] = createSignal(false);
-  const [wsConnectionResourceParams, setWsConnectionResourceParams] =
-    createSignal<WsConnectionResourceParams>(undefined);
 
-  const connectFetchHandler = async (params: WsConnectionResourceParams) => {
-    if (!params) return null;
+  const [runConnectFetchResource, wsConnectionIndicator] = useDeferredResource(connectFetchHandler);
+  const [runNewLobbyIdResource, lobbyCallResourceData] = useDeferredResource(handleProfileSelected);
+
+  const getLobbyIdFromParams = () => params.id;
+
+  async function connectFetchHandler(params: WsConnectionResourceParams) {
     return connect(params.lobbyId, params.data);
-  };
+  }
 
-  const [wsConnectionIndicator] = createResource(wsConnectionResourceParams, connectFetchHandler);
+  async function handleProfileSelected(profileData: ProfileData) {
+    const lobbyId = await getLobbyId(getLobbyIdFromParams());
+    return { lobbyId, profileData };
+  }
 
   async function setCookiesForLobbyAndPrivateId() {
     const res = await fetch(
@@ -57,47 +62,21 @@ export default function Lobby() {
         getServerURL(import.meta.env.VITE_ENVIRONMENT),
         `setCookies?lobbyId=${gameStore.lobbyId}&privateId=${gameStore.thisPlayerIds?.private}`
       ),
-      {
-        credentials: "include",
-        headers: {
-          "ngrok-skip-browser-warning": "true",
-        },
-      }
+      getOptionsForNgrokCrossSite()
     );
 
     return res.status;
   }
-
-  createEffect(() => {
-    if (!gameStore.lobbyId || !gameStore.thisPlayerIds?.private) return;
-    // On connection update cookie for lobbyId so it can be reused when reloading page...
-    setCookiesForLobbyAndPrivateId();
-    // setCookie(LOBBY_ID_COOKIE, { value: gameStore.lobbyId, path: "/" });
-    // setCookie("privateId", { value: gameStore.thisPlayerIds?.private, path: "/" });
-  });
-
-  const getLobbyIdFromParams = () => params.id;
-
-  async function handleProfileSelected(profileData: ProfileData) {
-    await new Promise((res) => setTimeout(() => res(""), 2000));
-    const lobbyId = await getLobbyId(getLobbyIdFromParams());
-    return { lobbyId, profileData };
-  }
-
-  const [runNewLobbyIdResource, lobbyCallResource] = useDeferredResource<
-    { lobbyId: string; profileData: ProfileData },
-    ProfileData
-  >(handleProfileSelected);
 
   async function onProfileSelected(data: ProfileData) {
     runNewLobbyIdResource(data);
   }
 
   createEffect(
-    on(lobbyCallResource, () => {
-      const lobbyCallData = lobbyCallResource();
-      console.log(lobbyCallData);
+    on(lobbyCallResourceData, () => {
+      const lobbyCallData = lobbyCallResourceData();
       if (!lobbyCallData) return;
+
       const { lobbyId: newLobbyId, profileData } = lobbyCallData;
 
       if (newLobbyId !== getLobbyIdFromParams()) {
@@ -105,25 +84,22 @@ export default function Lobby() {
       }
 
       setGameStore("lobbyId", newLobbyId);
-      setWsConnectionResourceParams({ data: profileData, lobbyId: newLobbyId });
+      runConnectFetchResource({ data: profileData, lobbyId: newLobbyId });
     })
   );
+
+  createEffect(() => {
+    if (!gameStore.lobbyId || !gameStore.thisPlayerIds?.private) return;
+    // On connection update cookie for lobbyId so it can be reused when reloading page...
+    setCookiesForLobbyAndPrivateId();
+  });
 
   const eventListenerAbortController = new AbortController();
 
   onMount(async () => {
-    // if (
-    //   getCookie(LOBBY_ID_COOKIE).value === getLobbyIdFromParams() &&
-    //   getCookie(PRIVATE_ID_COOKIE).value
-    // ) {
     const { status } = await fetch(
       constructURL(getServerURL(import.meta.env.VITE_ENVIRONMENT), "isValidPlayerInLobby"),
-      {
-        credentials: "include",
-        headers: {
-          "ngrok-skip-browser-warning": "true",
-        },
-      }
+      getOptionsForNgrokCrossSite()
     );
 
     if (status !== 200) {
@@ -162,7 +138,7 @@ export default function Lobby() {
         <Show when={shouldDisplayProfileSelection()}>
           <ProfileSelection onProfileSelected={onProfileSelected} />
         </Show>
-        <Show when={lobbyCallResource() && wsConnectionIndicator()}>
+        <Show when={lobbyCallResourceData() && wsConnectionIndicator()}>
           <div
             class="relative"
             style={{

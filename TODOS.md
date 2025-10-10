@@ -39,6 +39,6 @@ only on join
 
 [-] - fix timer bug when out of focus in browser -> Can't do much about it
 
-[] - apply some variable to check that user has httpOnly cookies, because now I have to request backend (isValidPlayerInLobby) every time because I cannot check it locally
-[] - browser needs interaction before it enables to play audio (at least on Chrome) but when reconnecting it could happen that user does not interact with anything hence the audio won't play
+[-] - apply some variable to check that user has httpOnly cookies, because now I have to request backend (isValidPlayerInLobby) every time because I cannot check it locally
+[x] - browser needs interaction before it enables to play audio (at least on Chrome) but when reconnecting it could happen that user does not interact with anything hence the audio won't play
 [] - implement the input bar on the homepage to add custom backend server
