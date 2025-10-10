@@ -152,24 +152,24 @@ export default function Lobby() {
               {/* Player sidebar */}
               <PlayerList players={gameStore.players} />
               {/* ___ */}
-              <ErrorBoundary fallback={<LobbyErrorBoundary />}>
-                <div>
-                  <Switch>
-                    <Match when={gameStore.gameState?.state === "lobby"}>
-                      <LobbyPhase />
-                    </Match>
-                    <Match when={gameStore.gameState?.state === "picking"}>
-                      <PickingPhase />
-                    </Match>
-                    <Match when={gameStore.gameState?.state === "guessing"}>
-                      <GuessingGamePhase />
-                    </Match>
-                    <Match when={gameStore.gameState?.state === "leaderboard"}>
-                      <LeaderboardsGamePhase />
-                    </Match>
-                  </Switch>
-                </div>
-              </ErrorBoundary>
+              {/* <ErrorBoundary fallback={<LobbyErrorBoundary />}> */}
+              <div>
+                <Switch>
+                  <Match when={gameStore.gameState?.state === "lobby"}>
+                    <LobbyPhase />
+                  </Match>
+                  <Match when={gameStore.gameState?.state === "picking"}>
+                    <PickingPhase />
+                  </Match>
+                  <Match when={gameStore.gameState?.state === "guessing"}>
+                    <GuessingGamePhase />
+                  </Match>
+                  <Match when={gameStore.gameState?.state === "leaderboard"}>
+                    <LeaderboardsGamePhase />
+                  </Match>
+                </Switch>
+              </div>
+              {/* </ErrorBoundary> */}
               {/* Player sidebar */}
               <LobbyChat />
               {/* ___ */}
