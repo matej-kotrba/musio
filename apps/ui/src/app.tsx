@@ -21,9 +21,9 @@ export default function App() {
             }}
           />
           <Nav />
-          {/* <ErrorBoundary fallback={<WholePageErrorFallback />}> */}
-          <Suspense>{props.children}</Suspense>
-          {/* </ErrorBoundary> */}
+          <ErrorBoundary fallback={<WholePageErrorFallback />}>
+            <Suspense>{props.children}</Suspense>
+          </ErrorBoundary>
         </MetaProvider>
       )}
     >
