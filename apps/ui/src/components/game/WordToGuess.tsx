@@ -1,7 +1,7 @@
 import { Motion } from "solid-motionone";
 
 type Props = {
-  wordChars: (string | null)[][];
+  wordChars: Nullable<string>[][];
 };
 
 export default function WordToGuess(props: Props) {

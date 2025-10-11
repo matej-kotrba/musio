@@ -55,7 +55,7 @@ export default function ProfileSelection(props: Props) {
 
   const [selectedIconIndex, setSelectedIconIndex] = createSignal(0);
 
-  const [nameError, setNameError] = createSignal<string | null>(null);
+  const [nameError, setNameError] = createSignal<Nullable<string>>(null);
 
   const getIconByIndex = (index: number) => icons.find((_, idx) => idx === index);
 

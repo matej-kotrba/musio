@@ -2,6 +2,7 @@ import { Icon } from "@iconify-icon/solid";
 import { Button } from "../ui/button";
 import { Motion } from "solid-motionone";
 import BackendAccessibilityDisplay from "~/features/checkBackendAccessibility/components/BackendAccessibilityDisplay";
+import BackendUrlInput from "./BackendUrlInput";
 
 export default function Hero() {
   return (
@@ -28,6 +29,8 @@ export default function Hero() {
               Join
             </Button>
           </div>
+          <div class="h-4"></div>
+          <BackendUrlInput />
         </div>
         <div class="@container w-full lg:w-1/2 mt-10 lg:mt-0">
           <div

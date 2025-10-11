@@ -73,7 +73,7 @@ export default function setupRestEndpoints(app: Hono) {
   });
 
   app.get("/ping", (c) => {
-    return c.json("Server is running", 200);
+    return c.json("Musio server is running", 200);
   });
 }
 

@@ -1,3 +1,11 @@
+export function getOptionsForNgrok() {
+  return {
+    headers: {
+      "ngrok-skip-browser-warning": "true",
+    },
+  } as const;
+}
+
 export function getOptionsForNgrokCrossSite() {
   return {
     credentials: "include",

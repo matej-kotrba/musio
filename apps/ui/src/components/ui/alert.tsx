@@ -15,6 +15,7 @@ export const alertVariants = cva(
         default: "bg-background text-foreground",
         destructive:
           "border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive",
+        warn: "border-warning/50 text-warning dark:border-warning [&>svg]:text-warning",
       },
     },
     defaultVariants: {
@@ -39,7 +40,7 @@ export const Alert = <T extends ValidComponent = "div">(
         alertVariants({
           variant: props.variant,
         }),
-        "bg-secondary/20 shadow-inner shadow-foreground/20",
+        "bg-secondary/20",
         local.class
       )}
       {...rest}

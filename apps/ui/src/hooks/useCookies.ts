@@ -9,7 +9,7 @@ export default function useCookie() {
   const convertCookieToObject = (cookie: string[], key: string) => {
     let final: {
       key: string;
-      value: string | null;
+      value: Nullable<string>;
     } = {
       key: key,
       value: null,
