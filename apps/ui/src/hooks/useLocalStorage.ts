@@ -6,9 +6,15 @@ export default function useLocalStorage(
 ): [Accessor<Nullable<string>>, Setter<Nullable<string>>] {
   const [value, setValue] = createSignal<Nullable<string>>(null);
 
+  function isValueInLocalStorageValid(value: Nullable<string>) {
+    return value == undefined || value == null;
+  }
+
   onMount(() => {
     const currentValue = localStorage.getItem(key);
-    if (!currentValue && defaultValue) localStorage.setItem(key, defaultValue);
+    if ((!isValueInLocalStorageValid(currentValue) || !currentValue) && defaultValue) {
+      localStorage.setItem(key, defaultValue);
+    }
     setValue(localStorage.getItem(key));
   });
 
