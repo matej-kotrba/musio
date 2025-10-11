@@ -48,3 +48,4 @@ only on join
 [] - correct indicator that you guessed the song
 [x] - delete console logs
 [] - persist state of the time on the server so it can show it correctly on reload
+[] - clean input on next song

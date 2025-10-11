@@ -5,6 +5,7 @@ import setupDevEndpoints from "./lib/routes/dev";
 import setupWsEndpoints from "./lib/routes/ws";
 import setupRestEndpoints from "./lib/routes/rest";
 import { cors } from "hono/cors";
+import { normalizeString } from "./lib/common/utils";
 
 console.log(process.env.ENV, process.env.UI_URL);
 const portEnv = Number(process.env.PORT!);

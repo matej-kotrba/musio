@@ -64,16 +64,17 @@ export async function waitFor(ms: number, signal?: AbortSignal) {
 }
 
 export function normalizeString(str: string) {
+  const strTrimmed = str.trim();
   let output = "";
 
-  let normalized = str.normalize("NFD");
+  let normalized = strTrimmed.normalize("NFD");
   let i = 0;
   let j = 0;
 
-  while (i < str.length) {
+  while (i < strTrimmed.length) {
     output += normalized[j];
 
-    j += str[i] == normalized[j] ? 1 : 2;
+    j += strTrimmed[i] == normalized[j] ? 1 : 2;
     i++;
   }
 
