@@ -1,9 +1,10 @@
-import { createEffect, createSignal } from "solid-js";
+import { createEffect, createSignal, on } from "solid-js";
 import styles from "./ChatInput.module.css";
 import { Icon } from "@iconify-icon/solid";
 import clsx from "clsx";
 import { messageLengthSchema } from "shared";
 import toast from "solid-toast";
+import { useGameStore } from "~/routes/lobby/stores/game-store";
 
 type Props = {
   onSubmit: (value: string) => void;
@@ -12,7 +13,10 @@ type Props = {
 };
 
 export default function ChatInput(props: Props) {
+  const [gameStore] = useGameStore();
   const [inputValue, setInputValue] = createSignal("");
+
+  const clearInput = () => setInputValue("");
 
   function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
@@ -26,7 +30,7 @@ export default function ChatInput(props: Props) {
       toast.error(validationResult.message);
     }
 
-    setInputValue("");
+    clearInput();
   }
 
   function isEmpty(message: string) {
@@ -41,6 +45,13 @@ export default function ChatInput(props: Props) {
 
     return { success: true };
   }
+
+  createEffect(() => {
+    // When song to guess changes we wan't to clear the input
+    gameStore.currentSongToGuess;
+
+    clearInput();
+  });
 
   return (
     <form
