@@ -43,3 +43,8 @@ only on join
 [x] - browser needs interaction before it enables to play audio (at least on Chrome) but when reconnecting it could happen that user does not interact with anything hence the audio won't play
 [] - implement the input bar on the homepage to add custom backend server
 [] - add meta
+[] - some errors with invalidating cookies, properly handle the error in the ui
+[] - bad trimming
+[] - correct indicator that you guessed the song
+[x] - delete console logs
+[] - persist state of the time on the server so it can show it correctly on reload

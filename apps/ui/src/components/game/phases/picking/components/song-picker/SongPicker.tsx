@@ -331,16 +331,12 @@ export default function SongPicker(props: Props) {
   }
 
   function handleSongConfirm() {
-    console.log("A");
     if (!selectedSong()) return;
-
-    console.log("B");
 
     props.onSongSelect({
       ...selectedSong()!,
       ...(editedSongName() && { trackName: editedSongName() }),
     });
-    console.log("C");
 
     setIsConfirmDialogOpened(false);
   }
