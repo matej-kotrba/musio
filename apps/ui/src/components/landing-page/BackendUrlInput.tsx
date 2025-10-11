@@ -36,13 +36,13 @@ export default function BackendUrlInput() {
           </A>
         </p>
         <div class="h-3"></div>
-        <UlrInput />
+        <UrlInput />
       </AlertDescription>
     </Alert>
   );
 }
 
-function UlrInput() {
+function UrlInput() {
   const [inputUrlLocalStorage, setInputUrlLocalStorage] = useLocalStorage("serverUrl");
   const [inputtedUrl, setInputtedUrl] = createSignal<Nullable<string>>(null);
   const [inputtedUrlError, setInputtedUrlError] = createSignal<Maybe<string>>();

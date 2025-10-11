@@ -1,12 +1,12 @@
-import { getServerURL } from "shared";
 import { createSignal } from "solid-js";
 import { ProfileData } from "~/components/game/profile/ProfileSelection";
+import { getServerURLOrRedirectClient } from "~/utils/urls";
 
 export default function useWebsocket(onMessageHandler: (event: MessageEvent<string>) => void) {
   const [ws, setWs] = createSignal<Maybe<WebSocket>>(undefined);
 
   async function connect(lobbyId: string, data: ProfileData) {
-    let serverAddress = getServerURL(import.meta.env.VITE_ENVIRONMENT);
+    let serverAddress = getServerURLOrRedirectClient();
     serverAddress = serverAddress.replace("https://", "").replace("http://", "");
     const wsProtocol = import.meta.env.VITE_ENVIRONMENT === "development" ? "ws" : "wss";
     const newWs = new WebSocket(

@@ -1,15 +1,14 @@
 "use server";
 
-import { constructURL, getServerURL } from "shared";
+import { constructURL } from "shared";
 
 // Returns relative URL path to correct lobby
 // TODO: Add error handling
-export const getLobbyURL = async (lobbyId?: string) => {
+export const getLobbyURL = async (serverUrl?: string, lobbyId?: string) => {
+  if (!serverUrl) return;
+
   const serverResponse = await fetch(
-    constructURL(
-      getServerURL(import.meta.env.VITE_ENVIRONMENT),
-      `getOrCreateLobbyById?lobbyId=${lobbyId}`
-    ),
+    constructURL(serverUrl, `getOrCreateLobbyById?lobbyId=${lobbyId}`),
     {
       headers: {
         "ngrok-skip-browser-warning": "true",

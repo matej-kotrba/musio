@@ -1,6 +1,6 @@
 import { Icon } from "@iconify-icon/solid";
 import { action, useIsRouting, useNavigate, useSearchParams } from "@solidjs/router";
-import { constructURL, getServerURL } from "shared";
+import { constructURL } from "shared";
 import { createEffect, createResource, createSignal, Show } from "solid-js";
 import { isServer } from "solid-js/web";
 import toast from "solid-toast";
@@ -10,6 +10,7 @@ import { Button } from "~/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { TextField, TextFieldRoot } from "~/components/ui/textfield";
 import { NAV_HEIGHT } from "~/utils/constants";
+import { getServerURLOrRedirectClient } from "~/utils/urls";
 
 const actionQueryParam = "action";
 const actionQueryParamValues = { create: "create", join: "join" } as const;
@@ -32,14 +33,11 @@ export default function LobbyCreator() {
 
     await new Promise((res) => setTimeout(() => res(""), 1500));
 
-    const { status } = await fetch(
-      constructURL(getServerURL(import.meta.env.VITE_ENVIRONMENT), "isLobbyId"),
-      {
-        headers: {
-          "ngrok-skip-browser-warning": "true",
-        },
-      }
-    );
+    const { status } = await fetch(constructURL(getServerURLOrRedirectClient(), "isLobbyId"), {
+      headers: {
+        "ngrok-skip-browser-warning": "true",
+      },
+    });
     if (status === 200) {
       navigate(`/lobby/${lobbyId}`);
     } else {

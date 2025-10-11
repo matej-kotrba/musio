@@ -16,6 +16,11 @@ export default function Home() {
       toast.success("You have successfully left the lobby.");
       setSearchParams({ leftLobby: null });
     }
+
+    if (searchParams.noServerUrlSet) {
+      toast.error("You have to set server's url first.");
+      setSearchParams({ noServerUrlSet: null });
+    }
   });
 
   return (

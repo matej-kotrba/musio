@@ -7,7 +7,6 @@ declare namespace NodeJS {
 }
 
 interface ImportMetEnv {
-  VITE_BACKEND_URL: string;
   VITE_ENVIRONMENT: string;
 }
 

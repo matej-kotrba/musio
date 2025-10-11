@@ -25,11 +25,12 @@ import PickingPhase from "~/components/game/phases/picking/components/PickingPha
 import GuessingGamePhase from "~/components/game/phases/guessing/components/GuessingPhase";
 import LobbyPhase from "~/components/game/phases/lobby/components/LobbyPhase";
 import LeaderboardsGamePhase from "~/components/game/phases/leaderboards/components/LeaderboardsPhase";
-import { constructURL, getServerURL } from "shared";
-import { useCookies, useDeferredResource } from "~/hooks";
+import { constructURL } from "shared";
+import { useDeferredResource } from "~/hooks";
 import LobbyChat from "~/features/lobbyChat/LobbyChat";
 import WholePageLoaderFallback from "~/components/common/fallbacks/WholePageLoader";
 import { getOptionsForNgrokCrossSite } from "~/utils/fetch";
+import { getServerURLOrRedirectClient } from "~/utils/urls";
 
 type WsConnectionResourceParams = { lobbyId: string; data: ProfileData };
 
@@ -52,14 +53,15 @@ export default function Lobby() {
   }
 
   async function handleProfileSelected(profileData: ProfileData) {
-    const lobbyId = await getLobbyId(getLobbyIdFromParams());
+    const serverUrl = getServerURLOrRedirectClient();
+    const lobbyId = await getLobbyId(serverUrl, getLobbyIdFromParams());
     return { lobbyId, profileData };
   }
 
   async function setCookiesForLobbyAndPrivateId() {
     const res = await fetch(
       constructURL(
-        getServerURL(import.meta.env.VITE_ENVIRONMENT),
+        getServerURLOrRedirectClient(),
         `setCookies?lobbyId=${gameStore.lobbyId}&privateId=${gameStore.thisPlayerIds?.private}`
       ),
       getOptionsForNgrokCrossSite()
@@ -83,8 +85,8 @@ export default function Lobby() {
         navigate(`/lobby/${newLobbyId}`, { replace: true });
       }
 
-      setGameStore("lobbyId", newLobbyId);
-      runConnectFetchResource({ data: profileData, lobbyId: newLobbyId });
+      setGameStore("lobbyId", newLobbyId!);
+      runConnectFetchResource({ data: profileData, lobbyId: newLobbyId! });
     })
   );
 
@@ -97,8 +99,10 @@ export default function Lobby() {
   const eventListenerAbortController = new AbortController();
 
   onMount(async () => {
+    const serverUrl = getServerURLOrRedirectClient();
+
     const { status } = await fetch(
-      constructURL(getServerURL(import.meta.env.VITE_ENVIRONMENT), "isValidPlayerInLobby"),
+      constructURL(serverUrl, "isValidPlayerInLobby"),
       getOptionsForNgrokCrossSite()
     );
 

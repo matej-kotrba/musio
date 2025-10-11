@@ -41,7 +41,7 @@ only on join
 
 [-] - apply some variable to check that user has httpOnly cookies, because now I have to request backend (isValidPlayerInLobby) every time because I cannot check it locally
 [x] - browser needs interaction before it enables to play audio (at least on Chrome) but when reconnecting it could happen that user does not interact with anything hence the audio won't play
-[] - implement the input bar on the homepage to add custom backend server
+[x] - implement the input bar on the homepage to add custom backend server
 [x] - add meta
 [] - some errors with invalidating cookies, properly handle the error in the ui
 [x] - bad trimming

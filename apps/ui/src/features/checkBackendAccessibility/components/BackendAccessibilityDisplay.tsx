@@ -1,9 +1,10 @@
 import { Icon } from "@iconify-icon/solid";
-import { constructURL, getServerURL } from "shared";
+import { constructURL } from "shared";
 import { createSignal, ErrorBoundary, onMount, Show } from "solid-js";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
+import { getServerURLOrRedirectClient } from "~/utils/urls";
 
-const pingServerUrl = () => constructURL(getServerURL(import.meta.env.VITE_ENVIRONMENT), "ping");
+const pingServerUrl = () => constructURL(getServerURLOrRedirectClient(), "ping");
 
 async function pingBackend() {
   const response = await fetch(pingServerUrl(), {
