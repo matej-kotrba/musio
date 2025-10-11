@@ -20,7 +20,7 @@ export default function Hero() {
             Musio turns your gatherings into unforgettable music trivia experiences. Challenge
             friends, discover new tunes, and create lasting memories.
           </p>
-          <BackendAccessibilityDisplay />
+          {/* <BackendAccessibilityDisplay /> */}
           <div class="flex gap-2 mt-4">
             <Button class="text-lg px-8 py-6" as="a" href="/lobby-creator">
               Host a game

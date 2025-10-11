@@ -1,4 +1,4 @@
-import { For, JSXElement, Show } from "solid-js";
+import { ErrorBoundary, For, JSXElement, Show } from "solid-js";
 import { GlobalsContextProvider } from "~/contexts/globals";
 import { GameStoreProvider, getNewGameStore } from "./lobby/stores/game-store";
 import { NAV_HEIGHT } from "~/utils/constants";

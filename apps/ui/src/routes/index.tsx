@@ -21,6 +21,12 @@ export default function Home() {
       toast.error("You have to set server's url first.");
       setSearchParams({ noServerUrlSet: null });
     }
+
+    if (searchParams.invalidServerUrl) {
+      toast.error("Your server url doesn't seem to work.");
+      setSearchParams({ invalidServerUrl: null });
+      localStorage.removeItem("serverUrl");
+    }
   });
 
   return (

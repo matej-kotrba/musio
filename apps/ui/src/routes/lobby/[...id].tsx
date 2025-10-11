@@ -101,19 +101,22 @@ export default function Lobby() {
   onMount(async () => {
     const serverUrl = getServerURLOrRedirectClient();
 
-    const { status } = await fetch(
-      constructURL(serverUrl, "isValidPlayerInLobby"),
-      getOptionsForNgrokCrossSite()
-    );
+    fetch(constructURL(serverUrl, "isValidPlayerInLobby"), getOptionsForNgrokCrossSite())
+      .catch(() => {
+        window.location.replace("/?invalidServerUrl=true");
+      })
+      .then((data) => {
+        if (!data) return;
 
-    if (status !== 200) {
-      setShouldDisplayProfileSelection(true);
-      return;
-    }
+        if (data.status !== 200) {
+          setShouldDisplayProfileSelection(true);
+          return;
+        }
 
-    // Reconnect logic, sending incorrect data means that it will fail if the player is not reconnecting
-    // as the server checks the privateId sent with the request first
-    onProfileSelected({ name: "", icon: "" });
+        // Reconnect logic, sending incorrect data means that it will fail if the player is not reconnecting
+        // as the server checks the privateId sent with the request first
+        onProfileSelected({ name: "", icon: "" });
+      });
     // } else {
     //   setShouldDisplayProfileSelection(true);
     // }
