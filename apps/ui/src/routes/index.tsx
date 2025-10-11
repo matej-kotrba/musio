@@ -20,8 +20,6 @@ export default function Home() {
 
   return (
     <div class="min-h-screen bg-background-DEAFULT text-foreground overflow-hidden relative">
-      <Title>Musio</Title>
-
       <BackgroundNetEffect />
       <main class="container mx-auto px-4 sm:px-6 lg:px-8">
         <Hero />
