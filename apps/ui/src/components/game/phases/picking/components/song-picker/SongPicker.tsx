@@ -277,12 +277,12 @@ type Props = {
 export default function SongPicker(props: Props) {
   const globals = useContext(GlobalsContext);
 
-  const [songName, setSongName] = useDebounce<string>("", 600);
-  // const [searchedSongs, setSearchedSongs] = createSignal<ItunesSong[]>(dummy_data.results);
-  const [searchedSongs, setSearchedSongs] = createSignal<ItunesSong[]>([]);
+  const [songName, setSongName] = useDebounce<string>("", 800);
+  const [searchedSongs, setSearchedSongs] = createSignal<ItunesSong[]>(dummy_data.results);
+  // const [searchedSongs, setSearchedSongs] = createSignal<ItunesSong[]>([]);
   const [editedSongName, setEditedSongName] = createSignal<string>();
-  // const [selectedSong, setSelectedSong] = createSignal<ItunesSong | null>(dummy_data.results[0]);
-  const [selectedSong, setSelectedSong] = createSignal<ItunesSong | null>(null);
+  const [selectedSong, setSelectedSong] = createSignal<ItunesSong | null>(dummy_data.results[0]);
+  // const [selectedSong, setSelectedSong] = createSignal<ItunesSong | null>(null);
 
   const [isConfirmDialogOpened, setIsConfirmDialogOpened] = createSignal<boolean>(false);
   let audioElementRef: HTMLAudioElement;
@@ -340,6 +340,12 @@ export default function SongPicker(props: Props) {
 
     setIsConfirmDialogOpened(false);
   }
+
+  // function onKeydown(e: KeyboardEvent) {
+  //   if (e.code !== "ArrowUp" && e.code !== "ArrowDown") return;
+  //   e.preventDefault();
+
+  // }
 
   return (
     <div>
@@ -430,14 +436,17 @@ export default function SongPicker(props: Props) {
               style={"--item-height: 4rem; --item-overflow-count: 3;"}
             >
               <Index each={searchedSongs()}>
-                {(song) => {
+                {(song, index) => {
                   return (
                     <button
                       type="button"
                       class={`${styles.song} h-[var(--item-height)] isolate relative flex items-center gap-2 p-2 hover:bg-background-DEAFULT duration-150 outline-none focus-within:outline-none focus-within:bg-background-DEAFULT`}
                       data-selected={song().trackId === selectedSong()?.trackId}
+                      aria-selected={song().trackId === selectedSong()?.trackId}
                       on:click={() => handlePickSong(song())}
                       title={song().trackName}
+                      role="option"
+                      id={`opt-${index}`}
                     >
                       <img
                         src={song().artworkUrl60}

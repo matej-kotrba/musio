@@ -109,6 +109,7 @@ export const handleOnWsMessage = () => {
       case "IN_BETWEEN_SONGS_DELAY": {
         const payload = data.message.payload;
 
+        resetPlayerChecks();
         setGameStore("currentSongToGuess", undefined);
         setGameStore("previousSongData", {
           correctSongName: payload.correctSongName,
@@ -188,6 +189,8 @@ export const handleOnWsMessage = () => {
         const payload = data.message.payload;
 
         payload.forEach(({ publicId, newPoints }) => {
+          // TODO: For current use case it's okay but probably it should have custom event
+          setGameStore("players", (player) => player.publicId === publicId, "isChecked", true);
           setGameStore(
             "players",
             (player) => player.publicId === publicId,

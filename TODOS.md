@@ -49,8 +49,8 @@ only on join
 [x] - clean input on next song
 [x] - slash at the end breaks stuff
 [x] - redirecting to create/join doesn't change the page
-[] - using tab, keys to select songs
-[] - correct indicator that you guessed the song
+[-] - using tab, keys to select songs
+[x] - correct indicator that you guessed the song
+[] - add more animal portraits
 [] - persist state of the time on the server so it can show it correctly on reload
 [] - mobile responsiveness
-[] - add more animal portraits
