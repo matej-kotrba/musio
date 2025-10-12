@@ -4,6 +4,7 @@ export type Song = {
   artist: string;
   trackUrl: string;
   imageUrl100x100: string;
+  iTunesUrl: string;
 };
 
 export type SongWithNameHidden = Omit<Song, "name"> & { name: (string | null)[][] };

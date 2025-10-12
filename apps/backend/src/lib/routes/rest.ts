@@ -35,8 +35,6 @@ export default function setupRestEndpoints(app: Hono) {
     const lobbyId = c.req.query("lobbyId");
     const lobbies = getLobbiesService().lobbies;
 
-    console.log(lobbyId, lobbies.has(lobbyId!));
-
     if (!lobbyId || !lobbies.has(lobbyId))
       throw new HTTPException(404, { message: "Lobby with this ID does not exist" });
 

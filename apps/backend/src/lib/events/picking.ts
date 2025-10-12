@@ -31,7 +31,7 @@ export function handlePickingEvent(
   switch (data.message.type) {
     case "PICK_SONG":
       const player = getPlayerByPrivateId(lobby, data.privateId);
-      const { name, artist, trackUrl, imageUrl100x100 } = data.message.payload;
+      const { name, artist, trackUrl, imageUrl100x100, iTunesUrl } = data.message.payload;
 
       if (!player) return;
       if (lobby.stateProperties.playersWhoPickedIds.includes(data.privateId)) return;
@@ -41,6 +41,7 @@ export function handlePickingEvent(
         artist,
         trackUrl,
         imageUrl100x100,
+        iTunesUrl,
         player.publicId
       );
 
@@ -119,18 +120,19 @@ async function runGuessingSongQueue(
               publicId: getPlayerByPrivateId(lobby, player.privateId)!.publicId,
               points: player.points,
             }))
-            .concat(getPlayerByPrivateId(
-                  lobby,
-                  lobby.stateProperties.playerWhoPickedTheSong!.privateId
-                ) ? [
-              {
-                publicId: getPlayerByPrivateId(
-                  lobby,
-                  lobby.stateProperties.playerWhoPickedTheSong!.privateId
-                )!.publicId,
-                points: lobby.stateProperties.playerWhoPickedTheSong!.points,
-              },
-            ] : []),
+            .concat(
+              getPlayerByPrivateId(lobby, lobby.stateProperties.playerWhoPickedTheSong!.privateId)
+                ? [
+                    {
+                      publicId: getPlayerByPrivateId(
+                        lobby,
+                        lobby.stateProperties.playerWhoPickedTheSong!.privateId
+                      )!.publicId,
+                      points: lobby.stateProperties.playerWhoPickedTheSong!.points,
+                    },
+                  ]
+                : []
+            ),
         })
       )
     );

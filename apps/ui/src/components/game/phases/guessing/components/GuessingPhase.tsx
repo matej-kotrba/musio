@@ -47,12 +47,17 @@ function GuessingGamePhaseInner(props: GuessingGamePhaseInnerProps) {
   const currentSongTrack = () => gameStore.currentSongToGuess?.trackUrl;
 
   const getPreviousSong: () => Maybe<
-    Pick<Song, "artist"> & { playerName: string; songName: string }
+    Pick<Song, "artist" | "iTunesUrl" | "imageUrl100x100"> & {
+      playerName: string;
+      songName: string;
+    }
   > = () =>
     gameStore.previousSongData && previousSong()
       ? {
           songName: gameStore.previousSongData.correctSongName,
           artist: previousSong()!.artist,
+          iTunesUrl: previousSong()!.iTunesUrl,
+          imageUrl100x100: previousSong()!.imageUrl100x100,
           playerName: getPlayerByPublicId(previousSong()!.fromPlayerByPublicId)?.name || "Unknown",
         }
       : undefined;
@@ -207,7 +212,12 @@ type PlayerOrderedByPointsGained = {
 };
 
 type GuessingGameLeaderboardsProps = {
-  prevSong: Maybe<Pick<Song, "artist"> & { songName: string; playerName: string }>;
+  prevSong: Maybe<
+    Pick<Song, "artist" | "iTunesUrl" | "imageUrl100x100"> & {
+      songName: string;
+      playerName: string;
+    }
+  >;
   playersOrderedByPointsGained: PlayerOrderedByPointsGained[];
 };
 
@@ -225,11 +235,18 @@ export function GuessingGameLeaderboardsFallback(props: GuessingGameLeaderboards
   // });
 
   return (
-    <div class="max-w-96">
+    <div class="w-96">
       <div class="font-bold text-lg text-foreground text-center mb-2">
         {props.prevSong ? "Next round starting soon..." : "Get ready, starting soon..."}
       </div>
       <Show when={props.prevSong}>
+        <div>
+          <img
+            class="w-32 aspect-square rounded-sm mx-auto my-2"
+            src={props.prevSong!.imageUrl100x100}
+            alt={`${props.prevSong!.songName} by ${props.prevSong!.artist}`}
+          />
+        </div>
         <div class="text-foreground/80 text-center">
           <span>Last song: </span>
           <span class="font-bold text-foreground">{props.prevSong?.songName}</span>
@@ -239,6 +256,16 @@ export function GuessingGameLeaderboardsFallback(props: GuessingGameLeaderboards
         <div class="text-foreground/80 text-center">
           <span>Requested by: </span>
           <span class="text-foreground font-bold">{props.prevSong?.playerName}</span>
+        </div>
+        <div class="mt-4 text-right">
+          <div>
+            Audio previews and metadata provided by <span class="font-bold">iTunes</span>.
+          </div>
+          <div>
+            <a class="text-blue-500 underline" href={props.prevSong!.iTunesUrl} target="_blank">
+              Download song on iTunes
+            </a>
+          </div>
         </div>
         <div class="flex flex-col gap-1 mt-2">
           <For each={props.playersOrderedByPointsGained}>

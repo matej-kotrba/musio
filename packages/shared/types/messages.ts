@@ -1,6 +1,6 @@
-import type { messageConfig } from "../messages";
-import type { GameOptions, GameState, SongWithNameHidden } from "./lobby";
-import type { ClientPlayerFromServer, PlayerStatus } from "./player";
+import type { messageConfig } from "../messages.ts";
+import type { GameOptions, GameState, SongWithNameHidden } from "./lobby.ts";
+import type { ClientPlayerFromServer, PlayerStatus } from "./player.ts";
 
 // Player ids are never specified as they are passed with the ws messageToClient already
 export type WS_MessageMapServer = {

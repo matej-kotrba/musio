@@ -29,6 +29,7 @@ export default function PickingPhase() {
           artist: selectedSong.artistName,
           trackUrl: selectedSong.previewUrl,
           imageUrl100x100: selectedSong.artworkUrl100,
+          iTunesUrl: selectedSong.trackViewUrl,
         })
       )
     );

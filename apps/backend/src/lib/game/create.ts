@@ -96,6 +96,7 @@ export function createNewSong(
   artist: string,
   trackUrl: string,
   imageUrl: string,
+  iTunesUrl: string,
   fromPlayerById: string
 ): Song {
   return {
@@ -104,5 +105,6 @@ export function createNewSong(
     trackUrl,
     imageUrl100x100: imageUrl,
     fromPlayerByPublicId: fromPlayerById,
+    iTunesUrl: iTunesUrl,
   };
 }
