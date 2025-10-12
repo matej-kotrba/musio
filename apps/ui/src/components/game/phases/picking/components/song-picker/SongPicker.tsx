@@ -278,11 +278,11 @@ export default function SongPicker(props: Props) {
   const globals = useContext(GlobalsContext);
 
   const [songName, setSongName] = useDebounce<string>("", 800);
-  const [searchedSongs, setSearchedSongs] = createSignal<ItunesSong[]>(dummy_data.results);
-  // const [searchedSongs, setSearchedSongs] = createSignal<ItunesSong[]>([]);
+  // const [searchedSongs, setSearchedSongs] = createSignal<ItunesSong[]>(dummy_data.results);
+  const [searchedSongs, setSearchedSongs] = createSignal<ItunesSong[]>([]);
   const [editedSongName, setEditedSongName] = createSignal<string>();
-  const [selectedSong, setSelectedSong] = createSignal<ItunesSong | null>(dummy_data.results[0]);
-  // const [selectedSong, setSelectedSong] = createSignal<ItunesSong | null>(null);
+  // const [selectedSong, setSelectedSong] = createSignal<ItunesSong | null>(dummy_data.results[0]);
+  const [selectedSong, setSelectedSong] = createSignal<ItunesSong | null>(null);
 
   const [isConfirmDialogOpened, setIsConfirmDialogOpened] = createSignal<boolean>(false);
   let audioElementRef: HTMLAudioElement;
