@@ -43,9 +43,12 @@ only on join
 [x] - browser needs interaction before it enables to play audio (at least on Chrome) but when reconnecting it could happen that user does not interact with anything hence the audio won't play
 [x] - implement the input bar on the homepage to add custom backend server
 [x] - add meta
-[] - some errors with invalidating cookies, properly handle the error in the ui
+[-] - some errors with invalidating cookies, properly handle the error in the ui
 [x] - bad trimming
-[] - correct indicator that you guessed the song
 [x] - delete console logs
-[] - persist state of the time on the server so it can show it correctly on reload
 [x] - clean input on next song
+[] - slash at the end breaks stuff
+[] - using tab, keys to select songs
+[] - redirecting to create/join doesn't change the page
+[] - correct indicator that you guessed the song
+[] - persist state of the time on the server so it can show it correctly on reload

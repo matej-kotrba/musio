@@ -80,7 +80,7 @@ function UrlInput() {
       return;
     }
 
-    setInputUrlLocalStorage(urlToCheck);
+    setInputUrlLocalStorage(url.origin);
     setIsCheckingServer(false);
     setInputtedUrlError("");
     toast.success("Your server is good to go");
