@@ -33,7 +33,15 @@ export default function Footer() {
               </li>
             </ul>
           </div>
-          <div></div>
+          <div>
+            <h4 class="text-lg font-semibold mb-4">Legal</h4>
+            <p class="text-sm text-foreground/75">
+              All song metadata and previews are provided courtesy of{" "}
+              <strong class="text-foreground">iTunes</strong>. This application is{" "}
+              <strong class="text-foreground">NOT</strong> endorsed by Apple nor it is it's partner
+              in any way.
+            </p>
+          </div>
           <div>
             <h4 class="text-lg font-semibold mb-4">Created by</h4>
             <div>

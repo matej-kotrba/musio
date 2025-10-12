@@ -110,3 +110,9 @@ Contributions are welcome! Please follow these steps:
 ## 📜 License
 
 This project is licensed under the ISC License.
+
+## Legal / Attribution
+
+This project streams 30-second audio previews directly from Apple's iTunes Search API (no audio files are stored). Previews and metadata are provided by iTunes Search API.  
+Links to the store use Apple's `trackViewUrl`. This project is not affiliated with or endorsed by Apple Inc.  
+See: https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/ and https://www.apple.com/legal/internet-services/itunes/ for more information.
