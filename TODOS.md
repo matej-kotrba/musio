@@ -47,8 +47,10 @@ only on join
 [x] - bad trimming
 [x] - delete console logs
 [x] - clean input on next song
-[] - slash at the end breaks stuff
+[x] - slash at the end breaks stuff
+[x] - redirecting to create/join doesn't change the page
 [] - using tab, keys to select songs
-[] - redirecting to create/join doesn't change the page
 [] - correct indicator that you guessed the song
 [] - persist state of the time on the server so it can show it correctly on reload
+[] - mobile responsiveness
+[] - add more animal portraits

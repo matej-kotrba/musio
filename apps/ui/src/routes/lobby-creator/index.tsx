@@ -1,15 +1,15 @@
 import { Icon } from "@iconify-icon/solid";
-import { action, useIsRouting, useNavigate, useSearchParams } from "@solidjs/router";
+import { useIsRouting, useNavigate, useSearchParams } from "@solidjs/router";
 import { constructURL } from "shared";
-import { createEffect, createResource, createSignal, Show } from "solid-js";
+import { createResource, createSignal, Show } from "solid-js";
 import { isServer } from "solid-js/web";
 import toast from "solid-toast";
 import WholePageLoaderFallback from "~/components/common/fallbacks/WholePageLoader";
-import Loader from "~/components/common/loader/Loader";
 import { Button } from "~/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { TextField, TextFieldRoot } from "~/components/ui/textfield";
 import { NAV_HEIGHT } from "~/utils/constants";
+import { getOptionsForNgrok } from "~/utils/fetch";
 import { getServerURLOrRedirectClient } from "~/utils/urls";
 
 const actionQueryParam = "action";
@@ -30,14 +30,10 @@ export default function LobbyCreator() {
   const [lobbyIdCheckData, { refetch: refetchLobbyIdCheck }] = createResource(async (_, info) => {
     const lobbyId = info.refetching;
     if (!lobbyId) return;
+    if (!isCodeStringValueWithCorrectLength(lobbyId)) return;
 
-    await new Promise((res) => setTimeout(() => res(""), 1500));
-
-    const { status } = await fetch(constructURL(getServerURLOrRedirectClient(), "isLobbyId"), {
-      headers: {
-        "ngrok-skip-browser-warning": "true",
-      },
-    });
+    const url = constructURL(getServerURLOrRedirectClient(), `isLobbyId?lobbyId=${lobbyId}`);
+    const { status } = await fetch(url, getOptionsForNgrok());
     if (status === 200) {
       navigate(`/lobby/${lobbyId}`);
     } else {
@@ -49,7 +45,7 @@ export default function LobbyCreator() {
     refetchLobbyIdCheck(joinCode());
   }
 
-  const getDefaultTabValue: () => ActionQueryParamsValue = () => {
+  const getTabValue: () => ActionQueryParamsValue = () => {
     if (isValidActionType(searchParams[actionQueryParam])) return searchParams[actionQueryParam];
     else return "create";
   };
@@ -58,6 +54,12 @@ export default function LobbyCreator() {
     if (!isValidActionType(actionType)) return;
 
     setSearchParams({ [actionQueryParam]: actionType });
+  }
+
+  function isCodeStringValueWithCorrectLength(code: unknown) {
+    if (typeof code !== "string") return false;
+
+    return code.length === 8;
   }
 
   function isValidActionType(actionType: unknown): actionType is ActionQueryParamsValue {
@@ -73,11 +75,11 @@ export default function LobbyCreator() {
       </Show>
       <div
         style={{ height: `calc(100vh - ${NAV_HEIGHT})` }}
-        class="flex flex-col items-center justify-center bg-gradient-to-b from-background to-muted p-4"
+        class="flex flex-col items-center bg-gradient-to-b from-background to-muted p-4 mt-8"
       >
         <div class="w-full max-w-md">
           <CardHeader />
-          <Tabs defaultValue={getDefaultTabValue()} class="w-full" onChange={handleTabChange}>
+          <Tabs value={getTabValue()} class="w-full" onChange={handleTabChange}>
             <TabsList class="grid w-full grid-cols-2">
               <TabsTrigger value="create">Create Game</TabsTrigger>
               <TabsTrigger value="join">Join Game</TabsTrigger>
@@ -112,9 +114,10 @@ export default function LobbyCreator() {
                     <TextField
                       placeholder="Enter game code"
                       maxLength={8}
+                      autocomplete={"off"}
                       value={joinCode()}
                       onInput={(e) => setJoinCode(e.currentTarget.value)}
-                      class="text-center text-lg uppercase py-2 border-zinc-600"
+                      class="text-center text-lg uppercase py-2 border-zinc-600 tracking-widest"
                     />
                   </TextFieldRoot>
                 </div>
