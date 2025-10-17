@@ -11,7 +11,7 @@ import { Button } from "~/components/ui/button";
 import { TextField, TextFieldRoot } from "~/components/ui/textfield";
 import { TooltipTrigger, TooltipContent, Tooltip } from "~/components/ui/tooltip";
 import { useWsConnection } from "~/contexts/wsConnection";
-import { useCopyToClipboard } from "~/hooks";
+import { useCopyToClipboard, useLocalStorage } from "~/hooks";
 import { useGameStore } from "~/routes/lobby/stores/game-store";
 import LobbySettings, { OnSaveData } from "./Settings";
 import Loader from "~/components/common/loader/Loader";
@@ -151,6 +151,7 @@ function LobbyCopyToClipboardCode() {
   const [gameStore] = useGameStore();
 
   const copyToClipboard = useCopyToClipboard();
+  const [getServerUrlLocalStorage] = useLocalStorage("serverUrl");
 
   return (
     <div class="flex gap-1 h-fit">
@@ -169,7 +170,11 @@ function LobbyCopyToClipboardCode() {
           <Button
             type="button"
             variant={"outline"}
-            on:click={() => copyToClipboard(window.location.href)}
+            on:click={() => {
+              const url = new URL(window.location.href);
+              url.search = `searchUrl=${getServerUrlLocalStorage()}`;
+              copyToClipboard(url.href);
+            }}
           >
             <Icon icon="solar:copy-bold-duotone" class="text-2xl py-1 text-foreground" />
           </Button>
