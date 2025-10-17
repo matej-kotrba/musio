@@ -53,10 +53,9 @@ function UrlInput() {
     setInputtedUrl(target.value);
   }
 
-  async function handleUrlConfirm() {
+  async function handleUrlConfirm(urlToCheck: Nullable<string>) {
     setIsCheckingServer(true);
 
-    const urlToCheck = inputtedUrl();
     if (!urlToCheck) {
       setIncorrectURLError();
       setIsCheckingServer(false);
@@ -100,8 +99,6 @@ function UrlInput() {
     const res = await fetch(url, getOptionsForNgrok());
     const data = await res.json();
 
-    console.log(res.status, data);
-
     return res.status === 200 && data === "Musio server is running";
   }
 
@@ -111,6 +108,12 @@ function UrlInput() {
 
   function setNotMusioServerError() {
     setInputtedUrlError("Your server doesn't seem to work correctly 😭");
+  }
+
+  function clearServerUrl() {
+    setInputUrlLocalStorage(null);
+    setInputtedUrl("");
+    toast.success("Server url cleared");
   }
 
   onMount(() => {
@@ -136,10 +139,19 @@ function UrlInput() {
           type="button"
           variant={"outline"}
           title="Confirm"
-          onClick={handleUrlConfirm}
+          onClick={() => handleUrlConfirm(inputtedUrl())}
           disabled={isCheckingServer()}
         >
           <Icon icon={"charm:tick"} class="text-2xl text-white" />
+        </Button>
+        <Button
+          type="button"
+          variant={"outline"}
+          title="Clear"
+          onClick={clearServerUrl}
+          disabled={isCheckingServer()}
+        >
+          <Icon icon={"iconoir:cancel"} class="text-2xl text-white" />
         </Button>
       </div>
       <TextFieldErrorMessage>{inputtedUrlError()}</TextFieldErrorMessage>

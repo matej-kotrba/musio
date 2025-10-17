@@ -13,7 +13,7 @@ import {
   on,
 } from "solid-js";
 import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
-import { useParams, useNavigate, createAsync } from "@solidjs/router";
+import { useParams, useNavigate, createAsync, useSearchParams } from "@solidjs/router";
 import { getLobbyURL as getLobbyId } from "~/utils/rscs";
 import useWebsocket from "./services/websockets-service";
 import { useGameStore } from "./stores/game-store";
@@ -40,6 +40,8 @@ export default function Lobby() {
   const { setGameStore } = actions;
   const params = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const SERVER_URL_SEARCH_PARAM = "serverUrl";
 
   const [shouldDisplayProfileSelection, setShouldDisplayProfileSelection] = createSignal(false);
 
@@ -99,6 +101,11 @@ export default function Lobby() {
   const eventListenerAbortController = new AbortController();
 
   onMount(async () => {
+    const searchParamServerUrl = searchParams[SERVER_URL_SEARCH_PARAM];
+    if (typeof searchParamServerUrl === "string") {
+      localStorage.setItem("serverUrl", searchParamServerUrl);
+    }
+
     const serverUrl = getServerURLOrRedirectClient();
 
     fetch(constructURL(serverUrl, "isValidPlayerInLobby"), getOptionsForNgrokCrossSite())
