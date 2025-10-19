@@ -24,7 +24,7 @@ export type WS_MessageMapServer = {
     publicId: string;
   };
   PLAYER_DATA_CHANGE: {
-    status?: PlayerStatus;
+    connectionStatus?: PlayerStatus;
     isHost?: boolean;
   };
   NEW_SONG_TO_GUESS: {

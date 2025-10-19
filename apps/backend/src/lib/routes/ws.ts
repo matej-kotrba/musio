@@ -106,7 +106,7 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
             );
           } else {
             reconnectedPlayer.ws = ws;
-            reconnectedPlayer.status = "connected";
+            reconnectedPlayer.connectionStatus = "connected";
 
             console.log("[ws] reconnected open - ", reconnectedPlayer.name);
             ws.send(
@@ -130,7 +130,7 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
               toPayloadToClient(
                 reconnectedPlayer.publicId,
                 createNewMessageToClient(lobbyId!, "PLAYER_DATA_CHANGE", {
-                  status: "connected",
+                  connectionStatus: "connected",
                 })
               )
             );
@@ -222,14 +222,14 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
               )
             );
           } else {
-            playerToDisconnect.status = "disconnected";
+            playerToDisconnect.connectionStatus = "disconnected";
 
             lobbies.broadcast(
               lobbyId!,
               toPayloadToClient(
                 playerToDisconnect.publicId,
                 createNewMessageToClient(lobbyId!, "PLAYER_DATA_CHANGE", {
-                  status: "disconnected",
+                  connectionStatus: "disconnected",
                 })
               )
             );
@@ -271,7 +271,7 @@ function changeLobbyLeaderToNextInArray(
   currentLeaderPrivateId: string
 ): PlayerServer | undefined {
   for (const player of lobby.players) {
-    if (player.privateId !== currentLeaderPrivateId && player.status === "connected") {
+    if (player.privateId !== currentLeaderPrivateId && player.connectionStatus === "connected") {
       lobby.leaderPrivateId = player.privateId;
       return player;
     }

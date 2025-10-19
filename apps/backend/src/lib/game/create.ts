@@ -85,7 +85,7 @@ export function createNewPlayer(
     publicId,
     name,
     icon,
-    status: "connected",
+    connectionStatus: "connected",
     points: points ?? 0,
     lastSentMessage: new Date(),
   };

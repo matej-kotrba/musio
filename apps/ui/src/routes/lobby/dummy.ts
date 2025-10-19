@@ -8,7 +8,7 @@ export const dummy_players: PlayerToDisplay[] = [
     isHost: true,
     publicId: "1",
     isChecked: true,
-    status: "connected",
+    connectionStatus: "connected",
   },
   {
     name: "Player 2",
@@ -16,7 +16,7 @@ export const dummy_players: PlayerToDisplay[] = [
     points: 89,
     isHost: false,
     publicId: "2",
-    status: "connected",
+    connectionStatus: "connected",
   },
   {
     name: "Player 3",
@@ -24,7 +24,7 @@ export const dummy_players: PlayerToDisplay[] = [
     points: 76,
     isHost: false,
     publicId: "3",
-    status: "connected",
+    connectionStatus: "connected",
   },
   {
     name: "Very Long cool name",
@@ -32,7 +32,7 @@ export const dummy_players: PlayerToDisplay[] = [
     points: 67,
     isHost: false,
     publicId: "4",
-    status: "connected",
+    connectionStatus: "connected",
   },
   {
     name: "Player 2",
@@ -40,7 +40,7 @@ export const dummy_players: PlayerToDisplay[] = [
     points: 56,
     isHost: false,
     publicId: "5",
-    status: "connected",
+    connectionStatus: "connected",
   },
   {
     name: "Player 3",
@@ -48,7 +48,7 @@ export const dummy_players: PlayerToDisplay[] = [
     points: 43,
     isHost: false,
     publicId: "6",
-    status: "connected",
+    connectionStatus: "connected",
   },
   {
     name: "Very Long cool name",
@@ -56,7 +56,7 @@ export const dummy_players: PlayerToDisplay[] = [
     points: 39,
     isHost: false,
     publicId: "7",
-    status: "connected",
+    connectionStatus: "connected",
   },
   {
     name: "Player 2",
@@ -64,7 +64,7 @@ export const dummy_players: PlayerToDisplay[] = [
     points: 6,
     isHost: false,
     publicId: "8",
-    status: "connected",
+    connectionStatus: "connected",
   },
   {
     name: "Player 3",
@@ -72,7 +72,7 @@ export const dummy_players: PlayerToDisplay[] = [
     points: 0,
     isHost: false,
     publicId: "9",
-    status: "connected",
+    connectionStatus: "connected",
   },
 ];
 

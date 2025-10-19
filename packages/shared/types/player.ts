@@ -9,7 +9,7 @@ export type Player = {
   publicId: string;
   name: string;
   points: number;
-  status: PlayerStatus;
+  connectionStatus: PlayerStatus;
 };
 
 export type ClientPlayer = Player & {

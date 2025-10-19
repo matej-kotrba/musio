@@ -9,7 +9,7 @@ const dummy_players: PlayerToDisplay[] = [
     points: 5,
     publicId: "a",
     previousPoints: 85,
-    status: "connected",
+    connectionStatus: "connected",
   },
   {
     name: "Player 2",
@@ -18,7 +18,7 @@ const dummy_players: PlayerToDisplay[] = [
     points: 100,
     publicId: "b",
     previousPoints: 80,
-    status: "connected",
+    connectionStatus: "connected",
   },
   {
     name: "Player 3",
@@ -27,7 +27,7 @@ const dummy_players: PlayerToDisplay[] = [
     points: 80,
     publicId: "c",
     previousPoints: 76,
-    status: "connected",
+    connectionStatus: "connected",
   },
   {
     name: "Player 4",
@@ -36,7 +36,7 @@ const dummy_players: PlayerToDisplay[] = [
     points: 72,
     publicId: "d",
     previousPoints: 69,
-    status: "connected",
+    connectionStatus: "connected",
   },
   // {
   //   name: "Player 5",

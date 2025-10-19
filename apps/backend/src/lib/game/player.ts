@@ -56,6 +56,6 @@ export function convertServerPlayerToClientPlayer(
     isHost: isHost(player.privateId, lobby),
     points: player.points,
     publicId: player.publicId,
-    status: player.status,
+    connectionStatus: player.connectionStatus,
   };
 }

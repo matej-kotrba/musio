@@ -37,7 +37,7 @@ export default function PlayerDisplay(props: Props) {
         classList={{
           "group relative snap-start bg-background-highlight/40 p-3 pb-5 border border-background-highlight rounded-md overflow-hidden":
             true,
-          "opacity-50": props.player.status === "disconnected",
+          "opacity-50": props.player.connectionStatus === "disconnected",
         }}
       >
         <div class="flex gap-2">
@@ -48,7 +48,7 @@ export default function PlayerDisplay(props: Props) {
               alt=""
               class="w-16 aspect-square rounded-lg border-2 border-primary/50 box-content"
             />
-            <Show when={props.player.status === "disconnected"}>
+            <Show when={props.player.connectionStatus === "disconnected"}>
               <div class="absolute left-1 top-1">
                 <Icon
                   icon={"lucide:unplug"}
@@ -96,12 +96,14 @@ export default function PlayerDisplay(props: Props) {
             <div class="flex items-center gap-1">
               <div
                 class={`w-2 h-2 rounded-full ${
-                  props.player.status === "connected"
+                  props.player.connectionStatus === "connected"
                     ? "bg-green-400 animate-pulse"
                     : "bg-yellow-400"
                 }`}
               ></div>
-              <span class="text-xs text-foreground-muted capitalize">{props.player.status}</span>
+              <span class="text-xs text-foreground-muted capitalize">
+                {props.player.connectionStatus}
+              </span>
             </div>
             {/* <div class="grid grid-cols-[auto,1fr] items-center">
             <div class="px-1 box-border rounded-full bg-background-DEAFULT border-2 border-primary z-[2] min-w-[calc(4ch+2*0.25rem)] font-mono text-center text-sm">
