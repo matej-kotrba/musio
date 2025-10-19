@@ -6,7 +6,7 @@ import {
   LobbyGameState,
   playerLimitSchema,
 } from "shared";
-import { createEffect, JSX, Show } from "solid-js";
+import { Show } from "solid-js";
 import { Button } from "~/components/ui/button";
 import { TextField, TextFieldRoot } from "~/components/ui/textfield";
 import { TooltipTrigger, TooltipContent, Tooltip } from "~/components/ui/tooltip";
@@ -16,7 +16,6 @@ import { useGameStore } from "~/routes/lobby/stores/game-store";
 import LobbySettings, { OnSaveData } from "./Settings";
 import Loader from "~/components/common/loader/Loader";
 import Stats from "./Stats";
-import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 
 export default function LobbyPhase() {
   const [gameStore] = useGameStore();
@@ -141,6 +140,18 @@ function LobbyInitial(props: LobbyTypesProps) {
         </Show>
 
         <DecorativeWaitingIndicator />
+        <p class="mt-8 text-foreground-muted text-sm mx-auto w-fit">
+          How about leaving a star on{" "}
+          <a
+            href="https://github.com/matej-kotrba/musio"
+            target="_blank"
+            referrerPolicy="no-referrer"
+            class="text-primary underline"
+          >
+            GitHub
+          </a>{" "}
+          in the meantime 🦭
+        </p>
         {/* <img src="/svgs/waiting.svg" alt="" class="w-80 aspect-[2/3]" /> */}
       </div>
     </section>
