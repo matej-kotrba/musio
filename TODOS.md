@@ -51,9 +51,9 @@ only on join
 [x] - redirecting to create/join doesn't change the page
 [-] - using tab, keys to select songs
 [x] - correct indicator that you guessed the song
-[] - add validation when sending server url in params (not really implemented but it behaves well)
-[] - ignore indicator for host
-[] - reset points of players when the session ends
+[x] - ignore indicator for host
+[-] - add validation when sending server url in params (not really implemented but it behaves well)
+[x] - reset points of players when the session ends
 [] - persist state of the time on the server so it can show it correctly on reload
 [] - mobile responsiveness
 [] - add more animal portraits

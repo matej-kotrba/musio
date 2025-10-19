@@ -106,9 +106,10 @@ export default function Lobby() {
       localStorage.setItem("serverUrl", searchParamServerUrl);
     }
 
-    const serverUrl = getServerURLOrRedirectClient();
-
-    fetch(constructURL(serverUrl, "isValidPlayerInLobby"), getOptionsForNgrokCrossSite())
+    fetch(
+      constructURL(getServerURLOrRedirectClient(), "isValidPlayerInLobby"),
+      getOptionsForNgrokCrossSite()
+    )
       .catch(() => {
         window.location.replace("/?invalidServerUrl=true");
       })
