@@ -54,6 +54,7 @@ only on join
 [x] - ignore indicator for host
 [-] - add validation when sending server url in params (not really implemented but it behaves well)
 [x] - reset points of players when the session ends
+[x] - fix points indicator out of bounds of player display (kind of fixed, not really the best but it'll do)
 [] - persist state of the time on the server so it can show it correctly on reload
 [] - mobile responsiveness
 [] - add more animal portraits

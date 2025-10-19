@@ -28,7 +28,7 @@ type Props = {
 
 export default function PlayerDisplay(props: Props) {
   function getPlayerPointsAsPercentage() {
-    return (props.player.points / props.maxPoints) * 100;
+    return Math.min((props.player.points / props.maxPoints) * 100, 100);
   }
 
   function getIconBasedOnPlayerStatus(icon: Props["player"]["playerStatus"]) {
@@ -157,9 +157,9 @@ export default function PlayerDisplay(props: Props) {
           <div
             class="absolute text-xs bottom-0 leading-[0.75rem] text-black font-semibold font-mono opacity-0 group-hover:opacity-100 duration-100"
             style={{
-              left: `calc(${getPlayerPointsAsPercentage()}% + ${
+              left: `max(calc(${getPlayerPointsAsPercentage()}% + ${
                 -props.player.points.toString().length - 1
-              }ch)`,
+              }ch), 1ch)`,
             }}
           >
             {props.player.points}

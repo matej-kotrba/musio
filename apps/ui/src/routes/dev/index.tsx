@@ -1,12 +1,12 @@
 import SongPicker from "~/components/game/phases/picking/components/song-picker/SongPicker";
-import { getAllIcons, PlayerToDisplay } from "~/components/game/Player";
+import PlayerDisplay, { getAllIcons, PlayerToDisplay } from "~/components/game/Player";
 
 const dummy_players: PlayerToDisplay[] = [
   {
     name: "Player 1",
     icon: getAllIcons()[Math.round(Math.random() * (getAllIcons().length - 1))],
     isHost: true,
-    points: 5,
+    points: 10,
     publicId: "a",
     previousPoints: 85,
     connectionStatus: "connected",
@@ -70,8 +70,8 @@ const dummy_players: PlayerToDisplay[] = [
 
 export default function Dev() {
   return (
-    <div class="container mx-auto">
-      <SongPicker onSongSelect={() => {}} />
+    <div class="container mx-auto w-64">
+      <PlayerDisplay maxPoints={100} player={dummy_players[0]}></PlayerDisplay>
     </div>
   );
 }
