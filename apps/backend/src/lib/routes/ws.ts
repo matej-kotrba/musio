@@ -156,7 +156,10 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
 
             // Ideally refactor that someday so it doesn't have to be here
             if (parsedData.message.type === "CHAT_MESSAGE") {
-              const now = new Date();
+              // Fixes timezone problems but is very easy to work around
+              let now = new Date(parsedData.message.payload.currentDate);
+              // Check whether date is valid otherwise set server's date time
+              now = now instanceof Date && !isNaN(now as any) ? now : new Date();
               const dateDiff = now.getTime() - player.lastSentMessage.getTime();
               if (dateDiff <= RATELIMIT_MESSAGE_IN_MS) {
                 player.ws.send(
@@ -181,7 +184,7 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
                   )
                 );
               } else {
-                player.lastSentMessage = new Date();
+                player.lastSentMessage = now;
               }
             }
 

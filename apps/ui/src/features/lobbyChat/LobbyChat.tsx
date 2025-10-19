@@ -38,14 +38,15 @@ export default function LobbyChat() {
           createNewMessageToServer(gameStore.lobbyId, "CHAT_MESSAGE", {
             messageId: newMessage.id!,
             content,
+            currentDate: new Date(),
           })
         )
       );
     } else {
       toast.error(
         `Wait ${(gameStore.chatMessageRateLimitExpiration! - now.getTime()).toFixed(
-          1
-        )}s before sending another message.`
+          0
+        )}ms before sending another message.`
       );
     }
   };

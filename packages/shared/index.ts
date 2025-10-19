@@ -1,8 +1,8 @@
-export * from "./urls";
-export * from "./messages";
+export * from "./urls.ts";
+export * from "./messages.ts";
 
-export * from "./validators/index";
-export * from "./index.types";
+export * from "./validators/index.ts";
+export * from "./index.types.ts";
 
 // Cookies
 export const LOBBY_ID_COOKIE = "lobbyId";

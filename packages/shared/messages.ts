@@ -1,4 +1,4 @@
-import type { GameState, GameStateType, LobbyGameState, Song } from "./index.types";
+import type { GameState, Song } from "./index.types.ts";
 import type {
   WS_MESSAGE,
   WS_MESSAGE_TO_CLIENT_TYPE,
@@ -6,24 +6,24 @@ import type {
   WS_MessageInterface,
   WS_MessageMapClient,
   WS_MessageMapServer,
-} from "./types/messages";
+} from "./types/messages.ts";
 
 export const messageConfig = {
   lobby: {
     START_GAME: {} as {},
-    CHANGE_GAME_OPTIONS: {} as { newGameLimit?: number, newPlayerLimit?: number },
+    CHANGE_GAME_OPTIONS: {} as { newGameLimit?: number; newPlayerLimit?: number },
   },
   picking: {
     PICK_SONG: {} as Omit<Song, "fromPlayerByPublicId">,
   },
   guessing: {
-    CHAT_MESSAGE: {} as { content: string; messageId: string },
+    CHAT_MESSAGE: {} as { content: string; messageId: string; currentDate: Date },
   },
   leaderboard: {
     BACK_TO_LOBBY: {} as {},
   },
   all: {
-    CHAT_MESSAGE: {} as { content: string; messageId: string },
+    CHAT_MESSAGE: {} as { content: string; messageId: string; currentDate: Date },
   },
 } as const;
 
