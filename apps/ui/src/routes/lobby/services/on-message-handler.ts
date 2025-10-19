@@ -79,9 +79,14 @@ export const handleOnWsMessage = () => {
       }
 
       case "PLAYER_PICKED_SONG": {
-        setGameStore("players", (player) => player.publicId === data.publicId, "isChecked", true);
+        setGameStore(
+          "players",
+          (player) => player.publicId === data.publicId,
+          "playerStatus",
+          "checked"
+        );
         // setGameStore("players", (old) =>
-        //   old.map((player) => ({ ...player, isChecked: player.publicId === data.publicId }))
+        //   old.map((player) => ({ ...player, playerStatus: player.publicId === data.publicId }))
         // );
 
         if (gameStore.thisPlayerIds?.public === data.publicId) {
@@ -105,6 +110,13 @@ export const handleOnWsMessage = () => {
         const payload = data.message.payload;
 
         setGameStore("currentSongToGuess", payload.song);
+        setGameStore(
+          "players",
+          (player) => player.publicId === payload.song.fromPlayerByPublicId,
+          "playerStatus",
+          "ignored"
+        );
+
         break;
       }
 
@@ -192,7 +204,14 @@ export const handleOnWsMessage = () => {
 
         payload.forEach(({ publicId, newPoints }) => {
           // TODO: For current use case it's okay but probably it should have custom event
-          setGameStore("players", (player) => player.publicId === publicId, "isChecked", true);
+          setGameStore(
+            "players",
+            (player) =>
+              player.publicId === publicId &&
+              publicId !== gameStore.currentSongToGuess?.fromPlayerByPublicId,
+            "playerStatus",
+            "checked"
+          );
           setGameStore(
             "players",
             (player) => player.publicId === publicId,

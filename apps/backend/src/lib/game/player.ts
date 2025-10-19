@@ -10,7 +10,7 @@ export type PlayerServerOnlyProperties = {
   lastSentMessage: Date;
 };
 
-export type PlayerServer = Omit<ClientPlayerFromServer, "isHost" | "isChecked"> &
+export type PlayerServer = Omit<ClientPlayerFromServer, "isHost" | "playerStatus"> &
   PlayerServerOnlyProperties;
 
 export function initPlayerToLobby(lobbies: LobbiesMap, lobbyId: string, player: PlayerServer) {

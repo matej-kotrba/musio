@@ -7,7 +7,7 @@ export const dummy_players: PlayerToDisplay[] = [
     points: 100,
     isHost: true,
     publicId: "1",
-    isChecked: true,
+    playerStatus: "checked",
     connectionStatus: "connected",
   },
   {

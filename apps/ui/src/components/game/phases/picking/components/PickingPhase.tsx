@@ -36,7 +36,7 @@ export default function PickingPhase() {
   };
 
   const numberOfPlayersWhoPicked = () =>
-    gameStore.players.filter((player) => player.isChecked).length;
+    gameStore.players.filter((player) => player.playerStatus).length;
 
   return (
     <Show when={getGamePhaseIfValid<PickingGameState>(gameStore.gameState!, "picking")}>

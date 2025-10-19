@@ -1,6 +1,6 @@
 import { Icon } from "@iconify-icon/solid";
 import { Icon as IconType, ClientPlayer } from "shared/index.types";
-import { Show } from "solid-js";
+import { Match, Show, Switch } from "solid-js";
 import { Motion } from "solid-motionone";
 
 const icons = import.meta.glob("/public/avatars/*", { query: "?url" });
@@ -29,6 +29,14 @@ type Props = {
 export default function PlayerDisplay(props: Props) {
   function getPlayerPointsAsPercentage() {
     return (props.player.points / props.maxPoints) * 100;
+  }
+
+  function getIconBasedOnPlayerStatus(icon: Props["player"]["playerStatus"]) {
+    if (icon === "ignored") {
+      return "material-symbols-light:do-not-disturb-on-total-silence-rounded";
+    } else if (icon === "checked") {
+      return "charm:tick";
+    }
   }
 
   return (
@@ -66,7 +74,7 @@ export default function PlayerDisplay(props: Props) {
                 />
               </div>
             </Show>
-            <Show when={props.player.isChecked}>
+            <Show when={props.player.playerStatus}>
               <Motion
                 transition={{ duration: 0.4 }}
                 initial={{ rotateZ: -270, opacity: 0, scale: 0 }}
@@ -74,7 +82,10 @@ export default function PlayerDisplay(props: Props) {
                 exit={{ rotateZ: -270, opacity: 0, scale: 0 }}
                 class="absolute grid place-content-center bottom-1 right-1 bg-primary-darker rounded-full p-1 shadow-md border border-primary-accent"
               >
-                <Icon icon={"charm:tick"} class="text-lg text-white duration-100" />
+                <Icon
+                  icon={getIconBasedOnPlayerStatus(props.player.playerStatus)!}
+                  class="text-lg text-white duration-100"
+                />
               </Motion>
             </Show>
           </div>

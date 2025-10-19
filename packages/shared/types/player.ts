@@ -15,7 +15,7 @@ export type Player = {
 export type ClientPlayer = Player & {
   icon: Icon;
   isHost: boolean;
-  isChecked?: boolean;
+  playerStatus?: "checked" | "ignored";
 };
 
 export type ClientPlayerFromServer = Omit<ClientPlayer, "icon"> & { icon: string };

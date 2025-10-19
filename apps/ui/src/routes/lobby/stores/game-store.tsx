@@ -25,7 +25,7 @@ const getGameStoreActions = (store: GameStore, setStore: SetStoreFunction<GameSt
   return {
     setGameStore: setStore,
     resetPlayerChecks() {
-      setStore("players", () => true, "isChecked", false);
+      setStore("players", () => true, "playerStatus", undefined);
       setStore("didPick", false);
     },
     resetGameData() {
