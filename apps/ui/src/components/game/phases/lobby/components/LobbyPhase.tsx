@@ -183,7 +183,7 @@ function LobbyCopyToClipboardCode() {
             variant={"outline"}
             on:click={() => {
               const url = new URL(window.location.href);
-              url.search = `searchUrl=${getServerUrlLocalStorage()}`;
+              url.search = `serverUrl=${getServerUrlLocalStorage()}`;
               copyToClipboard(url.href);
             }}
           >
