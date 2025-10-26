@@ -11,7 +11,7 @@ import { getReceivedPoints } from "../game/game-utils";
 import { getLobbiesService } from "../game/create";
 import { stringSimilarity } from "string-similarity-js";
 import { handleChatMessage } from "./all";
-import { normalizeString } from "../common/utils";
+import { createDateWithFallback, normalizeString } from "../common/utils";
 
 export function handleGuessingEvent(
   lobby: Lobby<"guessing">,
@@ -21,7 +21,8 @@ export function handleGuessingEvent(
     case "CHAT_MESSAGE":
       const STRING_SIMILARITY_THRESHOLD = 0.7;
 
-      const { content, messageId } = data.message.payload;
+      const { content, messageId, currentDate } = data.message.payload;
+      const now = createDateWithFallback(currentDate);
       const player = getPlayerByPrivateId(lobby, data.privateId);
       const currentSong = lobby.data.songQueue[lobby.data.currentSongIndex];
 
@@ -36,7 +37,7 @@ export function handleGuessingEvent(
               isOk: false,
               messageId,
               type: false,
-              rateLimitExpirationTime: new Date().getTime() + RATELIMIT_MESSAGE_IN_MS,
+              rateLimitExpirationTime: now.getTime() + RATELIMIT_MESSAGE_IN_MS,
             })
           )
         );
@@ -44,10 +45,10 @@ export function handleGuessingEvent(
       }
 
       if (areStringsSame(normalizeString(content), currentSong.name))
-        handleGuessWhenSame(lobby, player, messageId);
+        handleGuessWhenSame(lobby, player, messageId, now);
       else if (areStringSimilarByThreshold(content, currentSong.name, STRING_SIMILARITY_THRESHOLD))
-        handleGuessWhenSimilar(lobby, player, messageId);
-      else handleChatMessage(player, lobby, { messageId, content });
+        handleGuessWhenSimilar(lobby, player, messageId, now);
+      else handleChatMessage(player, lobby, { messageId, content, now });
 
       break;
   }
@@ -61,7 +62,12 @@ function areStringSimilarByThreshold(str1: string, str2: string, threshold: numb
   return stringSimilarity(str1, str2) >= threshold;
 }
 
-function handleGuessWhenSame(lobby: Lobby<"guessing">, player: PlayerServer, messageId: string) {
+function handleGuessWhenSame(
+  lobby: Lobby<"guessing">,
+  player: PlayerServer,
+  messageId: string,
+  now: Date
+) {
   const pointsToReceive = getReceivedPoints({
     guessedPlayersLength: lobby.stateProperties.playersWhoGuessed.length,
     guessTimeInMs: Date.now(),
@@ -113,7 +119,7 @@ function handleGuessWhenSame(lobby: Lobby<"guessing">, player: PlayerServer, mes
         isOk: true,
         type: "guessed",
         messageId,
-        rateLimitExpirationTime: new Date().getTime() + RATELIMIT_MESSAGE_IN_MS,
+        rateLimitExpirationTime: now.getTime() + RATELIMIT_MESSAGE_IN_MS,
       })
     )
   );
@@ -130,7 +136,12 @@ function shouldAbortGuessTimeout(lobby: Lobby<"guessing">) {
   );
 }
 
-function handleGuessWhenSimilar(lobby: Lobby<"guessing">, player: PlayerServer, messageId: string) {
+function handleGuessWhenSimilar(
+  lobby: Lobby<"guessing">,
+  player: PlayerServer,
+  messageId: string,
+  now: Date
+) {
   player.ws.send(
     toPayloadToClient(
       "server",
@@ -138,7 +149,7 @@ function handleGuessWhenSimilar(lobby: Lobby<"guessing">, player: PlayerServer, 
         isOk: true,
         type: "near",
         messageId,
-        rateLimitExpirationTime: new Date().getTime() + RATELIMIT_MESSAGE_IN_MS,
+        rateLimitExpirationTime: now.getTime() + RATELIMIT_MESSAGE_IN_MS,
       })
     )
   );

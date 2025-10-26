@@ -80,4 +80,11 @@ export function normalizeString(str: string) {
 
   return output;
 }
+
+export function createDateWithFallback(date: Date) {
+  let now = new Date(date);
+  // Check whether date is valid otherwise set server's date time
+  now = now instanceof Date && !isNaN(now as any) ? now : new Date();
+  return now;
+}
 // ****

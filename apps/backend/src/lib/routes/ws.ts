@@ -9,7 +9,7 @@ import {
   LOBBY_ID_COOKIE,
   RATELIMIT_MESSAGE_IN_MS,
 } from "shared";
-import { getRandomId, parseCookie } from "../common/utils";
+import { createDateWithFallback, getRandomId, parseCookie } from "../common/utils";
 import { handleAllEvent } from "../events/all";
 import { handleGuessingEvent } from "../events/guessing";
 import { handleLobbyEvent } from "../events/lobby";
@@ -157,9 +157,7 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
             // Ideally refactor that someday so it doesn't have to be here
             if (parsedData.message.type === "CHAT_MESSAGE") {
               // Fixes timezone problems but is very easy to work around
-              let now = new Date(parsedData.message.payload.currentDate);
-              // Check whether date is valid otherwise set server's date time
-              now = now instanceof Date && !isNaN(now as any) ? now : new Date();
+              const now = createDateWithFallback(parsedData.message.payload.currentDate);
               const dateDiff = now.getTime() - player.lastSentMessage.getTime();
               if (dateDiff <= RATELIMIT_MESSAGE_IN_MS) {
                 player.ws.send(
@@ -183,6 +181,8 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
                     })
                   )
                 );
+
+                return;
               } else {
                 player.lastSentMessage = now;
               }

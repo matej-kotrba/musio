@@ -19,6 +19,7 @@ export default function LobbyChat() {
     const isRateLimitExpired =
       !gameStore.chatMessageRateLimitExpiration ||
       now.getTime() > gameStore.chatMessageRateLimitExpiration;
+
     if (isRateLimitExpired) {
       const newMessage: ChatMessage = {
         id: createUniqueId(),
