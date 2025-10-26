@@ -54,6 +54,11 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
           const reconnectedPlayer = getPlayerByPrivateId(lobby, cookiePrivateId as string);
 
           if (!reconnectedPlayer) {
+            if (lobby.players.length >= lobby.options.playerLimit) {
+              ws.close();
+              return;
+            }
+
             if (
               !playerNameValidator.safeParse(name).success ||
               !playerIconNameValidator.safeParse(icon).success

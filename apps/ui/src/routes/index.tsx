@@ -27,6 +27,11 @@ export default function Home() {
       setSearchParams({ invalidServerUrl: null });
       localStorage.removeItem("serverUrl");
     }
+
+    if (searchParams.error) {
+      toast.error(searchParams.error);
+      setSearchParams({ error: null });
+    }
   });
 
   return (

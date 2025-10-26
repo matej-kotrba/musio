@@ -55,8 +55,8 @@ only on join
 [-] - add validation when sending server url in params (not really implemented but it behaves well)
 [x] - reset points of players when the session ends
 [x] - fix points indicator out of bounds of player display (kind of fixed, not really the best but it'll do)
-[] - fix timezone issues
-[] - check whether i actually limit by lobby limit
+[x] - fix timezone issues
+[] - check whether i actually limit by lobby limits
 [] - send notification to chat when someone guesses
 [] - I reset ui points on every state change
 [] - check random method for song queue, they are very biased on player position
@@ -65,5 +65,6 @@ only on join
 [] - when sending message as the one who picked the song in the between songs, it does not work
 [] - indicator of song history is not right, players as the points are displayed in the order of the lobby not how the players picked it
 [] - add chat record when someone guesses
+[] - grey screen before server responds and the client then decides to show profile selector
 [] - mobile responsiveness
 [] - add more animal portraits

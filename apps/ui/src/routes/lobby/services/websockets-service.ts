@@ -18,6 +18,13 @@ export default function useWebsocket(onMessageHandler: (event: MessageEvent<stri
         res("done");
       });
 
+      newWs.addEventListener("close", (e) => {
+        console.log("Connection was closed");
+        window.location.replace(
+          "/?error=Something went wrong when trying to connect to the server"
+        );
+      });
+
       newWs.onmessage = onMessageHandler;
     });
   }
