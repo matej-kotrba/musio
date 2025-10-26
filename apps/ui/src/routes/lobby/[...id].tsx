@@ -169,7 +169,7 @@ export default function Lobby() {
               {/* ___ */}
               <ErrorBoundary fallback={<LobbyErrorBoundary />}>
                 <div>
-                  <Switch>
+                  <Switch fallback={<WholePageLoaderFallback />}>
                     <Match when={gameStore.gameState?.state === "lobby"}>
                       <LobbyPhase />
                     </Match>
