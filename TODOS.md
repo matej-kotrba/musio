@@ -56,7 +56,7 @@ only on join
 [x] - reset points of players when the session ends
 [x] - fix points indicator out of bounds of player display (kind of fixed, not really the best but it'll do)
 [x] - fix timezone issues
-[] - check whether i actually limit by lobby limits
+[x] - check whether i actually limit by lobby limits
 [] - send notification to chat when someone guesses
 [] - I reset ui points on every state change
 [] - check random method for song queue, they are very biased on player position

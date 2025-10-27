@@ -8,6 +8,7 @@ import {
   PRIVATE_ID_COOKIE,
   LOBBY_ID_COOKIE,
   RATELIMIT_MESSAGE_IN_MS,
+  StatusCode,
 } from "shared";
 import { createDateWithFallback, getRandomId, parseCookie } from "../common/utils";
 import { handleAllEvent } from "../events/all";
@@ -55,7 +56,7 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
 
           if (!reconnectedPlayer) {
             if (lobby.players.length >= lobby.options.playerLimit) {
-              ws.close();
+              ws.close(1000, StatusCode.LOBBY_FULL);
               return;
             }
 

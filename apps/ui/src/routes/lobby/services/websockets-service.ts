@@ -1,9 +1,13 @@
 import { createSignal } from "solid-js";
 import { ProfileData } from "~/components/game/profile/ProfileSelection";
 import { getServerURLOrRedirectClient } from "~/utils/urls";
+import { StatusCode, StatusCodes } from "shared";
+import toast from "solid-toast";
+import { useNavigate } from "@solidjs/router";
 
 export default function useWebsocket(onMessageHandler: (event: MessageEvent<string>) => void) {
   const [ws, setWs] = createSignal<Maybe<WebSocket>>(undefined);
+  const navigate = useNavigate();
 
   async function connect(lobbyId: string, data: ProfileData) {
     let serverAddress = getServerURLOrRedirectClient();
@@ -19,10 +23,11 @@ export default function useWebsocket(onMessageHandler: (event: MessageEvent<stri
       });
 
       newWs.addEventListener("close", (e) => {
-        console.log("Connection was closed");
-        window.location.replace(
-          "/?error=Something went wrong when trying to connect to the server"
-        );
+        console.log("Connection was closed", e.reason);
+
+        navigate(`/?error=${getConnectionCloseErrorBasedOnReason(e.reason as StatusCodes)}`, {
+          replace: true,
+        });
       });
 
       newWs.onmessage = onMessageHandler;
@@ -31,6 +36,14 @@ export default function useWebsocket(onMessageHandler: (event: MessageEvent<stri
 
   function disconnect() {
     ws()?.close();
+  }
+
+  function getConnectionCloseErrorBasedOnReason(reason: StatusCodes) {
+    if (!(reason in StatusCode)) return;
+
+    if (reason === "LOBBY_FULL") {
+      return "Lobby is already full 😭";
+    }
   }
 
   return [
