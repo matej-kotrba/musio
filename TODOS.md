@@ -57,7 +57,8 @@ only on join
 [x] - fix points indicator out of bounds of player display (kind of fixed, not really the best but it'll do)
 [x] - fix timezone issues
 [x] - check whether i actually limit by lobby limits
-[] - I reset ui points on every state change
+[x] - I reset ui points on every state change
+[] - fix HMR problems
 [] - send notification to chat when someone guesses
 [] - check random method for song queue, they are very biased on player position
 [] - reconnecting of websockets when it is stale for a long time
