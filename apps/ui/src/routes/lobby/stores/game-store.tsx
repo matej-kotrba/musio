@@ -28,9 +28,11 @@ const getGameStoreActions = (store: GameStore, setStore: SetStoreFunction<GameSt
       setStore("players", () => true, "playerStatus", undefined);
       setStore("didPick", false);
     },
-    resetGameData() {
+    resetTempGameData() {
       setStore("previousSongData", undefined);
       setStore("delaySongProgress", undefined);
+    },
+    resetPlayerPoints() {
       setStore("players", () => true, "points", 0);
     },
   } as const;

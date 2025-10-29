@@ -6,7 +6,7 @@ import toast from "solid-toast";
 
 export const handleOnWsMessage = () => {
   const [gameStore, { actions }] = useGameStore();
-  const { setGameStore, resetPlayerChecks, resetGameData } = actions;
+  const { setGameStore, resetPlayerChecks, resetTempGameData, resetPlayerPoints } = actions;
 
   return (event: MessageEvent<string>) => {
     const data = fromMessageOnClient(event.data);
@@ -61,7 +61,11 @@ export const handleOnWsMessage = () => {
         setGameStore("gameState", payload.properties);
         resetPlayerChecks();
 
-        if (payload.properties.state === "lobby") resetGameData();
+        console.log("State change", payload);
+        if (payload.properties.state === "lobby") {
+          resetTempGameData();
+          if (payload.properties.type === "INITIAL") resetPlayerPoints();
+        }
         // if (doesChangeFromPickingToGuessing) console.log(payload.properties);
         break;
       }
