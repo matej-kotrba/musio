@@ -10,3 +10,6 @@ export const PRIVATE_ID_COOKIE = "privateId";
 
 // Ratelimiting
 export const RATELIMIT_MESSAGE_IN_MS = 1500;
+
+// Status codes
+export * from "./statusCode.ts";

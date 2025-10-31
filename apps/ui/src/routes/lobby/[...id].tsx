@@ -111,7 +111,7 @@ export default function Lobby() {
       getOptionsForNgrokCrossSite()
     )
       .catch(() => {
-        window.location.replace("/?invalidServerUrl=true");
+        navigate("/?invalidServerUrl=true", { replace: true });
       })
       .then((data) => {
         if (!data) return;
