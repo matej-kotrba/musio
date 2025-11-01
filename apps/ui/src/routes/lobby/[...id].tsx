@@ -185,7 +185,6 @@ export default function Lobby() {
                   </Switch>
                 </div>
               </ErrorBoundary>
-              {/* Player sidebar */}
               <LobbyChat />
               {/* ___ */}
             </div>
