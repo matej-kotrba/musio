@@ -183,7 +183,6 @@ export const handleOnWsMessage = () => {
         const payload = data.message.payload;
 
         const sender = gameStore.players.find((player) => player.publicId === data.publicId);
-        // const sender = players().find((player) => player.publicId === data.publicId);
         if (!sender) break;
 
         setGameStore("chatMessages", gameStore.chatMessages.length, {
@@ -192,14 +191,7 @@ export const handleOnWsMessage = () => {
           senderName: sender.name,
           senderPublicId: sender.publicId,
         });
-        // setChatMessages((old) => [
-        //   ...old,
-        //   {
-        //     content: payload.content,
-        //     guessRelation: false,
-        //     senderName: sender.name,
-        //   },
-        // ]);
+
         break;
       }
 
