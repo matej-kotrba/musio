@@ -28,12 +28,6 @@ export default function HowToPlay() {
       class="isolate py-24"
       style={{ "--x": `${getCoords().x}px`, "--y": `${getCoords().y}px` }}
     >
-      {/* <h2 class="text-foreground text-left text-transparent mb-2">
-        <span class="text-6xl mr-2" style={{ "-webkit-text-stroke": "1px hsl(var(--foreground))" }}>
-          01
-        </span>
-        <span class="text-4xl text-foreground">How to play</span>
-      </h2> */}
       <h2 class="text-foreground font-bold text-5xl text-center mb-8">
         How to play <span class="text-primary">Musio</span>?
       </h2>
@@ -83,10 +77,7 @@ function HowToPlayStep(props: HowToPlayStepProps) {
         props.class
       )}
     >
-      <Motion.div
-        data-animate="true"
-        class={`absolute inset-0 rounded-xl`}
-      ></Motion.div>
+      <Motion.div data-animate="true" class={`absolute inset-0 rounded-xl`}></Motion.div>
       <div class="mb-6 flex justify-center">
         <div class="p-3 bg-background-dark rounded-full transition-colors duration-300">
           <Icon
