@@ -341,12 +341,6 @@ export default function SongPicker(props: Props) {
     setIsConfirmDialogOpened(false);
   }
 
-  // function onKeydown(e: KeyboardEvent) {
-  //   if (e.code !== "ArrowUp" && e.code !== "ArrowDown") return;
-  //   e.preventDefault();
-
-  // }
-
   return (
     <div>
       <Dialog open={isConfirmDialogOpened()} onOpenChange={setIsConfirmDialogOpened}>
