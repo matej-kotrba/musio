@@ -155,9 +155,9 @@ function UrlInput() {
         </Button>
       </div>
       <TextFieldErrorMessage>{inputtedUrlError()}</TextFieldErrorMessage>
-      <Show when={isCheckingServer()}>
-        <TextFieldDescription>Checking your server...</TextFieldDescription>
-      </Show>
+      <TextFieldDescription style={{ opacity: +isCheckingServer() }}>
+        Checking your server...
+      </TextFieldDescription>
     </TextFieldRoot>
   );
 }

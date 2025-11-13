@@ -55,7 +55,12 @@ You can also run the backend locally without Docker.
 
     The backend will be available at `http://localhost:5173`.
 
-    *Note: The backend expects the `UI_URL` environment variable to be set. For local development, you can set it in the `.env.prod` file.*
+    _Note: The backend expects the `UI_URL` environment variable to be set. For local development, you can set it in the `.env.dev` file._
+
+    > **Warning:** When specifying the `UI_URL`, ensure it does not have a trailing slash.
+    >
+    > -   Correct: `UI_URL=http://localhost:3000`
+    > -   Incorrect: `UI_URL=http://localhost:3000/`
 
 ### Exposing with ngrok
 
