@@ -16,7 +16,6 @@ import { handleGuessingEvent } from "../events/guessing";
 import { handleLobbyEvent } from "../events/lobby";
 import { handlePickingEvent } from "../events/picking";
 import { getLobbiesService, createNewPlayer, createNewLobby } from "../game/create";
-import { isHost } from "../game/game-utils";
 import { isLobbyState, type Lobby } from "../game/lobby";
 import {
   convertServerPlayerToClientPlayer,
@@ -65,7 +64,8 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
               !playerIconNameValidator.safeParse(icon).success
             ) {
               console.log("Invalid name or icon provided");
-              ws.close();
+              ws.close(1, StatusCode.INVALID_USER_PROFILE);
+
               return;
             }
 

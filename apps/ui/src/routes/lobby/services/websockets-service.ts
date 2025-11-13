@@ -2,7 +2,6 @@ import { createSignal } from "solid-js";
 import { ProfileData } from "~/components/game/profile/ProfileSelection";
 import { getServerURLOrRedirectClient } from "~/utils/urls";
 import { StatusCode, StatusCodes } from "shared";
-import toast from "solid-toast";
 import { useNavigate } from "@solidjs/router";
 
 export default function useWebsocket(onMessageHandler: (event: MessageEvent<string>) => void) {
@@ -22,12 +21,18 @@ export default function useWebsocket(onMessageHandler: (event: MessageEvent<stri
         res("done");
       });
 
+      // TODO: Now this listener actives when redirecting from the lobby manually via link
+      // figure out a way to do it differently, maybe with error?
       newWs.addEventListener("close", (e) => {
-        console.log("Connection was closed", e.reason);
+        const reason = e.reason as StatusCodes;
+        console.log("Connection was closed", reason);
 
-        navigate(`/?error=${getConnectionCloseErrorBasedOnReason(e.reason as StatusCodes)}`, {
-          replace: true,
-        });
+        // Only do the redirect when the reason is known
+        if (Object.values(StatusCode).includes(reason)) {
+          navigate(`/?error=${getConnectionCloseErrorBasedOnReason(reason as StatusCodes)}`, {
+            replace: true,
+          });
+        }
       });
 
       newWs.onmessage = onMessageHandler;
