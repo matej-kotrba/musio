@@ -137,3 +137,19 @@ body {
     scale: 0;
   }
 } */
+
+#seal {
+  #seal__mouth,
+  #seal__mouth__mask {
+    transform: scaleY(0.01);
+    transform-origin: 313.5px 440px;
+    transition: 200ms;
+  }
+
+  &:hover {
+    #seal__mouth,
+    #seal__mouth__mask {
+      transform: scaleY(1);
+    }
+  }
+}

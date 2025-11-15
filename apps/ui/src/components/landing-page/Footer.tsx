@@ -1,5 +1,6 @@
 import { Icon } from "@iconify-icon/solid";
 import { A } from "@solidjs/router";
+import { Seal } from "./SealClient";
 
 export default function Footer() {
   return (
@@ -42,32 +43,35 @@ export default function Footer() {
               in any way.
             </p>
           </div>
-          <div>
-            <h4 class="text-lg font-semibold mb-4">Created by</h4>
+          <div class="flex gap-1 items-end">
             <div>
-              <span class="font-bold text-foreground">Matěj Kotrba</span>
-              <span> with 🦭</span>
+              <h4 class="text-lg font-semibold mb-4">Created by</h4>
+              <div>
+                <span class="font-bold text-foreground">Matěj Kotrba</span>
+                <span> with 🦭</span>
+              </div>
+              <div class="flex space-x-2">
+                <a
+                  href="https://github.com/matej-kotrba"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-foreground/75 hover:text-primary transition-colors duration-300"
+                >
+                  <Icon icon="mdi:github" class="text-3xl" />
+                  <span class="sr-only">GitHub</span>
+                </a>
+                <a
+                  href="https://www.linkedin.com/in/matej-kotrba/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-foreground/75 hover:text-primary transition-colors duration-300"
+                >
+                  <Icon icon="mdi:linkedin" class="text-3xl" />
+                  <span class="sr-only">LinkedIn</span>
+                </a>
+              </div>
             </div>
-            <div class="flex space-x-2">
-              <a
-                href="https://github.com/matej-kotrba"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-foreground/75 hover:text-primary transition-colors duration-300"
-              >
-                <Icon icon="mdi:github" class="text-3xl" />
-                <span class="sr-only">GitHub</span>
-              </a>
-              <a
-                href="https://www.linkedin.com/in/matej-kotrba/"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-foreground/75 hover:text-primary transition-colors duration-300"
-              >
-                <Icon icon="mdi:linkedin" class="text-3xl" />
-                <span class="sr-only">LinkedIn</span>
-              </a>
-            </div>
+            <Seal />
           </div>
         </div>
       </div>
