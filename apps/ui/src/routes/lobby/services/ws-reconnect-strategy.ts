@@ -1,5 +1,3 @@
-import { StatusCode, StatusCodes } from "shared";
-
 type ReconnectStrategyData = {
   wsProtocol: "ws" | "wss";
   serverAddress: string;
@@ -28,7 +26,7 @@ export class ReconnectStrategy {
       return new Promise((res) => {
         ws.addEventListener("open", () => {
           onOpen(ws);
-          // setWs(ws);
+          this.resetRetryCount();
           res("done");
         });
 
@@ -40,15 +38,6 @@ export class ReconnectStrategy {
             return this.startWsConnectionAsync(onOpen, onMessage, onClose, onDefect);
           });
         });
-        // const reason = e.reason as StatusCodes;
-        // console.log("Connection was closed", reason);
-
-        // // Only do the redirect when the reason is known
-        // if (Object.values(StatusCode).includes(reason)) {
-        //   navigate(`/?error=${getConnectionCloseErrorBasedOnReason(reason as StatusCodes)}`, {
-        //     replace: true,
-        //   });
-        // }
 
         ws.onmessage = onMessage;
       });
@@ -72,11 +61,16 @@ export class ReconnectStrategy {
 
   private async incrementRetries(errorMessage: string): Promise<void> {
     this.currentAttempt++;
+    console.info(`Ws reconnect attempt number: ${this.currentAttempt}`);
     if (this.currentAttempt >= this.maxAttempts) {
       console.error("Max attempts of ws connection retries reached", errorMessage);
       throw new Error(`Max attempts of ws connection retries reached ${errorMessage}`);
     }
     return this.delay(this.delayBetweenRetriesInMs);
+  }
+
+  private resetRetryCount() {
+    this.currentAttempt = 0;
   }
 
   private async delay(timeInMs: number): Promise<void> {
