@@ -61,11 +61,11 @@ only on join
 [x] - check random method for song queue, they are very biased on player position - seems OK, really is probably just a bad luck
 [x] - fix HMR problems
 [x] - send notification to chat when someone guesses
-[] - reconnecting of websockets when it is stale for a long time
+[x] - reconnecting of websockets when it is stale for a long time
+[x] - add chat record when someone guesses
 [] - persist state of the time on the server so it can show it correctly on reload
 [] - when sending message as the one who picked the song in the between songs, it does not work
 [] - indicator of song history is not right, players as the points are displayed in the order of the lobby not how the players picked it
-[] - add chat record when someone guesses
 [] - grey screen before server responds and the client then decides to show profile selector
 [] - mobile responsiveness
 [] - add more animal portraits
