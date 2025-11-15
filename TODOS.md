@@ -58,9 +58,9 @@ only on join
 [x] - fix timezone issues
 [x] - check whether i actually limit by lobby limits
 [x] - I reset ui points on every state change
+[x] - check random method for song queue, they are very biased on player position - seems OK, really is probably just a bad luck
 [] - fix HMR problems
 [] - send notification to chat when someone guesses
-[] - check random method for song queue, they are very biased on player position
 [] - reconnecting of websockets when it is stale for a long time
 [] - persist state of the time on the server so it can show it correctly on reload
 [] - when sending message as the one who picked the song in the between songs, it does not work

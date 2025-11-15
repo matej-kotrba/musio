@@ -10,7 +10,7 @@ import {
   RATELIMIT_MESSAGE_IN_MS,
   StatusCode,
 } from "shared";
-import { createDateWithFallback, getRandomId, parseCookie } from "../common/utils";
+import { createDateWithFallback, getRandomId, isDev, parseCookie } from "../common/utils";
 import { handleAllEvent } from "../events/all";
 import { handleGuessingEvent } from "../events/guessing";
 import { handleLobbyEvent } from "../events/lobby";
@@ -219,7 +219,7 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
           if (!playerToDisconnect) return;
 
           if (lobby.stateProperties.state === "lobby" && lobby.stateProperties.type === "INITIAL") {
-            removePlayerFromLobby(lobby, playerToDisconnect.privateId);
+            if (!isDev()) removePlayerFromLobby(lobby, playerToDisconnect.privateId);
 
             lobbies.broadcast(
               lobbyId!,
@@ -268,7 +268,7 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
             }
           }
 
-          if (lobby.players.length === 0) lobbies.delete(lobby.id);
+          if (lobby.players.length === 0 && !isDev()) lobbies.delete(lobby.id);
         },
       };
     })

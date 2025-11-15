@@ -3,7 +3,7 @@ import { getLobbiesService, createNewLobby } from "../game/create";
 import { parseCookie } from "../common/utils";
 import { LOBBY_ID_COOKIE, PRIVATE_ID_COOKIE } from "shared";
 import { HTTPException } from "hono/http-exception";
-import { getPlayerByPrivateId, removePlayerFromLobby } from "../game/player";
+import { getPlayerByPrivateId } from "../game/player";
 import type { Lobby } from "../game/lobby";
 import { setCookie } from "hono/cookie";
 import type { CookieOptions } from "hono/utils/cookie";
@@ -44,6 +44,7 @@ export default function setupRestEndpoints(app: Hono) {
   app.get("/isValidPlayerInLobby", (c) => {
     const cookies = c.req.header().cookie;
     const [lobbyId, privateId] = parseCookie(cookies, LOBBY_ID_COOKIE, PRIVATE_ID_COOKIE);
+    console.log("IS VALID PLAYER IN LOBBY", lobbyId, privateId);
 
     const lobby = getLobbiesService().lobbies.get(lobbyId!);
     if (!lobby)

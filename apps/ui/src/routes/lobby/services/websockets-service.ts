@@ -3,6 +3,7 @@ import { ProfileData } from "~/components/game/profile/ProfileSelection";
 import { getServerURLOrRedirectClient } from "~/utils/urls";
 import { StatusCode, StatusCodes } from "shared";
 import { useNavigate } from "@solidjs/router";
+import { ReconnectStrategy } from "./ws-reconnect-strategy";
 
 export default function useWebsocket(onMessageHandler: (event: MessageEvent<string>) => void) {
   const [ws, setWs] = createSignal<Maybe<WebSocket>>(undefined);
@@ -12,31 +13,39 @@ export default function useWebsocket(onMessageHandler: (event: MessageEvent<stri
     let serverAddress = getServerURLOrRedirectClient();
     serverAddress = serverAddress.replace("https://", "").replace("http://", "");
     const wsProtocol = import.meta.env.VITE_ENVIRONMENT === "development" ? "ws" : "wss";
-    const newWs = new WebSocket(
-      `${wsProtocol}://${serverAddress}/ws?lobbyId=${lobbyId}&name=${data.name}&icon=${data.icon}`
+    const wsReconnectionStrategy = new ReconnectStrategy(
+      {
+        wsProtocol,
+        serverAddress,
+        lobbyId,
+        player: data,
+      },
+      5
     );
-    return new Promise((res) => {
-      newWs.addEventListener("open", () => {
+    return wsReconnectionStrategy.startWsConnectionAsync(
+      (newWs) => {
         setWs(newWs);
-        res("done");
+      },
+      onMessageHandler,
+      onWsConnectionClose,
+      () => {
+        console.error("DEFECT");
+      }
+    );
+  }
+
+  function onWsConnectionClose(e: CloseEvent, retry: () => Promise<unknown>) {
+    const reason = e.reason as StatusCodes;
+    console.log("Connection was closed", reason);
+
+    // Only do the redirect when the reason is known
+    if (Object.values(StatusCode).includes(reason)) {
+      navigate(`/?error=${getConnectionCloseErrorBasedOnReason(reason as StatusCodes)}`, {
+        replace: true,
       });
-
-      // TODO: Now this listener actives when redirecting from the lobby manually via link
-      // figure out a way to do it differently, maybe with error?
-      newWs.addEventListener("close", (e) => {
-        const reason = e.reason as StatusCodes;
-        console.log("Connection was closed", reason);
-
-        // Only do the redirect when the reason is known
-        if (Object.values(StatusCode).includes(reason)) {
-          navigate(`/?error=${getConnectionCloseErrorBasedOnReason(reason as StatusCodes)}`, {
-            replace: true,
-          });
-        }
-      });
-
-      newWs.onmessage = onMessageHandler;
-    });
+    } else {
+      retry();
+    }
   }
 
   function disconnect() {
