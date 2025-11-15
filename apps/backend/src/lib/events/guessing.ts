@@ -41,12 +41,27 @@ export function handleGuessingEvent(
             })
           )
         );
+
         return;
       }
 
-      if (areStringsSame(normalizeString(content), currentSong.name))
-        handleGuessWhenSame(lobby, player, messageId, now);
-      else if (areStringSimilarByThreshold(content, currentSong.name, STRING_SIMILARITY_THRESHOLD))
+      if (areStringsSame(normalizeString(content), currentSong.name)) {
+        const receivedPoints = handleGuessWhenSame(lobby, player, messageId, now);
+        const lobbies = getLobbiesService().lobbies;
+
+        lobbies.broadcast(
+          lobby.id,
+          toPayloadToClient(
+            "server",
+            createNewMessageToClient(lobby.id, "CHAT_MESSAGE", {
+              content: `${player.name} guessed it! Gained ${receivedPoints.forGuesser} points`,
+              isSystem: true,
+            })
+          )
+        );
+      } else if (
+        areStringSimilarByThreshold(content, currentSong.name, STRING_SIMILARITY_THRESHOLD)
+      )
         handleGuessWhenSimilar(lobby, player, messageId, now);
       else handleChatMessage(player, lobby, { messageId, content, now });
 
@@ -67,7 +82,7 @@ function handleGuessWhenSame(
   player: PlayerServer,
   messageId: string,
   now: Date
-) {
+): ReturnType<typeof getReceivedPoints> {
   const pointsToReceive = getReceivedPoints({
     guessedPlayersLength: lobby.stateProperties.playersWhoGuessed.length,
     guessTimeInMs: Date.now(),
@@ -125,6 +140,8 @@ function handleGuessWhenSame(
   );
 
   if (shouldAbortGuessTimeout(lobby)) lobby.data.currentTimeoutAbortController?.abort();
+
+  return pointsToReceive;
 }
 
 function shouldAbortGuessTimeout(lobby: Lobby<"guessing">) {

@@ -64,7 +64,7 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
               !playerIconNameValidator.safeParse(icon).success
             ) {
               console.log("Invalid name or icon provided");
-              ws.close(1, StatusCode.INVALID_USER_PROFILE);
+              ws.close(1000, StatusCode.INVALID_USER_PROFILE);
 
               return;
             }

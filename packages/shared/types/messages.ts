@@ -45,6 +45,7 @@ export type WS_MessageMapServer = {
   };
   CHAT_MESSAGE: {
     content: string;
+    isSystem: boolean;
   };
   CHANGE_POINTS: {
     publicId: string;
@@ -89,4 +90,5 @@ export type ChatMessage = {
   content: string;
   guessRelation: GuessChatMessageType;
   isOptimistic?: boolean;
+  isSystem?: boolean;
 };

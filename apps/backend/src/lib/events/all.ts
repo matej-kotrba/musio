@@ -75,6 +75,7 @@ export function handleChatMessage(
       player.publicId,
       createNewMessageToClient(lobby.id, "CHAT_MESSAGE", {
         content: content,
+        isSystem: false,
       })
     )
   );

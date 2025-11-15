@@ -11,8 +11,7 @@ type Props = {
 
 export default function PlayerList(props: Props) {
   const [gameStore, { queries }] = useGameStore();
-  const emptyGameSlots = () =>
-    Array(Math.max(gameStore.gameOptions.playerLimit - props.players.length, 0)).fill(null);
+  const emptyGameSlots = () => Array(gameStore.gameOptions.playerLimit).fill(null);
   const shouldDisplayPlaceholders = () =>
     gameStore.gameState?.state === "lobby" && gameStore.gameState?.type === "INITIAL";
 

@@ -185,17 +185,27 @@ export const handleOnWsMessage = () => {
 
       case "CHAT_MESSAGE": {
         const payload = data.message.payload;
+        const isSystemMessage = payload.isSystem;
 
-        const sender = gameStore.players.find((player) => player.publicId === data.publicId);
-        if (!sender) break;
+        if (isSystemMessage) {
+          setGameStore("chatMessages", gameStore.chatMessages.length, {
+            content: payload.content,
+            guessRelation: false,
+            senderName: "",
+            senderPublicId: "",
+            isSystem: true,
+          });
+        } else {
+          const sender = gameStore.players.find((player) => player.publicId === data.publicId);
+          if (!sender) break;
 
-        setGameStore("chatMessages", gameStore.chatMessages.length, {
-          content: payload.content,
-          guessRelation: false,
-          senderName: sender.name,
-          senderPublicId: sender.publicId,
-        });
-
+          setGameStore("chatMessages", gameStore.chatMessages.length, {
+            content: payload.content,
+            guessRelation: false,
+            senderName: sender.name,
+            senderPublicId: sender.publicId,
+          });
+        }
         break;
       }
 

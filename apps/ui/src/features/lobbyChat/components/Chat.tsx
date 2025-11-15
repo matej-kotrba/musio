@@ -166,6 +166,7 @@ function Message(props: MessageProps) {
     <div
       class={`${styles.message} data-[optimistic=true]:opacity-50`}
       classList={{
+        "bg-blue-950 text-foreground-DEFAULT border-blue-200": props.message.isSystem,
         "bg-yellow-400 text-foreground-dark border-yellow-600 border-opacity-100":
           props.message.guessRelation === "near",
         "bg-green-600 border-green-800 border-opacity-100":
@@ -179,7 +180,7 @@ function Message(props: MessageProps) {
     >
       <div class="flex items-center gap-2">
         <span class="font-semibold text-sm opacity-75 text-ellipsis overflow-x-hidden whitespace-nowrap block">
-          {props.message.senderName}
+          {props.message.isSystem ? "System" : props.message.senderName}
         </span>
         <Show when={props.isFromThisPlayer}>
           <div class="border border-green-400 rounded-md text-green-400 text-xs px-1.5 py-0.5">
