@@ -87,7 +87,7 @@ body {
 .player-sidebar-enter,
 .player-sidebar-exit-to {
   opacity: 0;
-  transform: translateY(30px);
+  /* transform: translateY(30px); */
 }
 
 /* :root {
@@ -121,3 +121,19 @@ body {
 
     --radius: 0.5rem;
   } */
+
+/* .player-sidebar-enter {
+  width: calc(100% - 8px);
+  scale: 1;
+}
+
+.player-sidebar-exit {
+  width: calc(100% - 8px);
+  scale: 0;
+} */
+
+/* @starting-style {
+  .player-sidebar-enter-active {
+    scale: 0;
+  }
+} */

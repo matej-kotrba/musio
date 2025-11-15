@@ -1,4 +1,4 @@
-import { createEffect, For, Show } from "solid-js";
+import { For, Show } from "solid-js";
 import styles from "./index.module.css";
 import PlayerDisplay, { PlayerToDisplay } from "~/components/game/Player";
 import { useGameStore } from "~/routes/lobby/stores/game-store";
@@ -38,18 +38,20 @@ export default function PlayerList(props: Props) {
           )}
         </For>
       </TransitionGroup>
-      <Show when={shouldDisplayPlaceholders}>
-        <For each={emptyGameSlots()}>{() => <EmptyGameSlot />}</For>
-      </Show>
+      <div class="flex flex-col gap-2 absolute w-80 pr-2 overflow-x-clip -z-10">
+        <Show when={shouldDisplayPlaceholders}>
+          <For each={emptyGameSlots()}>{() => <EmptyGameSlot />}</For>
+        </Show>
+      </div>
     </aside>
   );
 }
 
 function EmptyGameSlot() {
   return (
-    <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-700/20 border-2 border-dashed border-gray-600 snap-start">
-      <div class="w-16 aspect-square rounded-lg bg-gray-600/50 grid content-center">
-        <Icon icon="tabler:users" class="text-xl text-gray-500" />
+    <div class="flex h-24 items-center gap-3 p-3 rounded-lg bg-background-accent border-2 border-dashed border-background-highlight snap-start">
+      <div class="w-16 aspect-square rounded-lg bg-background-highlight grid content-center">
+        <Icon icon="tabler:users" class="text-xl text-gray-400" />
       </div>
       <span class="text-gray-500 text-sm font-semibold">Waiting for player...</span>
     </div>

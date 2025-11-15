@@ -3,6 +3,7 @@ import { playerServerToPlayer } from "~/utils/game/common";
 import { useGameStore } from "../stores/game-store";
 import { produce } from "solid-js/store";
 import toast from "solid-toast";
+import { isDev } from "solid-js/web";
 
 export const handleOnWsMessage = () => {
   const [gameStore, { actions }] = useGameStore();
@@ -103,9 +104,12 @@ export const handleOnWsMessage = () => {
       case "PLAYER_REMOVED_FROM_LOBBY": {
         const payload = data.message.payload;
 
-        setGameStore("players", (players) =>
-          players.filter((player) => player.publicId !== payload.publicId)
-        );
+        // This enables to keep the player in the lobby despite HMR remount etc.
+        if (!isDev) {
+          setGameStore("players", (players) =>
+            players.filter((player) => player.publicId !== payload.publicId)
+          );
+        }
         // setPlayers((old) => old.filter((player) => player.publicId !== payload.publicId));
         break;
       }
