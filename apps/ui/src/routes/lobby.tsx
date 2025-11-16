@@ -12,7 +12,7 @@ export default function LobbyLayout(props: Props) {
     <div class="relative" style={{ height: `calc(100vh - ${NAV_HEIGHT})` }}>
       <GlobalsContextProvider>
         <GameStoreProvider gameStore={getNewGameStore()}>
-          <div class="container mx-auto">{props.children}</div>
+          <div class="md:container mx-auto px-1">{props.children}</div>
         </GameStoreProvider>
       </GlobalsContextProvider>
       <DotsEffect />

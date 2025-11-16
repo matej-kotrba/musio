@@ -139,7 +139,9 @@ function LobbyInitial(props: LobbyTypesProps) {
           </Show>
         </Show>
 
-        <DecorativeWaitingIndicator />
+        <div class="hidden md:block">
+          <DecorativeWaitingIndicator />
+        </div>
         <p class="mt-8 text-foreground-muted text-sm mx-auto w-fit">
           How about leaving a star on{" "}
           <a

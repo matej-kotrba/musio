@@ -136,7 +136,7 @@ export default function Chat(props: ChatProps) {
   }
 
   return (
-    <div class="h-full grid grid-rows-[1fr,auto] gap-2">
+    <div class="h-80 md:h-full grid grid-rows-[1fr,auto] gap-2">
       <div
         ref={chatRef}
         class={`${styles.messages__mask} flex flex-col gap-2 overflow-y-auto pr-2`}
@@ -171,7 +171,7 @@ function Message(props: MessageProps) {
           props.message.guessRelation === "near",
         "bg-green-600 border-green-800 border-opacity-100":
           props.message.guessRelation === "guessed",
-        "relative bg-background-DEAFULT rounded-xl p-2 border-2 border-white border-opacity-20":
+        "relative bg-background-DEAFULT rounded-sm md:rounded-xl p-1 md:p-2 border md:border-2 border-white border-opacity-20":
           true,
       }}
       data-near={props.message.guessRelation === "near"}
@@ -179,7 +179,7 @@ function Message(props: MessageProps) {
       data-optimistic={props.message.isOptimistic}
     >
       <div class="flex items-center gap-2">
-        <span class="font-semibold text-sm opacity-75 text-ellipsis overflow-x-hidden whitespace-nowrap block">
+        <span class="font-semibold text-xs md:text-sm opacity-75 text-ellipsis overflow-x-hidden whitespace-nowrap block">
           {props.message.isSystem ? "System" : props.message.senderName}
         </span>
         <Show when={props.isFromThisPlayer}>
@@ -188,7 +188,7 @@ function Message(props: MessageProps) {
           </div>
         </Show>
       </div>
-      <p class="hyphens-auto">{props.message.content}</p>
+      <p class="hyphens-auto text-sm md:text-base">{props.message.content}</p>
     </div>
   );
 }

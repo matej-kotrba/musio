@@ -69,9 +69,5 @@ const dummy_players: PlayerToDisplay[] = [
 // };
 
 export default function Dev() {
-  return (
-    <div class="container mx-auto w-64">
-      <PlayerDisplay maxPoints={100} player={dummy_players[0]}></PlayerDisplay>
-    </div>
-  );
+  return <SongPicker onSongSelect={() => {}} />;
 }

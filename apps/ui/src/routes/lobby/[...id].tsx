@@ -155,13 +155,13 @@ export default function Lobby() {
         </Show>
         <Show when={lobbyCallResourceData() && wsConnectionIndicator()}>
           <div
-            class="relative"
+            class="relative pb-2 md:pb-4"
             style={{
-              "--custom-height": `calc(100vh - ${NAV_HEIGHT} - ${LOBBY_LAYOUT_HEIGHT} * 2 - 2rem)`,
+              "--custom-height": `calc(100vh - ${NAV_HEIGHT} - ${LOBBY_LAYOUT_HEIGHT} * 2 - 0rem)`,
               height: `calc(var(--custom-height) + ${LOBBY_LAYOUT_HEIGHT} * 2)`,
             }}
           >
-            <div class={`${styles["glassy-bg"]} grid md:hidden`}>
+            <div class={`grid md:hidden grid-rows-[auto,1fr,auto] h-full`}>
               {/* Player sidebar */}
               <PlayerList players={gameStore.players} />
               {/* ___ */}
@@ -183,6 +183,7 @@ export default function Lobby() {
                   </Switch>
                 </div>
               </ErrorBoundary>
+              <div></div>
               <LobbyChat />
             </div>
             <div

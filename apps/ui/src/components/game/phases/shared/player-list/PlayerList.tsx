@@ -17,10 +17,15 @@ export default function PlayerList(props: Props) {
 
   return (
     <>
-      <aside>
-        <For each={props.players.toSorted((a, b) => b.points - a.points)}>
+      <aside
+        class={`relative flex md:hidden flex-row gap-2 overflow-x-auto h-full overflow-y-clip pb-2`}
+        style={{
+          "scroll-snap-type": "x mandatory",
+        }}
+      >
+        <For each={gameStore.players.toSorted((a, b) => b.points - a.points)}>
           {(player) => (
-            <div class="player-sidebar duration-200 snap-start">
+            <div class="player-sidebar duration-200 snap-start w-48">
               <PlayerDisplay
                 maxPoints={gameStore.gameOptions.toPointsLimit}
                 player={player}

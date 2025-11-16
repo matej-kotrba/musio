@@ -56,17 +56,26 @@ export default function LobbyChat() {
     gameStore.currentSongToGuess?.fromPlayerByPublicId === gameStore.thisPlayerIds?.public;
 
   return (
-    <aside
-      class="h-full max-h-full w-80"
-      style={{
-        height: "var(--custom-height)",
-      }}
-    >
-      <Chat
-        messages={gameStore.chatMessages}
-        onChatMessage={handleChatMessage}
-        disabled={isSongToGuessFromThisPlayer()}
-      />
-    </aside>
+    <>
+      <aside class="block md:hidden">
+        <Chat
+          messages={gameStore.chatMessages}
+          onChatMessage={handleChatMessage}
+          disabled={isSongToGuessFromThisPlayer()}
+        />
+      </aside>
+      <aside
+        class="hidden md:block h-full max-h-full w-80"
+        style={{
+          height: "var(--custom-height)",
+        }}
+      >
+        <Chat
+          messages={gameStore.chatMessages}
+          onChatMessage={handleChatMessage}
+          disabled={isSongToGuessFromThisPlayer()}
+        />
+      </aside>
+    </>
   );
 }

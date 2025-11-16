@@ -42,7 +42,7 @@ export default function PlayerDisplay(props: Props) {
   return (
     <div
       classList={{
-        "group h-24 relative snap-start bg-background-accent p-3 pb-5 border border-background-highlight rounded-md overflow-hidden":
+        "group h-20 md:h-24 relative snap-start bg-background-accent p-1 md:p-3 pb-5 border border-background-highlight rounded-md overflow-hidden":
           true,
         "opacity-50": props.player.connectionStatus === "disconnected",
       }}
@@ -53,7 +53,7 @@ export default function PlayerDisplay(props: Props) {
           <img
             src={props.player.icon.url}
             alt=""
-            class="w-16 aspect-square rounded-lg border-2 border-primary/50 box-content"
+            class="w-16 aspect-square rounded-lg border md:border-2 border-primary/50 box-content"
           />
           <Show when={props.player.connectionStatus === "disconnected"}>
             <div class="absolute left-1 top-1">
@@ -68,7 +68,7 @@ export default function PlayerDisplay(props: Props) {
             <div class="absolute right-1 top-1 rotate-45">
               <Icon
                 icon={"solar:crown-bold"}
-                class="text-lg text-yellow-400"
+                class="text-sm md:text-lg text-yellow-400"
                 style={{ filter: "drop-shadow(0 0 2px black)" }}
               />
             </div>
@@ -83,7 +83,7 @@ export default function PlayerDisplay(props: Props) {
             >
               <Icon
                 icon={getIconBasedOnPlayerStatus(props.player.playerStatus)!}
-                class="text-lg text-white duration-100"
+                class="text-xs md:text-lg text-white duration-100"
               />
             </Motion>
           </Show>
@@ -91,7 +91,7 @@ export default function PlayerDisplay(props: Props) {
         {/* Main content */}
         <div class="min-w-0 self-start w-full">
           <div
-            class="flex gap-2 items-center text-lg font-medium overflow-hidden whitespace-nowrap text-ellipsis"
+            class="flex gap-2 items-center text-sm md:text-lg font-medium overflow-hidden whitespace-nowrap text-ellipsis"
             title={props.player.name}
           >
             <span class="overflow-ellipsis whitespace-nowrap overflow-hidden">
@@ -148,13 +148,13 @@ export default function PlayerDisplay(props: Props) {
       <div>
         <div class="relative w-full mx-auto"></div>
         <div
-          class="bg-primary h-1 group-hover:h-3 duration-100 absolute left-0 bottom-0"
+          class="bg-primary h-3 md:h-1 group-hover:h-3 duration-100 absolute left-0 bottom-0"
           style={{
             width: `${getPlayerPointsAsPercentage()}%`,
           }}
         ></div>
         <div
-          class="absolute text-xs bottom-0 leading-[0.75rem] text-black font-semibold font-mono opacity-0 group-hover:opacity-100 duration-100"
+          class="absolute text-xs bottom-0 leading-[0.75rem] text-black font-semibold font-mono opacity-100 md:opacity-0 group-hover:opacity-100 duration-100"
           style={{
             left: `max(calc(${getPlayerPointsAsPercentage()}% + ${
               -props.player.points.toString().length - 1
