@@ -6,7 +6,7 @@ export default function Footer() {
   return (
     <footer class="bg-[#1a1a1a] text-foreground py-12 px-4 sm:px-6 lg:px-8 relative z-10">
       <div class="container mx-auto">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
           <div class="space-y-4">
             <h3 class="text-xl font-bold text-primary">Musio</h3>
             <p class="text-sm text-foreground/75">
@@ -43,7 +43,7 @@ export default function Footer() {
               in any way.
             </p>
           </div>
-          <div class="flex gap-1 items-end">
+          <div class="flex gap-1">
             <div>
               <h4 class="text-lg font-semibold mb-4">Created by</h4>
               <div>
