@@ -51,11 +51,22 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
           let lobby = lobbies.get(lobbyId!);
           if (!lobby) lobby = createNewLobby(lobbies);
 
-          const reconnectedPlayer = getPlayerByPrivateId(lobby, cookiePrivateId as string);
+          // If players wants to reconnect he has to have cookieLoobyId
+          const isPlayerTryingToReconnect = cookieLobbyId && cookieLobbyId === lobbyId;
+          const reconnectedPlayer = isPlayerTryingToReconnect
+            ? getPlayerByPrivateId(lobby, cookiePrivateId as string)
+            : undefined;
+
+          if (isPlayerTryingToReconnect && !reconnectedPlayer) {
+            ws.close(1000, StatusCode.RECONNECTED_PLAYER_NO_LONGER_IN_LOBBY);
+
+            return;
+          }
 
           if (!reconnectedPlayer) {
             if (lobby.players.length >= lobby.options.playerLimit) {
               ws.close(1000, StatusCode.LOBBY_FULL);
+
               return;
             }
 

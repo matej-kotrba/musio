@@ -58,6 +58,10 @@ export default function useWebsocket(onMessageHandler: (event: MessageEvent<stri
     if (reason === "LOBBY_FULL") {
       return "Lobby is already full 😭";
     }
+
+    if (reason === "INVALID_USER_PROFILE") {
+      return "Player data are not correct";
+    }
   }
 
   return [

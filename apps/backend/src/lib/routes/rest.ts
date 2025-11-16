@@ -42,8 +42,9 @@ export default function setupRestEndpoints(app: Hono) {
   });
 
   app.get("/isValidPlayerInLobby", (c) => {
+    const lobbyId = c.req.query("lobbyId");
     const cookies = c.req.header().cookie;
-    const [lobbyId, privateId] = parseCookie(cookies, LOBBY_ID_COOKIE, PRIVATE_ID_COOKIE);
+    const [privateId] = parseCookie(cookies, PRIVATE_ID_COOKIE);
     console.log("IS VALID PLAYER IN LOBBY", lobbyId, privateId);
 
     const lobby = getLobbiesService().lobbies.get(lobbyId!);

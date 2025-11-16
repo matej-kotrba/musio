@@ -6,14 +6,13 @@ import {
   Match,
   onCleanup,
   createEffect,
-  createResource,
   onMount,
   Suspense,
   ErrorBoundary,
   on,
 } from "solid-js";
 import { LOBBY_LAYOUT_HEIGHT, NAV_HEIGHT } from "~/utils/constants";
-import { useParams, useNavigate, createAsync, useSearchParams } from "@solidjs/router";
+import { useParams, useNavigate, useSearchParams } from "@solidjs/router";
 import { getLobbyURL as getLobbyId } from "~/utils/rscs";
 import useWebsocket from "./services/websockets-service";
 import { useGameStore } from "./stores/game-store";
@@ -106,8 +105,13 @@ export default function Lobby() {
       localStorage.setItem("serverUrl", searchParamServerUrl);
     }
 
+    // If you host a game then the lobbyId does not exist, meaning you are not in a lobby and a new lobby will be created
+    // If you join a game you have to go to valid lobbyId hence you will have it, the rest endpoint otherwise clears the cookies
     fetch(
-      constructURL(getServerURLOrRedirectClient(), "isValidPlayerInLobby"),
+      constructURL(
+        getServerURLOrRedirectClient(),
+        `isValidPlayerInLobby?lobbyId=${getLobbyIdFromParams()}`
+      ),
       getOptionsForNgrokCrossSite()
     )
       .catch(() => {
