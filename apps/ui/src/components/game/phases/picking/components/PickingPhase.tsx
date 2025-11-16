@@ -43,7 +43,7 @@ export default function PickingPhase() {
       {(pickingState) => (
         <div class="relative flex flex-col items-center">
           <Show when={!gameStore.didPick}>
-            <div class="absolute right-1 top-1">
+            <div class="block md:absolute right-1 top-1">
               Players ready: {numberOfPlayersWhoPicked()}/{gameStore.players.length}
             </div>
           </Show>

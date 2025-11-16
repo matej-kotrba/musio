@@ -40,16 +40,25 @@ export default function Timer(props: Props) {
   });
 
   return (
-    <div class={`border-transparent w-fit h-fit rounded-full relative`}>
-      <div
-        class={`${styles.bg} absolute w-full h-full rounded-full`}
-        style={`--deg: ${1 - time() / props.maxTime}turn`}
-      ></div>
-      <div
-        class={`aspect-square min-w-28 w-fit grid place-content-center rounded-full text-lg font-bold`}
-      >
-        {time().toFixed(0)}
+    <>
+      <div class="block md:hidden mx-2 h-3 w-full max-w-80 relative rounded-sm overflow-hidden">
+        <div class="w-full h-full bg-background-accent"></div>
+        <div
+          class="bg-primary absolute inset-0"
+          style={{ width: `calc(${time() / props.maxTime} * 100%` }}
+        ></div>
       </div>
-    </div>
+      <div class={`hidden md:block border-transparent w-fit h-fit rounded-full relative`}>
+        <div
+          class={`${styles.bg} absolute w-full h-full rounded-full`}
+          style={`--deg: ${1 - time() / props.maxTime}turn`}
+        ></div>
+        <div
+          class={`aspect-square min-w-28 w-fit grid place-content-center rounded-full text-lg font-bold`}
+        >
+          {time().toFixed(0)}
+        </div>
+      </div>
+    </>
   );
 }

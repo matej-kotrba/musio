@@ -1,4 +1,5 @@
 import SongPicker from "~/components/game/phases/picking/components/song-picker/SongPicker";
+import Timer from "~/components/game/phases/picking/components/timer/Timer";
 import PlayerDisplay, { getAllIcons, PlayerToDisplay } from "~/components/game/Player";
 
 const dummy_players: PlayerToDisplay[] = [
@@ -69,5 +70,14 @@ const dummy_players: PlayerToDisplay[] = [
 // };
 
 export default function Dev() {
-  return <SongPicker onSongSelect={() => {}} />;
+  return (
+    <div class="relative flex flex-col items-center">
+      <div class="block md:absolute right-1 top-1">
+        Players ready: {0}/{2}
+      </div>
+      <Timer maxTime={10} currentTime={1} />
+
+      <SongPicker onSongSelect={() => {}} />
+    </div>
+  );
 }

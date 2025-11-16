@@ -342,7 +342,7 @@ export default function SongPicker(props: Props) {
   }
 
   return (
-    <div>
+    <div class="w-full">
       <Dialog open={isConfirmDialogOpened()} onOpenChange={setIsConfirmDialogOpened}>
         <DialogContent>
           <DialogHeader>
@@ -371,12 +371,12 @@ export default function SongPicker(props: Props) {
           </DialogHeader>
         </DialogContent>
       </Dialog>
-      <div class="w-80 mx-auto pt-4 p-1 relative overflow-hidden">
-        <div class="h-40">
+      <div class="max-w-80 w-full mx-auto pt-4 p-1 relative">
+        <div class="h-5 md:h-40">
           <Show when={selectedSong()} keyed>
             <Motion.p
               title={selectedSong()!.trackName}
-              class={`text-center text-ellipsis overflow-hidden font-semibold whitespace-nowrap mb-2`}
+              class={`hidden md:block text-center text-ellipsis overflow-hidden font-semibold whitespace-nowrap mb-2`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.2 }}
@@ -384,7 +384,7 @@ export default function SongPicker(props: Props) {
               {selectedSong()!.trackName}
             </Motion.p>
 
-            <div class="flex flex-col">
+            <div class="hidden md:flex flex-col">
               <div class={`${styles.effect} relative`}>
                 <Motion.img
                   src={selectedSong()!.artworkUrl100}
@@ -419,12 +419,21 @@ export default function SongPicker(props: Props) {
               on:input={handleInputChange}
               min={1}
               autocomplete="off"
-              class="text-lg py-6 focus-visible:ring-0"
+              class="text-md md:text-lg py-4 md:py-6 focus-visible:ring-0"
             />
           </div>
         </TextFieldRoot>
+        <button
+          type="button"
+          class="w-full bg-primary text-background-highlight rounded-md px-4 py-2 mt-2 font-bold duration-200 disabled:bg-background-accent
+            disabled:text-background-highlight hover:bg-primary-darker hover:text-foreground"
+          disabled={!selectedSong()}
+          on:click={handleSongConfirmDialogOpen}
+        >
+          Select song
+        </button>
         <Show when={searchedSongs().length > 0}>
-          <div class="w-full overflow-hidden border border-foreground rounded-md mt-2">
+          <div class="absolute z-10 h-fit w-full border border-foreground rounded-md mt-2">
             <div
               class="flex flex-col divide-y-[1px] divide-white/40 overflow-y-auto max-h-[calc(var(--item-overflow-count)*var(--item-height))]"
               style={"--item-height: 4rem; --item-overflow-count: 3;"}
@@ -434,7 +443,7 @@ export default function SongPicker(props: Props) {
                   return (
                     <button
                       type="button"
-                      class={`${styles.song} h-[var(--item-height)] isolate relative flex items-center gap-2 p-2 hover:bg-background-DEAFULT duration-150 outline-none focus-within:outline-none focus-within:bg-background-DEAFULT`}
+                      class={`${styles.song} h-[var(--item-height)] isolate relative flex items-center gap-2 p-2 bg-background-DEAFULT duration-150 outline-none focus-within:outline-none focus-within:bg-background-DEAFULT`}
                       data-selected={song().trackId === selectedSong()?.trackId}
                       aria-selected={song().trackId === selectedSong()?.trackId}
                       on:click={() => handlePickSong(song())}
@@ -451,10 +460,12 @@ export default function SongPicker(props: Props) {
                         // style={{ mask: "linear-gradient(to right, black, transparent 100%)" }}
                       />
                       <div class="flex flex-col items-start overflow-hidden">
-                        <div class="w-full text-base font-semibold overflow-hidden whitespace-nowrap text-ellipsis">
+                        <div class="w-full text-sm md:text-base font-semibold overflow-hidden whitespace-nowrap text-ellipsis">
                           {song().trackName}
                         </div>
-                        <span class="text-foreground/80">{song().artistName}</span>
+                        <span class="text-sm md:text-base text-foreground/80">
+                          {song().artistName}
+                        </span>
                       </div>
                     </button>
                   );
@@ -463,15 +474,6 @@ export default function SongPicker(props: Props) {
             </div>
           </div>
         </Show>
-        <button
-          type="button"
-          class="w-full bg-primary text-background-highlight rounded-md px-4 py-2 mt-2 font-bold duration-200 disabled:bg-background-accent
-            disabled:text-background-highlight hover:bg-primary-darker hover:text-foreground"
-          disabled={!selectedSong()}
-          on:click={handleSongConfirmDialogOpen}
-        >
-          Select song
-        </button>
       </div>
     </div>
   );

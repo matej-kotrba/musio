@@ -62,6 +62,10 @@ export default function useWebsocket(onMessageHandler: (event: MessageEvent<stri
     if (reason === "INVALID_USER_PROFILE") {
       return "Player data are not correct";
     }
+
+    if (reason === "RECONNECTED_PLAYER_NO_LONGER_IN_LOBBY") {
+      return "Sorry, but you are not part of a lobby anymore";
+    }
   }
 
   return [
