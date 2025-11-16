@@ -161,8 +161,32 @@ export default function Lobby() {
               height: `calc(var(--custom-height) + ${LOBBY_LAYOUT_HEIGHT} * 2)`,
             }}
           >
+            <div class={`${styles["glassy-bg"]} grid md:hidden`}>
+              {/* Player sidebar */}
+              <PlayerList players={gameStore.players} />
+              {/* ___ */}
+              <ErrorBoundary fallback={<LobbyErrorBoundary />}>
+                <div>
+                  <Switch fallback={<WholePageLoaderFallback />}>
+                    <Match when={gameStore.gameState?.state === "lobby"}>
+                      <LobbyPhase />
+                    </Match>
+                    <Match when={gameStore.gameState?.state === "picking"}>
+                      <PickingPhase />
+                    </Match>
+                    <Match when={gameStore.gameState?.state === "guessing"}>
+                      <GuessingGamePhase />
+                    </Match>
+                    <Match when={gameStore.gameState?.state === "leaderboard"}>
+                      <LeaderboardsGamePhase />
+                    </Match>
+                  </Switch>
+                </div>
+              </ErrorBoundary>
+              <LobbyChat />
+            </div>
             <div
-              class={`${styles["glassy-bg"]} grid grid-cols-[auto,1fr,auto] gap-4 py-4 overflow-hidden px-3`}
+              class={`${styles["glassy-bg"]} hidden md:grid grid-cols-[auto,1fr,auto] gap-4 py-4 overflow-hidden px-3`}
             >
               {/* Player sidebar */}
               <PlayerList players={gameStore.players} />
