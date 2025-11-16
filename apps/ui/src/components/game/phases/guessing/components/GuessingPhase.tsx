@@ -236,28 +236,28 @@ export function GuessingGameLeaderboardsFallback(props: GuessingGameLeaderboards
 
   return (
     <div class="w-full max-w-96">
-      <div class="font-bold text-lg text-foreground text-center mb-2">
+      <div class="font-bold text-base md:text-lg text-foreground text-center mb-2">
         {props.prevSong ? "Next round starting soon..." : "Get ready, starting soon..."}
       </div>
       <Show when={props.prevSong}>
         <div>
           <img
-            class="w-32 aspect-square rounded-sm mx-auto my-2"
+            class="w-24 md:w-32 aspect-square rounded-sm mx-auto my-2"
             src={props.prevSong!.imageUrl100x100}
             alt={`${props.prevSong!.songName} by ${props.prevSong!.artist}`}
           />
         </div>
-        <div class="text-foreground/80 text-center">
+        <div class="text-foreground/80 text-center text-sm md:text-base">
           <span>Last song: </span>
           <span class="font-bold text-foreground">{props.prevSong?.songName}</span>
           <span> by </span>
           <span class="font-bold text-foreground">{props.prevSong?.artist}</span>
         </div>
-        <div class="text-foreground/80 text-center">
+        <div class="text-foreground/80 text-center text-sm md:text-base">
           <span>Requested by: </span>
           <span class="text-foreground font-bold">{props.prevSong?.playerName}</span>
         </div>
-        <div class="mt-4 text-right">
+        <div class="mt-2 md:mt-4 text-center md:text-right text-sm md:text-base">
           <div>
             Audio previews and metadata provided by <span class="font-bold">iTunes</span>.
           </div>
@@ -267,7 +267,7 @@ export function GuessingGameLeaderboardsFallback(props: GuessingGameLeaderboards
             </a>
           </div>
         </div>
-        <div class="flex flex-col gap-1 mt-2">
+        <div class="flex flex-col gap-1 mt-2 px-1 max-h-28 md:max-h-full overflow-y-auto md:overflow-y-visible">
           <For each={props.playersOrderedByPointsGained}>
             {(player, index) => (
               <Motion.div
@@ -292,25 +292,26 @@ export function GuessingGameLeaderboardsFallback(props: GuessingGameLeaderboards
           </For>
         </div>
       </Show>
-      <div class="mt-4"></div>
-      <Show when={gameStore.delaySongProgress} keyed>
-        {(songProgress) => {
-          return (
-            <>
-              <SongQueueProgress
-                maxSteps={songProgress.songsInQueueByPlayerPublicIds.length}
-                stepIndex={songProgress.currentIndex}
-                animateFromIndex={
-                  songProgress.currentIndex - 1 >= 0 ? songProgress.currentIndex - 1 : 0
-                }
-                stepDescription={songProgress.songsInQueueByPlayerPublicIds.map((publicId) => {
-                  return `${getPlayerByPublicId(publicId)?.name ?? "Unknown player"}'s song`;
-                })}
-              />
-            </>
-          );
-        }}
-      </Show>
+      <div class="hidden md:block mt-4">
+        <Show when={gameStore.delaySongProgress} keyed>
+          {(songProgress) => {
+            return (
+              <>
+                <SongQueueProgress
+                  maxSteps={songProgress.songsInQueueByPlayerPublicIds.length}
+                  stepIndex={songProgress.currentIndex}
+                  animateFromIndex={
+                    songProgress.currentIndex - 1 >= 0 ? songProgress.currentIndex - 1 : 0
+                  }
+                  stepDescription={songProgress.songsInQueueByPlayerPublicIds.map((publicId) => {
+                    return `${getPlayerByPublicId(publicId)?.name ?? "Unknown player"}'s song`;
+                  })}
+                />
+              </>
+            );
+          }}
+        </Show>
+      </div>
     </div>
   );
 }

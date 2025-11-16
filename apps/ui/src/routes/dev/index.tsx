@@ -1,4 +1,7 @@
+import { For } from "solid-js";
+import { Motion } from "solid-motionone";
 import VolumeInput from "~/components/common/audio-controller/VolumeInput";
+import SongQueueProgress from "~/components/game/phases/guessing/components/SongQueueProgress";
 import SongPicker from "~/components/game/phases/picking/components/song-picker/SongPicker";
 import Timer from "~/components/game/phases/picking/components/timer/Timer";
 import PlayerDisplay, { getAllIcons, PlayerToDisplay } from "~/components/game/Player";
@@ -73,33 +76,82 @@ const dummy_players: PlayerToDisplay[] = [
 
 export default function Dev() {
   return (
-    <>
-      <div class="flex items-center gap-2 justify-start mt-2 mb-2 w-full max-w-80 mx-auto">
-        <VolumeInput value={1} onVolumeInputChange={(value) => {}} />
+    <div class="w-full max-w-96">
+      <div class="font-bold text-base md:text-lg text-foreground text-center mb-2">
+        {"Get ready, starting soon..."}
       </div>
-      <div class="flex flex-col items-center gap-2">
-        <Timer maxTime={100} currentTime={1} />
-
-        <section class="flex flex-col items-center">
-          <p class="text-xl mb-8">
-            <span class="text-sm md:text-base text-foreground/35">Guess the song from</span>{" "}
-            <span class="text-sm md:text-base font-semibold text-foreground/80">Dr. House</span>
-          </p>
-          <div class={`animate-levitate mb-4 relative`} style={{ filter: `blur(calc(12px * 1))` }}>
-            <div class="absolute shadow-[inset_0_0_40px_rgba(0,0,0,0.8),0_0_20px_rgba(0,0,0,0.3)] inset-0 rounded-md"></div>
-            <img
-              src={
-                "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/c7/e2/29/c7e22953-d57c-add0-a07f-cd67830b7888/cover_4064832005936.jpg/60x60bb.jpg"
-              }
-              width={256}
-              height={256}
-              alt="Song to guess cover"
-              class="w-32 md:w-64 aspect-square rounded-md"
-            />
-          </div>
-          <WordToGuess wordChars={[["E", null, null, null, null], "lies".split("")]} />
-        </section>
+      <div>
+        <img
+          class="w-24 md:w-32 aspect-square rounded-sm mx-auto my-2"
+          src={
+            "https://is1-ssl.mzstatic.com/image/thumb/Music128/v4/f3/69/33/f3693389-7610-f6e0-9767-4b3ba8f61acc/00602557309201.rgb.jpg/60x60bb.jpg"
+          }
+        />
       </div>
-    </>
+      <div class="text-foreground/80 text-center text-sm md:text-base">
+        <span>Last song: </span>
+        <span class="font-bold text-foreground">{"Rock bottom"}</span>
+        <span> by </span>
+        <span class="font-bold text-foreground">{"Hailee Steinfield"}</span>
+      </div>
+      <div class="text-foreground/80 text-center text-sm md:text-base">
+        <span>Requested by: </span>
+        <span class="text-foreground font-bold">{"Dr. House"}</span>
+      </div>
+      <div class="mt-2 md:mt-4 text-center md:text-right text-sm md:text-base">
+        <div>
+          Audio previews and metadata provided by <span class="font-bold">iTunes</span>.
+        </div>
+        <div>
+          <a class="text-blue-500 underline" href={""} target="_blank">
+            Download song on iTunes
+          </a>
+        </div>
+      </div>
+      <div class="flex flex-col gap-1 mt-2 px-1 max-h-28 md:max-h-full overflow-y-auto md:overflow-y-visible">
+        <For each={[{}, {}, {}, {}]}>
+          {(player, index) => (
+            <Motion.div
+              initial={{ y: -10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.3, delay: index() * 0.15 }}
+              class="flex gap-1 items-center"
+            >
+              <img
+                src={
+                  "https://is1-ssl.mzstatic.com/image/thumb/Music128/v4/f3/69/33/f3693389-7610-f6e0-9767-4b3ba8f61acc/00602557309201.rgb.jpg/60x60bb.jpg"
+                }
+                width={48}
+                height={48}
+                alt={"name"}
+                class=" rounded-lg"
+              />
+              <div class="flex-1 flex justify-between">
+                <span class="font-semibold">{"Player 1"}</span>
+                <span class="text-green-600">+{3}</span>
+              </div>
+            </Motion.div>
+          )}
+        </For>
+      </div>
+      <div class="hidden md:block mt-4">
+        {/* {(songProgress) => {
+            return (
+              <>
+                <SongQueueProgress
+                  maxSteps={songProgress.songsInQueueByPlayerPublicIds.length}
+                  stepIndex={songProgress.currentIndex}
+                  animateFromIndex={
+                    songProgress.currentIndex - 1 >= 0 ? songProgress.currentIndex - 1 : 0
+                  }
+                  stepDescription={songProgress.songsInQueueByPlayerPublicIds.map(() => {
+                    return `asda`;
+                  })}
+                />
+              </>
+            );
+          }} */}
+      </div>
+    </div>
   );
 }
