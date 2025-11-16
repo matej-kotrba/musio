@@ -30,7 +30,7 @@ export default function LeaderboardsGamePhase() {
 
   return (
     <>
-      <div class="px-2 mt-8">
+      <div class="px-1 md:px-2 mt-8">
         <Show when={getThisPlayer()?.isHost}>
           <Button class="ml-auto mb-2 flex items-center gap-1" onClick={changeBackToLobby}>
             <span class="font-bold">Back to lobby</span>{" "}

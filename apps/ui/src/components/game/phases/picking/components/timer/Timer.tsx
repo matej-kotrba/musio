@@ -41,7 +41,7 @@ export default function Timer(props: Props) {
 
   return (
     <>
-      <div class="block md:hidden mx-2 h-3 w-full max-w-80 relative rounded-sm overflow-hidden">
+      <div class="block md:hidden mx-2 h-2 w-full max-w-80 relative rounded-sm overflow-hidden">
         <div class="w-full h-full bg-background-accent"></div>
         <div
           class="bg-primary absolute inset-0"

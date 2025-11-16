@@ -6,7 +6,7 @@ type Props = {
 
 export default function WordToGuess(props: Props) {
   return (
-    <div class="text-4xl flex gap-4 flex-wrap justify-center">
+    <div class="text-2xl md:text-4xl flex gap-4 flex-wrap justify-center">
       {props.wordChars.map((arr) => {
         if (arr.length === 0) return "";
 

@@ -148,7 +148,7 @@ function GuessingGamePhaseInner(props: GuessingGamePhaseInnerProps) {
 
   return (
     <>
-      <div class="flex items-center gap-2 justify-start">
+      <div class="flex items-center gap-2 justify-start mt-2 mb-2 w-full max-w-80 mx-auto">
         <VolumeInput
           value={Number(volume())}
           onVolumeInputChange={(value) => setVolume(String(value))}
@@ -179,8 +179,8 @@ function GuessingGamePhaseInner(props: GuessingGamePhaseInnerProps) {
         >
           <section class="flex flex-col items-center">
             <p class="text-xl mb-8">
-              <span class="text-foreground/35">Guess the song from</span>{" "}
-              <span class="font-semibold text-foreground/80">
+              <span class="text-sm md:text-base text-foreground/35">Guess the song from</span>{" "}
+              <span class="text-sm md:text-base font-semibold text-foreground/80">
                 {getPlayerWhoRequestedCurrentSong()?.name ?? "Unknown"}
               </span>
             </p>
@@ -194,7 +194,7 @@ function GuessingGamePhaseInner(props: GuessingGamePhaseInnerProps) {
                 width={256}
                 height={256}
                 alt="Song to guess cover"
-                class="w-64 aspect-square rounded-md"
+                class="w-32 md:w-64 aspect-square rounded-md"
               />
             </div>
             <WordToGuess wordChars={gameStore.currentSongToGuess!.name} />
@@ -235,7 +235,7 @@ export function GuessingGameLeaderboardsFallback(props: GuessingGameLeaderboards
   // });
 
   return (
-    <div class="w-96">
+    <div class="w-full max-w-96">
       <div class="font-bold text-lg text-foreground text-center mb-2">
         {props.prevSong ? "Next round starting soon..." : "Get ready, starting soon..."}
       </div>

@@ -136,7 +136,7 @@ export default function Chat(props: ChatProps) {
   }
 
   return (
-    <div class="h-80 md:h-full grid grid-rows-[1fr,auto] gap-2">
+    <div class="h-60 md:h-full grid grid-rows-[1fr,auto] gap-2">
       <div
         ref={chatRef}
         class={`${styles.messages__mask} flex flex-col gap-2 overflow-y-auto pr-2`}
