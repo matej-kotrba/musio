@@ -92,12 +92,12 @@ function HeroTile(props: HeroTileProps) {
         duration: 0.4,
         easing: "ease-out",
       }}
-      class="grid items-center justify-center bg-background-DEAFULT rounded-lg p-6 gap-0"
+      class="grid items-center justify-center bg-background-DEAFULT rounded-lg p-6 gap-2"
       style={{ "grid-template-rows": "subgrid", "grid-row": "span 3" }}
     >
       <Icon icon={props.icon} class="text-6xl text-primary size-16 mx-auto" />
-      <h3 class="font-semibold text-center">{props.title}</h3>
-      <p class="self-start text-base text-center text-foreground/80 text-balance">
+      <h3 class="font-semibold text-center leading-5">{props.title}</h3>
+      <p class="self-start text-base text-center text-foreground/80 text-balance leading-5">
         {props.description}
       </p>
     </Motion.div>
