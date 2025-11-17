@@ -44,10 +44,14 @@ export default function PlayerDisplay(props: Props) {
       classList={{
         "group h-20 md:h-24 relative snap-start bg-background-accent p-1 md:p-3 pb-5 border border-background-highlight rounded-md overflow-hidden":
           true,
-        "opacity-50": props.player.connectionStatus === "disconnected",
       }}
     >
-      <div class="flex gap-2">
+      <div
+        classList={{
+          "opacity-50": props.player.connectionStatus === "disconnected",
+          "flex gap-2": true,
+        }}
+      >
         {/* SVGs on player img */}
         <div class="relative w-20">
           <img
