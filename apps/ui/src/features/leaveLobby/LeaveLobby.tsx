@@ -9,10 +9,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { leaveLobby } from ".";
+import { useNavigate } from "@solidjs/router";
 
 export default function LeaveLobby() {
-  const handleLeaveLobby = () => leaveLobby();
+  const navigate = useNavigate();
+
+  const handleLeaveLobby = () => navigate("/?leftLobby=true");
 
   return (
     <Dialog>
