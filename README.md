@@ -70,18 +70,18 @@ The backend is dockerized for easy deployment. Follow these steps (or use Docker
 1. Build the Docker image:
 
    ```bash
-   docker build -t musio-backend ./apps/backend
+   docker build -t musio-backend -f .\Dockerfile .
    ```
 
 2. Run the container:
 
    ```bash
-   docker run -p 3000:3000 musio-backend
+   docker run -p 5173:5173 musio-backend
    ```
 
 3. Access the backend at:
    ```
-   http://localhost:3000
+   http://localhost:5173
    ```
 
 ## 📦 Building and Deployment
