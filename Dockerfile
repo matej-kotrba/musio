@@ -1,35 +1,56 @@
-FROM node:20-slim AS base
+FROM node:lts-alpine
+
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
-FROM base AS build
-WORKDIR /usr/src/app
+WORKDIR /app
+
 COPY . .
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --no-frozen-lockfile
-RUN pnpm run -r build
 
-# Backend stage
-FROM base AS backend
-WORKDIR /app
-
-COPY --from=build /usr/src/app/package.json /app/
-COPY --from=build /usr/src/app/pnpm-workspace.yaml /app/
-COPY --from=build /usr/src/app/pnpm-lock.yaml /app/
-
-COPY --from=build /usr/src/app/apps/backend/package.json /app/apps/backend/
-COPY --from=build /usr/src/app/packages/shared /app/packages/shared
-COPY --from=build /usr/src/app/apps/backend/src /app/apps/backend/
-
-WORKDIR /app
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --no-frozen-lockfile
-
-COPY --from=build /usr/src/app/apps/backend/dist /app/apps/backend/dist
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN pnpm --filter=backend run build
 
 WORKDIR /app/apps/backend
 
-EXPOSE 5173
+ARG PORT
+EXPOSE ${PORT:-5173}
+
 CMD ["pnpm", "start"]
+
+
+# FROM node:20-slim AS base
+# ENV PNPM_HOME="/pnpm"
+# ENV PATH="$PNPM_HOME:$PATH"
+# RUN corepack enable
+
+# FROM base AS build
+# WORKDIR /usr/src/app
+# COPY . .
+# RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --no-frozen-lockfile
+# RUN pnpm run -r build
+
+# # Backend stage
+# FROM base AS backend
+# WORKDIR /app
+
+# COPY --from=build /usr/src/app/package.json /app/
+# COPY --from=build /usr/src/app/pnpm-workspace.yaml /app/
+# COPY --from=build /usr/src/app/pnpm-lock.yaml /app/
+
+# COPY --from=build /usr/src/app/apps/backend/package.json /app/apps/backend/
+# COPY --from=build /usr/src/app/packages/shared /app/packages/shared
+# COPY --from=build /usr/src/app/apps/backend/src /app/apps/backend/
+
+# WORKDIR /app
+# RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --no-frozen-lockfile
+
+# COPY --from=build /usr/src/app/apps/backend/dist /app/apps/backend/dist
+
+# WORKDIR /app/apps/backend
+
+# EXPOSE 5173
+# CMD ["pnpm", "start"]
 
 # UI stage
 # FROM base AS ui
