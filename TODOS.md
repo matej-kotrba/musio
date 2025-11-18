@@ -63,10 +63,10 @@ only on join
 [x] - send notification to chat when someone guesses
 [x] - reconnecting of websockets when it is stale for a long time
 [x] - add chat record when someone guesses
+[x] - mobile responsiveness
+[x] - grey screen before server responds and the client then decides to show profile selector
 [] - while in between rounds, when leader disconnects another player gets the owner role and button appears but it does not work
 [] - persist state of the time on the server so it can show it correctly on reload
 [] - when sending message as the one who picked the song in the between songs, it does not work
 [] - indicator of song history is not right, players as the points are displayed in the order of the lobby not how the players picked it
-[] - grey screen before server responds and the client then decides to show profile selector
-[] - mobile responsiveness
 [] - add more animal portraits
