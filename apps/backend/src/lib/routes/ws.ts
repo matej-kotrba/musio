@@ -88,11 +88,6 @@ export default function setupWsEndpoints(app: Hono, upgradeWebSocket: UpgradeWeb
 
             lobby!.players.push(newPlayer);
 
-            //TODO: REMOVE THIS LINE
-            // if (lobby) {
-            //   lobby.stateProperties = getInitialPickingGameState();
-            // }
-
             console.log("[ws] open - ", newPlayer.name);
             ws.send(
               toPayloadToClient(
