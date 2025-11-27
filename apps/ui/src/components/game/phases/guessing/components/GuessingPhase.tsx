@@ -224,15 +224,6 @@ type GuessingGameLeaderboardsProps = {
 export function GuessingGameLeaderboardsFallback(props: GuessingGameLeaderboardsProps) {
   const [gameStore, { queries }] = useGameStore();
   const { getPlayerByPublicId } = queries;
-  // let ref!: HTMLDivElement;
-  // const [heightTopOffsetCSS, setHeightTopOffsetCSS] = createSignal<string>("");
-
-  // createEffect(() => {
-  //   if (!ref) return;
-  //   const rect = ref.getBoundingClientRect();
-  //   setHeightTopOffsetCSS(`${rect.top}px + ${NAV_HEIGHT}`);
-  //   console.log(`${rect.top}px + ${NAV_HEIGHT}`);
-  // });
 
   return (
     <div class="w-full max-w-96">
