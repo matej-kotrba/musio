@@ -154,7 +154,6 @@ function LobbyInitial(props: LobbyTypesProps) {
           </a>{" "}
           in the meantime 🦭
         </p>
-        {/* <img src="/svgs/waiting.svg" alt="" class="w-80 aspect-[2/3]" /> */}
       </div>
     </section>
   );
