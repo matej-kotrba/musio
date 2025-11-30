@@ -119,20 +119,6 @@ export default function PlayerDisplay(props: Props) {
               {props.player.connectionStatus}
             </span>
           </div>
-          {/* <div class="grid grid-cols-[auto,1fr] items-center">
-            <div class="px-1 box-border rounded-full bg-background-DEAFULT border-2 border-primary z-[2] min-w-[calc(4ch+2*0.25rem)] font-mono text-center text-sm">
-              {props.player.points}
-            </div>
-            <div class="relative h-2 text-sm text-foreground-dark my-2 -translate-x-[1px]">
-              <div class="w-full h-full bg-secondary absolute left-0 top-0 -z-10 rounded-r-full"></div>
-              <div
-                style={{
-                  width: `${displayPointsInPercentage()}%`,
-                }}
-                class="max-w-full h-full bg-primary/80 rounded-r-full duration-1000"
-              ></div>
-            </div>
-          </div> */}
           <Show when={props.previousPoints !== undefined}>
             {/* +1 is needed because zero is interpreted as false so it wont display */}
             <Show when={props.previousPoints! + 1} keyed>
