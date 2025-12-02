@@ -11,11 +11,6 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  /* background-image: linear-gradient(
-    to right,
-    hsl(var(--primary)) var(--gradient-stop),
-    hsl(var(--background-accent)) var(--gradient-stop)
-  ); */
   z-index: -99;
 }
 
