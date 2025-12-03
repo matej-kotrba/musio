@@ -1,8 +1,8 @@
 .volume[type="range"] {
-  -webkit-appearance: none; /* Remove default Chrome styles */
-  appearance: none; /* Remove default styles for all browsers */
-  height: 16px; /* Matches the track height for consistency */
-  background: transparent; /* Ensures no default background interferes */
+  -webkit-appearance: none;
+  appearance: none;
+  height: 16px;
+  background: transparent;
   cursor: pointer;
 }
 
