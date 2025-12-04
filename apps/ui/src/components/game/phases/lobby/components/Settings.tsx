@@ -82,7 +82,6 @@ export default function LobbySettings(props: Props) {
                 onInput={(e) => setGameLimitSliderValue(parseInt(e.currentTarget.value))}
               />
             </div>
-            {/* <Separator class="border-foreground/40 border-2 rounded-full" /> */}
             <div class={`my-4`}>
               <label
                 for="player-limit"
